@@ -1,45 +1,51 @@
 using UnityEngine;
+using UnityEngine.Serialization;
 
-public abstract class Enemies : MonoBehaviour
+public abstract class Enemy : MonoBehaviour
 {
-    public int health;
-    public int damage;
-    public float speed;
-
+    private Vector2 _previousPosition;
+    private SpriteRenderer _spriteRenderer;
     protected GameObject Player;
-    protected SpriteRenderer spriteRenderer;
-    protected Rigidbody2D rigidBody;
-    private Vector2 previousPosition;
+    protected Rigidbody2D RigidBody;
+    public int Health;
+    public int Damage;
+    public float Speed;
 
     public virtual void Awake()
     {
         Player = GameObject.Find("Player");
-        spriteRenderer = GetComponent<SpriteRenderer>();
-        rigidBody = GetComponent<Rigidbody2D>();
-        previousPosition = rigidBody.position;
+        RigidBody = GetComponent<Rigidbody2D>();
+        _spriteRenderer = GetComponent<SpriteRenderer>();
+        _previousPosition = RigidBody.position;
     }
 
     public virtual void Update()
     {
-        if (health <= 0) Destroy(gameObject);
-        lookWhereGoing();
+        if (Health <= 0) 
+            Destroy(gameObject);
+        
+        ChangeRotationToMatchMovingDirection();
     }
 
     private void OnCollisionEnter2D(Collision2D collision)
     {
-        if (collision.gameObject.CompareTag("Player")) damagePlayer(collision.gameObject);
+        if (collision.gameObject.CompareTag("Player")) 
+            DealDamageToPlayer(collision.gameObject);
     }
 
-    private void lookWhereGoing()
+    private void ChangeRotationToMatchMovingDirection()
     {
-        Vector2 currentPosition = rigidBody.position;
-        if (currentPosition.x > previousPosition.x)
-            spriteRenderer.flipX = false;
-        else if (currentPosition.x < previousPosition.x)
-            spriteRenderer.flipX = true;
-        previousPosition = currentPosition;
+        Vector2 currentPosition = RigidBody.position;
+        
+        if (currentPosition.x > _previousPosition.x)
+            _spriteRenderer.flipX = false;
+        else if (currentPosition.x < _previousPosition.x)
+            _spriteRenderer.flipX = true;
+        
+        _previousPosition = currentPosition;
     }
 
 
-    private void damagePlayer(GameObject player) => player.GetComponent<Health>().TakeDamage(damage, transform);
+    private void DealDamageToPlayer(GameObject player) => 
+        player.GetComponent<Health>().TakeDamage(Damage, transform);
 }

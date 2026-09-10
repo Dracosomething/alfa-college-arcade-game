@@ -1,91 +1,79 @@
 using System.Collections;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.AI;
+using UnityEngine.Serialization;
 
-public class FlyingEnemy : Enemies
+public class FlyingEnemy : Enemy
 {
-    private Vector3 Target;
-    private bool SeenPlayerRecently;
-    private NavMeshAgent agent;
-
-    // store the spawn
-    private Vector3 spot;
-
-    // coroutines handlers to avoid starting duplicates
-    private Coroutine wanderCoroutine;
-    private Coroutine forgetCoroutine;
-
-    [SerializeField] private float wanderRadius = 10f;
-    [SerializeField] private float wanderInterval = 3f;
-    [SerializeField] private float forgetDelay = 10f;
+    private Vector3 _targetPosition;
+    private NavMeshAgent _agent;
+    private bool _hasSeenPlayerRecently;
+    private Vector3 _spawnPosition;
+    private Coroutine _wanderCoroutine;
+    private Coroutine _forgetCoroutine;
+    [SerializeField] private float _wanderRadius = 10f;
+    [SerializeField] private float _wanderInterval = 3f;
+    [SerializeField] private float _forgetDelay = 10f;
+    [SerializeField] private float _sightDistance = 10f;
 
     public override void Awake()
     {
         base.Awake();
-        agent = GetComponent<NavMeshAgent>();
-        agent.updateRotation = false;
-        agent.updateUpAxis = false;
+        
+        _agent = GetComponent<NavMeshAgent>();
+        _agent.updateRotation = false;
+        _agent.updateUpAxis = false;
 
-        // store the starting position
-        spot = transform.position;
+        _spawnPosition = transform.position;
 
-        // start wandering routine that picks a random destination every few seconds when not chasing the player
-        if (wanderCoroutine == null)
-            wanderCoroutine = StartCoroutine(WanderRoutine());
+        if (_wanderCoroutine == null)
+            _wanderCoroutine = StartCoroutine(WanderRoutine());
     }
 
-    public new void Update()
+    public override void Update()
     {
         base.Update();
-        lookForPlayer();
+        CheckIfPlayerCanBeSeen();
     }
 
-    private void FixedUpdate()
+    private void FixedUpdate() =>
+        Move();
+
+    private void CheckIfPlayerCanBeSeen()
     {
-        Movement();
-    }
+        Vector3 currentEnemyPosition = transform.position;
+        var isPlayerVisible = false;
+        
+        Vector2 directionToPlayer = (Player.transform.position - currentEnemyPosition).normalized;
+        RaycastHit2D[] allObjectsHitByRay = Physics2D.RaycastAll(currentEnemyPosition, directionToPlayer, _sightDistance);
+        Debug.DrawLine(currentEnemyPosition, currentEnemyPosition + (Vector3)directionToPlayer * _sightDistance);
 
-    private void lookForPlayer()
-    {
-        Vector2 direction = (Player.transform.position - transform.position).normalized;
-        RaycastHit2D hit = Physics2D.Raycast(transform.position, direction, 10f);
-        Debug.DrawLine(transform.position, transform.position + (Vector3)direction * 10f);
-
-        bool playerVisible = false;
-
-        if (hit.collider != null && hit.collider.gameObject)
+        if (allObjectsHitByRay.Length != 0)
         {
-            foreach (RaycastHit2D rayHit in Physics2D.RaycastAll(transform.position, direction, 10f))
-            {
-                if (rayHit.collider.CompareTag("Player"))
-                {
-                    playerVisible = true;
-                    break;
-                }
-            }
+            isPlayerVisible = allObjectsHitByRay
+                .Where(raycastHitObjectInfo => (bool)raycastHitObjectInfo.collider) // Filters out all RaycastHit2D where the collider is null
+                .Where(raycastHitObjectInfo => (bool)raycastHitObjectInfo.collider.gameObject) // Filters out all RaycastHit2D where collider.gameObject is null
+                .Any(raycastHitObjectInfo => raycastHitObjectInfo.collider.CompareTag("Player")); // Checks if any of the collided objects are the player.
         }
 
-        if (playerVisible)
+        if (isPlayerVisible)
         {
-            // set target to player's position and mark as seen recently
-            Target = Player.transform.position;
-
-            // mark that we have seen the player recently
-            SeenPlayerRecently = true;
+            _targetPosition = Player.transform.position;
+            _hasSeenPlayerRecently = true;
 
             // if a forget coroutine is running, stop it because we regained sight
-            if (forgetCoroutine != null)
+            if (_forgetCoroutine != null)
             {
-                StopCoroutine(forgetCoroutine);
-                forgetCoroutine = null;
+                StopCoroutine(_forgetCoroutine);
+                _forgetCoroutine = null;
             }
         }
         else
         {
-            // if player not visible but was seen recently, start a single forget coroutine to clear the flag after delay
-            if (SeenPlayerRecently && forgetCoroutine == null)
+            if (_hasSeenPlayerRecently && _forgetCoroutine == null)
             {
-                forgetCoroutine = StartCoroutine(forgetPlayer());
+                _forgetCoroutine = StartCoroutine(ForgetPlayer());
             }
         }
     }
@@ -95,41 +83,38 @@ public class FlyingEnemy : Enemies
     {
         while (true)
         {
-            if (!SeenPlayerRecently)
+            if (!_hasSeenPlayerRecently)
             {
-                // pick a random 2D offset to keep wandering around the spawn point (spot)
-                Vector2 randomCircle = Random.insideUnitCircle * wanderRadius;
-                Vector3 randomDirection = spot + new Vector3(randomCircle.x, randomCircle.y, spot.z);
+                Vector2 randomPointInWanderRadius = Random.insideUnitCircle * _wanderRadius;
+                Vector3 directionToWonderTo = _spawnPosition + new Vector3(randomPointInWanderRadius.x, randomPointInWanderRadius.y, _spawnPosition.z);
 
-                NavMeshHit navHit;
                 // sample position around the spawn spot (use wanderRadius)
-                if (NavMesh.SamplePosition(randomDirection, out navHit, wanderRadius, NavMesh.AllAreas))
+                if (NavMesh.SamplePosition(sourcePosition: directionToWonderTo, out NavMeshHit foundMesh, _wanderRadius, NavMesh.AllAreas))
                 {
                     // ensure target keeps the original z (important for 2D setups)
-                    Target = new Vector3(navHit.position.x, navHit.position.y, spot.z);
+                    _targetPosition = new Vector3(foundMesh.position.x, foundMesh.position.y, _spawnPosition.z);
                 }
                 else
                 {
                     // fallback: directly use the computed 2D point with correct z
-                    Target = new Vector3(randomDirection.x, randomDirection.y, spot.z);
+                    _targetPosition = new Vector3(directionToWonderTo.x, directionToWonderTo.y, _spawnPosition.z);
                 }
             }
 
-            yield return new WaitForSeconds(wanderInterval);
+            yield return new WaitForSeconds(_wanderInterval);
         }
     }
 
-    private IEnumerator forgetPlayer()
+    private IEnumerator ForgetPlayer()
     {
-        // wait and then forget the player so wandering can resume
-        yield return new WaitForSeconds(forgetDelay);
-        SeenPlayerRecently = false;
-        forgetCoroutine = null;
+        yield return new WaitForSeconds(_forgetDelay);
+        _hasSeenPlayerRecently = false;
+        _forgetCoroutine = null;
         // wanderRoutine is already running, so no need to start it here
     }
 
-    private void Movement()
+    private void Move()
     {
-        agent.SetDestination(Target);
+        _agent.SetDestination(_targetPosition);
     }
 }

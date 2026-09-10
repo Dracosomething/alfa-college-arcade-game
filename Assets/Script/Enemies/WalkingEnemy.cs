@@ -1,16 +1,16 @@
-using System;
-using System.Collections;
+using System.Linq;
 using UnityEngine;
 
-public class WalkingEnemies : Enemies
+public class WalkingEnemy : Enemy
 {
-    public Transform[] patrolPoints;
-    private bool seesPlayer = false;
+    private bool _seesPlayer = false;
+    public Transform[] PatrolPoints;
 
     private void FixedUpdate()
     {
         DrawDebug();
     }
+    
     public override void Update()
     {
         base.Update();
@@ -18,31 +18,35 @@ public class WalkingEnemies : Enemies
     }
 
     private void Patrol()
-    {
-        if (patrolPoints.Length == 0) return;
-        // Move towards the first patrol point in the array
-        rigidBody.position = Vector2.MoveTowards(rigidBody.position, patrolPoints[0].position, speed * Time.fixedDeltaTime);
-        Transform targetPoint = patrolPoints[0];
-
-
-        var distance = Vector2.Distance(rigidBody.position, targetPoint.position);
-        if (distance <= 1)
+    {   // We check if there are any patrol points
+        if (PatrolPoints.Length == 0) 
+            return;
+        Transform targetPoint = PatrolPoints.First();
+        var targetPosition = (Vector2)targetPoint.position;
+        
+        RigidBody.position = Vector2.MoveTowards(
+            current: RigidBody.position, 
+            target: targetPosition,
+            maxDistanceDelta: Speed * Time.fixedDeltaTime);
+        
+        float distanceToTargetPosition = Vector2.Distance(RigidBody.position, targetPosition);
+        
+        if (distanceToTargetPosition <= 1)
         {
-            Transform temp = patrolPoints[0];
-            for (int i = 0; i < patrolPoints.Length - 1; i++)
+            for (var i = 0; i < PatrolPoints.Length - 1; i++)
             {
-                patrolPoints[i] = patrolPoints[i + 1];
+                PatrolPoints[i] = PatrolPoints[i + 1];
             }
-            patrolPoints[patrolPoints.Length - 1] = temp;
+            PatrolPoints[PatrolPoints.Length - 1] = targetPoint;
         }
     }
 
     private void DrawDebug()
     {
-        for (int i = 0; i < patrolPoints.Length; i++)
+        for (int i = 0; i < PatrolPoints.Length; i++)
         {
-            Debug.DrawLine(transform.position, patrolPoints[i].position, Color.green);
+            Debug.DrawLine(transform.position, PatrolPoints[i].position, Color.green);
         }
-        Debug.DrawRay(patrolPoints[0].position, Vector2.up * 2, Color.red);
+        Debug.DrawRay(PatrolPoints[0].position, Vector2.up * 2, Color.red);
     }
 }
