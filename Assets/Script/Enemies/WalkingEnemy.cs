@@ -3,7 +3,6 @@ using UnityEngine;
 
 public class WalkingEnemy : Enemy
 {
-    private bool _seesPlayer = false;
     public Transform[] PatrolPoints;
 
     private void FixedUpdate()
