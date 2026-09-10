@@ -62,7 +62,6 @@ public class FlyingEnemy : Enemy
             _targetPosition = Player.transform.position;
             _hasSeenPlayerRecently = true;
 
-            // if a forget coroutine is running, stop it because we regained sight
             if (_forgetCoroutine != null)
             {
                 StopCoroutine(_forgetCoroutine);
@@ -78,7 +77,6 @@ public class FlyingEnemy : Enemy
         }
     }
 
-    // continuous wander routine: every few seconds pick a random NavMesh point within wanderRadius around the fixed spawn spot
     private IEnumerator WanderRoutine()
     {
         while (true)
@@ -88,15 +86,13 @@ public class FlyingEnemy : Enemy
                 Vector2 randomPointInWanderRadius = Random.insideUnitCircle * _wanderRadius;
                 Vector3 directionToWonderTo = _spawnPosition + new Vector3(randomPointInWanderRadius.x, randomPointInWanderRadius.y, _spawnPosition.z);
 
-                // sample position around the spawn spot (use wanderRadius)
+                // If we can find a mesh we can move to.
                 if (NavMesh.SamplePosition(sourcePosition: directionToWonderTo, out NavMeshHit foundMesh, _wanderRadius, NavMesh.AllAreas))
                 {
-                    // ensure target keeps the original z (important for 2D setups)
                     _targetPosition = new Vector3(foundMesh.position.x, foundMesh.position.y, _spawnPosition.z);
                 }
                 else
                 {
-                    // fallback: directly use the computed 2D point with correct z
                     _targetPosition = new Vector3(directionToWonderTo.x, directionToWonderTo.y, _spawnPosition.z);
                 }
             }
@@ -110,7 +106,6 @@ public class FlyingEnemy : Enemy
         yield return new WaitForSeconds(_forgetDelay);
         _hasSeenPlayerRecently = false;
         _forgetCoroutine = null;
-        // wanderRoutine is already running, so no need to start it here
     }
 
     private void Move()
