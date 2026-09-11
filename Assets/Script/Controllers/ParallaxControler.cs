@@ -1,103 +1,120 @@
+using System;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 public class ParallaxController : MonoBehaviour
 {
-    private float length, startpos;
-    private float height, startposY;
-    private float autoScrollOffset = 0f;
-    public GameObject cam;
-    public float parallaxEffect;
-    public float parallaxEffectY;
+    [Header("Wobble Pattern Settings")]
+    public bool UseWobbleX = false;
+    public bool UseWobbleY = false;
+    public float WobbleOscillationSpeedX = 1f;
+    public float WobbleOscillationSpeedY = 1f;
+    public float WobbleXDirectionAmplitude = 2f;
+    public float WobbleYDirectionAmplitude = 2f;
     
     [Header("Auto Scroll Settings")]
-    public bool useAutoScrollX = false;
-    public float autoScrollSpeedX = 0f;
+    public bool UseAutoScrollX = false;
+    public float AutoScrollSpeedX = 0f;
     
-    [Header("Wobble Pattern Settings")]
-    public bool useWobbleX = false;
-    public float wobbleSpeedX = 1f; // Speed of the wobble oscillation
-    public float wobbleAmplitude = 2f; // How far it wobbles in each direction
-    
-    public bool useWobbleY = false;
-    public float wobbleSpeedY = 1f; // Speed of the Y wobble oscillation
-    public float wobbleAmplitudeY = 2f; // How far it wobbles in Y direction
-    
-    private float wobbleTime = 0f;
+    private float _textureLength;
+    private float _textureHeight;
+    private float _startposX;
+    private float _startposY;
+    private float _autoScrollOffset = 0f;
+    private float _wobbleTime = 0f;
+    public float ParallaxEffectX;
+    public float ParallaxEffectY;
+    public GameObject Camera;
 
-    void Start()
+    private void Start()
     {
-        startpos = transform.position.x;
-        startposY = transform.position.y;
-        length = GetComponent<SpriteRenderer>().bounds.size.x;
-        height = GetComponent<SpriteRenderer>().bounds.size.y;
+        var parallaxControllerSpriteRenderer = GetComponent<SpriteRenderer>();
+        
+        _startposX = transform.position.x;
+        _startposY = transform.position.y;
+        _textureLength = parallaxControllerSpriteRenderer.bounds.size.x;
+        _textureHeight = parallaxControllerSpriteRenderer.bounds.size.y;
     }
 
-    void Update()
+    private void Update()
     {
-        float tempY = (cam.transform.position.y * (1 - parallaxEffectY));
-        float distY = (cam.transform.position.y * parallaxEffectY);
+        Vector3 cameraPosition = Camera.transform.position;
+        Vector3 currentParallaxPosition = transform.position;
         
-        float finalX, finalY;
+        RelativeParallaxPosition relativePosition = new(
+            cameraPosition.x, ParallaxEffectX,
+            cameraPosition.y, ParallaxEffectY);
+
+        Vector2 distanceVector = new(
+             (cameraPosition.y * ParallaxEffectY), 
+             (cameraPosition.x * ParallaxEffectX));
         
-        if (useWobbleX)
+        if (UseWobbleX)
         {
-            // Update wobble time
-            wobbleTime += wobbleSpeedX * Time.deltaTime;
+            UpdateWobbleTimeUsingOscillationSpeed(WobbleOscillationSpeedX);
             
-            // Calculate wobble offset using sine wave for smooth back-and-forth motion
-            float wobbleOffset = Mathf.Sin(wobbleTime) * wobbleAmplitude;
+            float wobbleOffsetX = Mathf.Sin(_wobbleTime) * WobbleXDirectionAmplitude;
             
-            float temp = (cam.transform.position.x * (1 - parallaxEffect));
-            float dist = (cam.transform.position.x * parallaxEffect);
-            finalX = startpos + dist + wobbleOffset;
-            
-            if (temp > startpos + length) startpos += length;
-            else if (temp < startpos - length) startpos -= length;
+            currentParallaxPosition.x = CalculateNewPositionForCoordinate(_startposX, distanceVector.x, 
+                wobbleOffsetX);
         }
-        else if (useAutoScrollX)
+        else if (UseAutoScrollX)
         {
-            autoScrollOffset += autoScrollSpeedX * Time.deltaTime;
-            
-            float temp = (cam.transform.position.x * (1 - parallaxEffect));
-            float dist = (cam.transform.position.x * parallaxEffect);
-            finalX = startpos + dist + autoScrollOffset;
-            
-            if (temp > startpos + length) startpos += length;
-            else if (temp < startpos - length) startpos -= length;
+            _autoScrollOffset += AutoScrollSpeedX * Time.deltaTime;
+
+            currentParallaxPosition.x = CalculateNewPositionForCoordinate(_startposX, distanceVector.x,
+                _autoScrollOffset);
         }
         else
-        {
-            float temp = (cam.transform.position.x * (1 - parallaxEffect));
-            float dist = (cam.transform.position.x * parallaxEffect);
-            finalX = startpos + dist;
-            
-            if(temp > startpos + length) startpos += length;
-            else if(temp < startpos - length) startpos -= length;
-        }
+            currentParallaxPosition.x = CalculateNewPositionForCoordinate(_startposX, distanceVector.x);
         
-        if (useWobbleY)
-        {
-            // Update wobble time if not already updated by X wobble
-            if (!useWobbleX)
-            {
-                wobbleTime += wobbleSpeedY * Time.deltaTime;
-            }
+        ScrollBackgroundOnAxis(Axis2D.X, relativePosition);
+        
+        if (UseWobbleY)
+        {   // We only need to update the wobble time if we haven't already done it with the x wobble.
+            if (!UseWobbleX)
+               UpdateWobbleTimeUsingOscillationSpeed(WobbleOscillationSpeedY); 
             
-            // Calculate Y wobble offset using sine wave
-            float wobbleOffsetY = Mathf.Sin(wobbleTime * wobbleSpeedY / wobbleSpeedX) * wobbleAmplitudeY;
-            
-            finalY = startposY + distY + wobbleOffsetY;
-            
-            if(tempY > startposY + height) startposY += height;
-            else if(tempY < startposY - height) startposY -= height;
+            float wobbleOffsetY = Mathf.Sin(_wobbleTime * WobbleOscillationSpeedY / WobbleOscillationSpeedX) * WobbleYDirectionAmplitude;
+
+            currentParallaxPosition.y = CalculateNewPositionForCoordinate(_startposY, distanceVector.y,
+                wobbleOffsetY);
         }
         else
-        {
-            finalY = startposY + distY;
-            if(tempY > startposY + height) startposY += height;
-            else if(tempY < startposY - height) startposY -= height;
-        }
+            currentParallaxPosition.y = CalculateNewPositionForCoordinate(_startposY, distanceVector.y);
         
-        transform.position = new Vector3(finalX, finalY, transform.position.z);
+        ScrollBackgroundOnAxis(Axis2D.Y, relativePosition);
+        
+        transform.position = currentParallaxPosition;
     }
+
+    private void ScrollBackgroundOnAxis(Axis2D axis, RelativeParallaxPosition relativeParallaxPosition)
+    {
+        switch (axis)
+        {
+            case Axis2D.X:
+                _startposX = GetNewStartPosValueOnAxis(_startposX, _textureLength, relativeParallaxPosition.X);
+                break;
+            case Axis2D.Y:
+                _startposY = GetNewStartPosValueOnAxis(_startposY, _textureHeight, relativeParallaxPosition.Y);
+                break;
+        }
+    }
+
+    private float GetNewStartPosValueOnAxis(float originalStartPosOnAxis, float lengthOnAxis, float relativePositionOnAxis)
+    {
+        if (relativePositionOnAxis > originalStartPosOnAxis + lengthOnAxis)
+            return originalStartPosOnAxis + lengthOnAxis;
+        if (relativePositionOnAxis < originalStartPosOnAxis - lengthOnAxis)
+            return originalStartPosOnAxis - lengthOnAxis;
+
+        return 0f;
+    }
+
+    private float CalculateNewPositionForCoordinate(float startPoseCoordinate, float distanceCoordinate,
+        float offset = 0) =>
+        _startposY + distanceCoordinate + offset;
+    
+    private void UpdateWobbleTimeUsingOscillationSpeed(float oscillationSpeed) =>
+        _wobbleTime += oscillationSpeed * Time.deltaTime;
 }   
