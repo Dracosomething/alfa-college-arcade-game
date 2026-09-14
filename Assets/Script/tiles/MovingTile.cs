@@ -54,7 +54,7 @@ public class MovingTile : MonoBehaviour
     {
         if (collision.gameObject.CompareTag("Player") && playerController != null)
         {
-            playerController.movingTileRigidbody = rb;
+            playerController.MovingTileRigidbody = rb;
         }
     }
 
@@ -62,7 +62,7 @@ public class MovingTile : MonoBehaviour
     {
         if (collision.gameObject.CompareTag("Player") && playerController != null)
         {
-            playerController.movingTileRigidbody = null;
+            playerController.MovingTileRigidbody = null;
         }
     }
 
