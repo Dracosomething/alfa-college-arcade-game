@@ -83,7 +83,7 @@ public class DialogueStarter : MonoBehaviour
     public Animator characterAnimator;
     
     private bool isPlayerInRange = false;
-    private PlayerController playerController;
+    private OldPlayerController oldPlayerController;
     private bool hasDisabledInput = false; // Track if we've disabled input for this dialogue
     private bool hasFlippedToFacePlayer = false; // Track if we've flipped to face player
     private Vector3 originalScale; // Store original scale
@@ -110,7 +110,7 @@ public class DialogueStarter : MonoBehaviour
         allDialogueStarters.Add(this);
         
         // Find the PlayerController in the scene
-        playerController = FindFirstObjectByType<PlayerController>();
+        oldPlayerController = FindFirstObjectByType<OldPlayerController>();
         
         // Store original scale for flipping
         originalScale = transform.localScale;
@@ -139,9 +139,9 @@ public class DialogueStarter : MonoBehaviour
         }
         
         // Continuously face the player if face player is enabled
-        if (facePlayer && playerController != null)
+        if (facePlayer && oldPlayerController != null)
         {
-            FacePlayer(playerController.transform);
+            FacePlayer(oldPlayerController.transform);
         }
         
         // Re-enable player input when dialogue ends
@@ -150,7 +150,7 @@ public class DialogueStarter : MonoBehaviour
     
     private void CheckDialogueState()
     {
-        if (dialogueManager != null && playerController != null && hasDisabledInput)
+        if (dialogueManager != null && oldPlayerController != null && hasDisabledInput)
         {
             // If dialogue has ended, re-enable player input (only once)
             if (!dialogueManager.IsDialogueActive)
@@ -158,7 +158,7 @@ public class DialogueStarter : MonoBehaviour
                 // Set character back to idle animation (this will reset talking animation)
                 SetCharacterTalkingAnimation(false);
                 
-                playerController.SetInputEnabled(true);
+                oldPlayerController.SetInputEnabled(true);
                 hasDisabledInput = false; // Reset flag so we don't keep enabling input
             }
         }
@@ -174,9 +174,9 @@ public class DialogueStarter : MonoBehaviour
             ActivatePanels();
             
             // Disable player movement when dialogue starts
-            if (playerController != null)
+            if (oldPlayerController != null)
             {
-                playerController.SetInputEnabled(false);
+                oldPlayerController.SetInputEnabled(false);
                 hasDisabledInput = true;
             }
             
@@ -598,9 +598,9 @@ public class DialogueStarter : MonoBehaviour
         SetCharacterTalkingAnimation(false);
         
         // Re-enable player input
-        if (playerController != null)
+        if (oldPlayerController != null)
         {
-            playerController.SetInputEnabled(true);
+            oldPlayerController.SetInputEnabled(true);
             hasDisabledInput = false;
         }
         

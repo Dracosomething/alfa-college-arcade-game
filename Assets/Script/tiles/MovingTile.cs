@@ -6,7 +6,7 @@ public class MovingTile : MonoBehaviour
     public List<Transform> waypoints;
     private int currentTargetIndex = 0;
 
-    private PlayerController playerController;
+    private OldPlayerController oldPlayerController;
     private Rigidbody2D rb;
 
     public float speed = 2f;
@@ -16,7 +16,7 @@ public class MovingTile : MonoBehaviour
     {
         var playerObj = GameObject.FindGameObjectWithTag("Player");
         if (playerObj != null)
-            playerController = playerObj.GetComponent<PlayerController>();
+            oldPlayerController = playerObj.GetComponent<OldPlayerController>();
 
         rb = GetComponent<Rigidbody2D>();
         previousPosition = rb.position;
@@ -52,17 +52,17 @@ public class MovingTile : MonoBehaviour
 
     private void OnCollisionEnter2D(Collision2D collision)
     {
-        if (collision.gameObject.CompareTag("Player") && playerController != null)
+        if (collision.gameObject.CompareTag("Player") && oldPlayerController != null)
         {
-            playerController.movingTileRigidbody = rb;
+            oldPlayerController.MovingTileRigidbody = rb;
         }
     }
 
     private void OnCollisionExit2D(Collision2D collision)
     {
-        if (collision.gameObject.CompareTag("Player") && playerController != null)
+        if (collision.gameObject.CompareTag("Player") && oldPlayerController != null)
         {
-            playerController.movingTileRigidbody = null;
+            oldPlayerController.MovingTileRigidbody = null;
         }
     }
 
