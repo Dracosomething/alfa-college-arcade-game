@@ -86,7 +86,7 @@ public class OldPlayerController : MonoBehaviour
               TryGetComponent<Knockback>(out _knockback) &&
               TryGetComponent<Health>(out _health) &&
               TryGetComponent<Animator>(out var playerAnimator) &&
-              this.TryFindFirstObjectByType<DialogueManager>(out _dialogueManager)))
+              SceneHelper.TryFindFirstObjectByTypeInScene<DialogueManager>(out _dialogueManager)))
         {
             throw new MissingComponentException("GameObject PlayerController is missing one of the following" +
                                                 "components: RigidBody2D, TrialRenderer, Knockback, Health, Animator or DialogueManager.");
