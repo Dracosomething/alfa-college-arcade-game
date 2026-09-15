@@ -15,7 +15,7 @@ public class hazardDamage : MonoBehaviour
     private void OnTriggerEnter2D(Collider2D trigger)
     {
         Health health = trigger.gameObject.GetComponent<Health>();
-        PlayerController playerController = trigger.gameObject.GetComponent<PlayerController>();
+        OldPlayerController oldPlayerController = trigger.gameObject.GetComponent<OldPlayerController>();
 
         
         if (health != null)
@@ -29,7 +29,7 @@ public class hazardDamage : MonoBehaviour
                 
                 // Get player's facing direction from PlayerController
                 float facingDirection = 1f; // Default to right
-                if (playerController != null)
+                if (oldPlayerController != null)
                 {
                     // Access the horizontalMovement to determine facing direction
                     // If player is moving left (negative), face left. If moving right (positive) or not moving, face right
@@ -49,7 +49,7 @@ public class hazardDamage : MonoBehaviour
                 health.TakeDamage(damageAmount, this.transform, true); // true = play timeline animation
                 
                 // Start coroutine to wait for knockback to finish before respawning
-                StartCoroutine(WaitForKnockbackThenRespawn(playerController, trigger.gameObject));
+                StartCoroutine(WaitForKnockbackThenRespawn(oldPlayerController, trigger.gameObject));
             }
             else
             {
@@ -58,7 +58,7 @@ public class hazardDamage : MonoBehaviour
         }
     }
 
-    public IEnumerator WaitForKnockbackThenRespawn(PlayerController playerController, GameObject player)
+    public IEnumerator WaitForKnockbackThenRespawn(OldPlayerController oldPlayerController, GameObject player)
     {
         // Get the knockback component to monitor its state
         Knockback knockback = player.GetComponent<Knockback>();
@@ -83,9 +83,9 @@ public class hazardDamage : MonoBehaviour
         }
         
         // Now call the respawn after knockback is finished (only if player didn't die)
-        if (playerController != null)
+        if (oldPlayerController != null)
         {
-            playerController.SubCheckpoints();
+            oldPlayerController.SubCheckpoints();
         }
 
 

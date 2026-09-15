@@ -71,7 +71,7 @@ public class PowerTerminalMinigame : MonoBehaviour
     
     private CodePuzzle currentPuzzle;
     [Header("Player Control")]
-    private PlayerController playerController;
+    private OldPlayerController oldPlayerController;
     private PowerTerminal[] allTerminals;
     
     private bool isMinigameActive = false;
@@ -591,19 +591,19 @@ public class PowerTerminalMinigame : MonoBehaviour
         isMinigameActive = true;
         
         // Find and disable player controller
-        if (playerController == null)
+        if (oldPlayerController == null)
         {
-            playerController = FindFirstObjectByType<PlayerController>();
+            oldPlayerController = FindFirstObjectByType<OldPlayerController>();
         }
         
-        if (playerController != null)
+        if (oldPlayerController != null)
         {
             // Disable player input
-            var inputEnabledField = typeof(PlayerController).GetField("InputEnabled", 
+            var inputEnabledField = typeof(OldPlayerController).GetField("InputEnabled", 
                 System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
             if (inputEnabledField != null)
             {
-                inputEnabledField.SetValue(playerController, false);
+                inputEnabledField.SetValue(oldPlayerController, false);
             }
         }
         
@@ -627,13 +627,13 @@ public class PowerTerminalMinigame : MonoBehaviour
         isMinigameActive = false;
         
         // Re-enable player controller
-        if (playerController != null)
+        if (oldPlayerController != null)
         {
-            var inputEnabledField = typeof(PlayerController).GetField("InputEnabled", 
+            var inputEnabledField = typeof(OldPlayerController).GetField("InputEnabled", 
                 System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
             if (inputEnabledField != null)
             {
-                inputEnabledField.SetValue(playerController, true);
+                inputEnabledField.SetValue(oldPlayerController, true);
             }
         }
         

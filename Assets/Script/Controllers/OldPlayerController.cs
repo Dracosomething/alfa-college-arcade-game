@@ -4,7 +4,7 @@ using UnityEngine.InputSystem;
 using UnityEngine.Serialization;
 using UnityEngine.Tilemaps;
 
-public class PlayerController : MonoBehaviour
+public class OldPlayerController : MonoBehaviour
 {
     [Header("Movement")]
     private float _horizontalMovement;
@@ -136,7 +136,7 @@ public class PlayerController : MonoBehaviour
         if (MovingTileRigidbody)
             platformVelocityX = MovingTileRigidbody.linearVelocity.x;
 
-        if (_isXPositionLocked && _isClimbing)
+        if (_isXPositionLocked && _animationManager.IsClimbing)
             _playerRigidbody.linearVelocity = new Vector2(Constants.NoMovement, _playerRigidbody.linearVelocity.y);
         else
             _playerRigidbody.linearVelocity = new Vector2(_horizontalMovement * MovementSpeed + platformVelocityX, _playerRigidbody.linearVelocity.y);
@@ -144,13 +144,13 @@ public class PlayerController : MonoBehaviour
     
     private void UpdateFootstepAudio()
     {
-        var footstepSoundEffectName = "Footsteps";
-        var soundEffectPitch = 0.4f;
-        var startFootstepTime = 0f;
+        const string FootstepSoundEffectName = "Footsteps";
+        const float SoundEffectPitch = 0.4f;
+        const float StartFootstepTime = 0f;
         
         if (!IsGrounded() || Mathf.Abs(_horizontalMovement) < MinMovementSpeedForFootsteps)
         {
-            _footstepTimer = startFootstepTime;
+            _footstepTimer = StartFootstepTime;
             return;
         }
 
@@ -158,8 +158,8 @@ public class PlayerController : MonoBehaviour
         
         if (_footstepTimer >= FootstepInterval)
         {
-            SoundEffectManager.Play(footstepSoundEffectName, soundEffectPitch);
-            _footstepTimer = startFootstepTime;
+            SoundEffectManager.Play(FootstepSoundEffectName, SoundEffectPitch);
+            _footstepTimer = StartFootstepTime;
         }
     }
 
@@ -185,7 +185,7 @@ public class PlayerController : MonoBehaviour
 
     private void Gravity()
     {
-        if (_isClimbing) 
+        if (_animationManager.IsClimbing) 
             return;
         
         if (_playerRigidbody.linearVelocity.y < 0)
@@ -201,7 +201,7 @@ public class PlayerController : MonoBehaviour
     {
         const float MovementInputRecognizedThreshold = 0.01f;
         
-        if (Mathf.Abs(_horizontalMovement) > MovementInputRecognizedThreshold)
+        if (_inputState == InputState.Enabled && Mathf.Abs(_horizontalMovement) > MovementInputRecognizedThreshold)
         {
             var newFacingDirection = _horizontalMovement > 0 ? 
                 Direction.Right : 
@@ -214,74 +214,57 @@ public class PlayerController : MonoBehaviour
         _lastHorizontalInput = _horizontalMovement;
     }
 
-    private void UpdateAnimationStates()
-    {
-        const float JumpingTheshold = 0.05f;
-        const float FallingTheshold = -0.05f;
-        
-        if (_health.isInvincibleStatus() || _animationManager.IsSitting)
-            return;
-
-        bool startDashAnimation = _animationManager.IsClimbing || Time.time < _dashTimeLimit;
-
-        _animationManager.IsWalking = false;
-        _animationManager.IsJumping = false;
-        _animationManager.IsFalling = false;
-        _animationManager.IsClimbing = false;
-        _animationManager.IsDashing = false;
-        
-        if (startDashAnimation)
-        {
-            _animationManager.IsDashing = true;
-            return;
-        }
-
-        bool isAirborne = !IsGrounded() && !_animationManager.IsClimbing;
-        if (isAirborne)
-        {
-            if (_playerRigidbody.linearVelocity.y > JumpingTheshold)
-                _animationManager.IsJumping = true;
-            else if (_playerRigidbody.linearVelocity.y < FallingTheshold)
-                _animationManager.IsFalling = true;
-            else if (!_animationManager.IsJumping && !_animationManager.IsFalling)
-                _animationManager.IsJumping = true;
-        }
-        else if (_animationManager.IsClimbing)
-        {
-            _playerAnimator.SetBool("isClimbing", true);
-        }
-        else if (Mathf.Abs(_horizontalMovement) > 0.1f && IsGrounded() && !_isClimbing)
-        {
-            _playerAnimator.SetBool("isWalking", true);
-        }
-    }
+    // private void UpdateAnimationStates()
+    // {
+    //     const float JumpingTheshold = 0.05f;
+    //     const float FallingTheshold = -0.05f;
+    //     
+    //     if (_health.isInvincibleStatus() || _animationManager.IsSitting)
+    //         return;
+    //
+    //     bool startDashAnimation = _animationManager.IsClimbing || Time.time < _dashTimeLimit;
+    //
+    //     _animationManager.IsWalking = false;
+    //     _animationManager.IsJumping = false;
+    //     _animationManager.IsFalling = false;
+    //     _animationManager.IsClimbing = false;
+    //     _animationManager.IsDashing = false;
+    //     
+    //     if (startDashAnimation)
+    //     {
+    //         _animationManager.IsDashing = true;
+    //         return;
+    //     }
+    //
+    //     bool isAirborne = !IsGrounded() && !_animationManager.IsClimbing;
+    //     if (isAirborne)
+    //     {
+    //         if (_playerRigidbody.linearVelocity.y > JumpingTheshold)
+    //             _animationManager.IsJumping = true;
+    //         else if (_playerRigidbody.linearVelocity.y < FallingTheshold)
+    //             _animationManager.IsFalling = true;
+    //         else if (!_animationManager.IsJumping && !_animationManager.IsFalling)
+    //             _animationManager.IsJumping = true;
+    //     }
+    //     else if (_animationManager.IsClimbing)
+    //     {
+    //         _playerAnimator.SetBool("isClimbing", true);
+    //     }
+    //     else if (Mathf.Abs(_horizontalMovement) > 0.1f && IsGrounded() && !_isClimbing)
+    //     {
+    //         _playerAnimator.SetBool("isWalking", true);
+    //     }
+    // }
 
     public void Move(InputAction.CallbackContext context)
     {
         //Update last grounded position if the player is really grounded
         if (RealGrounded)
-        {
             LastGroundedPosition = transform.position;
-        }
+        
         Vector2 movementInput = context.ReadValue<Vector2>();
         _horizontalMovement = movementInput.x;
         _verticalMovement = movementInput.y;
-
-        // Update facing direction immediately when input changes
-        if (_inputState && Mathf.Abs(_horizontalMovement) > 0.01f)
-        {
-            int newFacingDirection = _horizontalMovement > 0 ? 0 : 1; // 0 = right, 1 = left
-
-            if (newFacingDirection != _facingDirection)
-            {
-                _facingDirection = newFacingDirection;
-
-                if (_playerAnimator != null)
-                {
-                    _playerAnimator.SetInteger("facingDirection", _facingDirection);
-                }
-            }
-        }
     }
 
     public void Jump()
