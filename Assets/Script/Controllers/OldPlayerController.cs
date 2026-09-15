@@ -357,7 +357,7 @@ public class OldPlayerController : MonoBehaviour
         _isDashing = true;
         // Set the minimum time the dash animation should stay active using the configurable duration
         _dashTimeLimit = Time.time + MaximumDashTime;
-        _playerAnimator.SetBool("isDashing", true);
+        // _playerAnimator.SetBool("isDashing", true);
         SoundEffectManager.Play("Dash");
         float originalGravity = _playerRigidbody.gravityScale;
         _playerRigidbody.gravityScale = 0f;
@@ -461,17 +461,17 @@ public class OldPlayerController : MonoBehaviour
 
     public void ResetAnimations()
     {
-        if (_playerAnimator == null) return;
-
-        _playerAnimator.SetBool("isWalking", false);
-        _playerAnimator.SetBool("isJumping", false);
-        _playerAnimator.SetBool("isFalling", false);
-        _playerAnimator.SetBool("isClimbing", false);
-        _playerAnimator.SetBool("isDashing", false);
-        _playerAnimator.SetBool("isSitting", false);
-
-        _playerAnimator.ResetTrigger("takeDamage");
-        _playerAnimator.ResetTrigger("sittingDown");
+        // if (_playerAnimator == null) return;
+        //
+        // _playerAnimator.SetBool("isWalking", false);
+        // _playerAnimator.SetBool("isJumping", false);
+        // _playerAnimator.SetBool("isFalling", false);
+        // _playerAnimator.SetBool("isClimbing", false);
+        // _playerAnimator.SetBool("isDashing", false);
+        // _playerAnimator.SetBool("isSitting", false);
+        //
+        // _playerAnimator.ResetTrigger("takeDamage");
+        // _playerAnimator.ResetTrigger("sittingDown");
 
         _dashTimeLimit = 0f;
 
@@ -480,7 +480,7 @@ public class OldPlayerController : MonoBehaviour
     // Method to control player input
     public void SetInputEnabled(bool enabled)
     {
-        _inputState = enabled;
+        // _inputState = enabled;
     }
 
     public void SubCheckpoints()
