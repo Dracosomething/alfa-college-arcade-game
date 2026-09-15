@@ -13,11 +13,12 @@ MonoBehaviour:
   m_Name: Johan_Strootman_1
   m_EditorClassIdentifier: 
   dialogueName: Johan Strootman
-  description: 
+  description: Johan strootman verteld kort dat Evil Ids op de volgende verdieping
+    is.
   dialogueNodes:
   - characterName: Johan Strootman
-    dialogueText: Een lange, ietwat grijzende man met een server op zijn rug staat
-      voor je. "Goedemiddag!"
+    dialogueText: Een lange, ietwat grijze man met een server op zijn rug staat voor
+      je. "Goedemiddag!"
     choices:
     - choiceText: '"Waarom heb je een server op je rug?"'
       nextNodeIndex: 1
@@ -29,7 +30,7 @@ MonoBehaviour:
     - choiceText: '"Welk spel?"'
       nextNodeIndex: 2
   - characterName: Johan Strootman
-    dialogueText: '"DIT spel!" zegt Johan, wild gebarend om zich heen'
+    dialogueText: '"DIT spel!" zegt Johan wild gebarend om zich heen'
     choices:
     - choiceText: '"Uhm, oke? Ik zoek Ids zijn broer."'
       nextNodeIndex: 3

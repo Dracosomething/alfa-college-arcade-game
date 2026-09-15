@@ -1565,6 +1565,7 @@ MonoBehaviour:
   dialogueManager: {fileID: 3826191408671759196}
   panelToDisable: {fileID: 0}
   powerTerminal: {fileID: 0}
+  powerTerminalMinigame: {fileID: 0}
 --- !u!1 &8000077203623465220
 GameObject:
   m_ObjectHideFlags: 0

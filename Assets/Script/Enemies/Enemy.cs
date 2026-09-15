@@ -7,9 +7,9 @@ public abstract class Enemy : MonoBehaviour
     private SpriteRenderer _spriteRenderer;
     protected GameObject Player;
     protected Rigidbody2D RigidBody;
-    public int Health;
-    public int Damage;
-    public float Speed;
+    public int Health = 10;
+    public int Damage = 1;
+    public float Speed = 0.5f;
 
     public virtual void Awake()
     {

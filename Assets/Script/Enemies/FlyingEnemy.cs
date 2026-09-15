@@ -45,6 +45,9 @@ public class FlyingEnemy : Enemy
         Vector3 currentEnemyPosition = transform.position;
         var isPlayerVisible = false;
         
+        if (Player == null)
+            return;
+
         Vector2 directionToPlayer = (Player.transform.position - currentEnemyPosition).normalized;
         RaycastHit2D[] allObjectsHitByRay = Physics2D.RaycastAll(currentEnemyPosition, directionToPlayer, _sightDistance);
         Debug.DrawLine(currentEnemyPosition, currentEnemyPosition + (Vector3)directionToPlayer * _sightDistance);

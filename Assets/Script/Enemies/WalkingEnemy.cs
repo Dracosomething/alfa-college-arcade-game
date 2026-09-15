@@ -42,6 +42,9 @@ public class WalkingEnemy : Enemy
 
     private void DrawDebug()
     {
+        if (PatrolPoints.Length == 0) 
+            return;
+
         for (int i = 0; i < PatrolPoints.Length; i++)
         {
             Debug.DrawLine(transform.position, PatrolPoints[i].position, Color.green);

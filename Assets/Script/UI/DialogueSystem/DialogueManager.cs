@@ -7,6 +7,7 @@ using UnityEngine.UI;
 public class DialogueNode
 {
     public string characterName;
+    [TextArea(3, 10)]
     public string dialogueText;
     public List<DialogueChoice> choices;
 }
@@ -95,7 +96,7 @@ public class DialogueManager : MonoBehaviour
             }
             
             // Ensure button component is interactable
-            var button = xButton.GetComponent<UnityEngine.UI.Button>();
+            var button = xButton.GetComponent<Button>();
             if (button != null)
             {
                 button.interactable = true;

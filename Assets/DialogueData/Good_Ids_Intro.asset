@@ -12,26 +12,27 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6fd8006031202b946afb2d2e35ddac9e, type: 3}
   m_Name: Good_Ids_Intro
   m_EditorClassIdentifier: 
-  dialogueName: Good-Ids-Intro
-  description: Good Ids' introduction to the player, giving them their mission; beat
-    his evil doppelganger
+  dialogueName: goede-Ids-Intro
+  description: Introductie van Ids Osinga die de speler een missie geeft of zijn
+    kwaataardige broer, Evil Ids, te verslaan
   dialogueNodes:
   - characterName: Ids Osinga
-    dialogueText: Er staat een man in een blousje met een bril op voor je, een jolige
-      grijns op zijn gezicht. "Hallo!"
+    dialogueText: Er staat een man in een blousje met een bril op voor je. Hij heeft
+      een vrolijke grijns op zijn gezicht. "Hallo!"
     choices:
     - choiceText: Volgende
       nextNodeIndex: 1
   - characterName: Ids Osinga
-    dialogueText: '"Mijn snode broer is ontsnapt! Echt een naar mannetje. Ik zoek
-      iemand om hem te stoppen. Jij bent een iemand, toch? Snapt ''ie ''m ?"'
+    dialogueText: '"Mijn kwaataardige broer is ontsnapt! Echt een naar mannetje.
+      Ik zoek iemand om hem te stoppen. Jij bent een iemand, toch? Snapt ''ie ''m
+      ?"'
     choices:
     - choiceText: Ik snap 'm niet.
       nextNodeIndex: 2
     - choiceText: Ik snap 'm!.
       nextNodeIndex: 5
   - characterName: Ids Osinga
-    dialogueText: Ids trekt een ietwat geconstipeerd gezicht. "Je snapt 'm niet."
+    dialogueText: Ids trekt een ietwat moelijk gezicht. "Je snapt 'm niet."
     choices:
     - choiceText: Nee echt niet.
       nextNodeIndex: 3
@@ -44,7 +45,7 @@ MonoBehaviour:
     - choiceText: Ja?
       nextNodeIndex: 4
   - characterName: Ids Osinga
-    dialogueText: '"kun JIJ dan niet, heel misschien, mijn snode broer stoppen?"'
+    dialogueText: '"kun JIJ dan niet, heel misschien, mijn kwaataardige broer stoppen?"'
     choices:
     - choiceText: Nou ja, vooruit
       nextNodeIndex: 5
