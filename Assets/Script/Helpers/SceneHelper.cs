@@ -7,4 +7,10 @@ public class SceneHelper
         foundObject = Object.FindFirstObjectByType<T>();
         return (object) foundObject != null;
     }
+
+    public static bool TryFindGameObjectWithTagInScene(string tag, out GameObject foundObject)
+    {
+	    foundObject = GameObject.FindGameObjectWithTag(tag);
+	    return (object) foundObject != null;
+    }
 }
