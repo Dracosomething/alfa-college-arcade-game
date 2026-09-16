@@ -1,4 +1,5 @@
 using UnityEngine;
+using System;
 
 public class BouncingPlatform : MonoBehaviour
 {
@@ -10,7 +11,7 @@ public class BouncingPlatform : MonoBehaviour
     {
 	if (!SceneHelper.TryFindGameObjectWithTagInScene("Player", out var player))
 		throw new Exception("Object with tag \"Player\" not found.");
-        _playerRigidBody = Player.GetComponent<Rigidbody2D>();
+        _playerRigidBody = player.GetComponent<Rigidbody2D>();
     }
 
     public void OnTriggerEnter2D(Collider2D collision)

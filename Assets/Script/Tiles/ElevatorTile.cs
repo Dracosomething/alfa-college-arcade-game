@@ -15,9 +15,9 @@ public class ElevatorEntry
 
 public class ElevatorTile : MonoBehaviour
 {
-    public List<ElevatorEntry> elevatorEntries = new List<ElevatorEntry>();
+    public List<ElevatorEntry> ElevatorEntries = new List<ElevatorEntry>();
     public int index;
-    public Transform platform;
+    public Transform Platform;
     public float speed;
     public float waitBeforeMove = 1.5f; // seconds to wait before elevator starts moving
     
@@ -26,7 +26,6 @@ public class ElevatorTile : MonoBehaviour
     public Animator[] sidegateAnimators = new Animator[2];
     
     [Header("Button System")]
-    [Tooltip("Button animator to control button press animations")]
     public Animator buttonAnimator;
     
     [Tooltip("The actual button GameObject/Collider that player must stand on")]
@@ -44,54 +43,47 @@ public class ElevatorTile : MonoBehaviour
     private Transform currentPlayerTransform;
     private bool requirePlayerToLeaveButton = false; // Prevents immediate re-activation after elevator movement
     private bool waitingForPlayerToLeaveZone = false; // Waiting for player to leave elevator zone before resetting button
+    private GameObject _playerGameObject;
 
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
+    private void Awake()
     {
-        if (elevatorEntries.Count <= 1)
-        {
-            throw new Exception("Needs at least 2 points!");
-        }
+    }
 
-        rb = platform.GetComponent<Rigidbody2D>();
+    private void Start()
+    {
+        if (ElevatorEntries.Count <= 1)
+            throw new Exception("Needs at least 2 points!");
+
+        rb = Platform.GetComponent<Rigidbody2D>();
         previousPosition = rb.position;
     }
     
-    void Update()
+    private void Update()
     {
-        // Check if player is standing on the button
         CheckPlayerOnButton();
         
-        // Check if we're waiting for player to leave the elevator zone
         if (waitingForPlayerToLeaveZone)
-        {
             CheckPlayerInElevatorZone();
-        }
     }
     
-    /// <summary>
-    /// Check if player is currently standing on the button
-    /// </summary>
     private void CheckPlayerOnButton()
     {
         if (buttonCollider == null || elevatorActivated) return;
         
-        // Find the player
-        GameObject player = GameObject.FindGameObjectWithTag("Player");
-        if (player == null) return;
+//       GameObject player = GameObject.FindGameObjectWithTag("Player");
+//        if (player == null) return;
+
+	if(!SceneHelper.TryFindGameObjectWithTagInScene("Player", out var playerGameObject))
+		return;
         
-        // Check if player's collider overlaps with button collider
         Collider2D playerCollider = player.GetComponent<Collider2D>();
         if (playerCollider != null && buttonCollider.bounds.Intersects(playerCollider.bounds))
         {
-            // Player is on button
             if (!isPlayerOnButton)
             {
-                // Player just stepped on button
                 isPlayerOnButton = true;
                 currentPlayerTransform = player.transform;
                 
-                // Check if we need to wait for player to leave first
                 if (requirePlayerToLeaveButton)
                 {
                     Debug.Log("Player on button but must leave first after elevator movement");
@@ -107,38 +99,29 @@ public class ElevatorTile : MonoBehaviour
         }
         else
         {
-            // Player left button
             if (isPlayerOnButton)
             {
-                // Player left button - reset state
                 isPlayerOnButton = false;
                 buttonTimer = 0f;
-                requirePlayerToLeaveButton = false; // Player has left, can now reactivate when they return
+                requirePlayerToLeaveButton = false;
                 
                 Debug.Log("Player left button - resetting button state");
-                
-                // No need to reset button animation since it never went down during activation
             }
         }
     }
     
-    /// <summary>
-    /// Check if player is still in the elevator zone - used after elevator movement
-    /// </summary>
     private void CheckPlayerInElevatorZone()
     {
-        // Find the player
         GameObject player = GameObject.FindGameObjectWithTag("Player");
         if (player == null) return;
         
         // Check if player is still in the current elevator zone
-        Collider2D currentZoneCollider = elevatorEntries[index].collider;
+        Collider2D currentZoneCollider = ElevatorEntries[index].collider;
         if (currentZoneCollider != null)
         {
             Collider2D playerCollider = player.GetComponent<Collider2D>();
             if (playerCollider != null && !currentZoneCollider.bounds.Intersects(playerCollider.bounds))
             {
-                // Player has left the elevator zone - now we can reset the button
                 Debug.Log("Player left elevator zone - resetting button");
                 
                 if (buttonAnimator != null)
@@ -148,9 +131,8 @@ public class ElevatorTile : MonoBehaviour
                 }
                 
                 waitingForPlayerToLeaveZone = false;
-                requirePlayerToLeaveButton = true; // Still require them to leave button area before next activation
+                requirePlayerToLeaveButton = true;
                 
-                // Reset ButtonUp after a short delay
                 StartCoroutine(ResetButtonUpAnimation());
             }
         }
@@ -212,7 +194,7 @@ public class ElevatorTile : MonoBehaviour
     public IEnumerator GoToNextPoint(int zoneId)
     {
         // Validate zoneId
-        if (zoneId < 0 || zoneId >= elevatorEntries.Count)
+        if (zoneId < 0 || zoneId >= ElevatorEntries.Count)
         {
             Debug.LogWarning($"Invalid zoneId: {zoneId}");
             yield break;
@@ -224,7 +206,7 @@ public class ElevatorTile : MonoBehaviour
         {
 
             // Already at the requested zone, go to the next one
-            targetIndex = (index + 1) % elevatorEntries.Count;
+            targetIndex = (index + 1) % ElevatorEntries.Count;
 
             // Open sidegates since we're about to move
             OpenSidegates();
@@ -241,12 +223,12 @@ public class ElevatorTile : MonoBehaviour
             OpenSidegates();
         }
 
-        nextPoint = elevatorEntries[targetIndex].transform;
+        nextPoint = ElevatorEntries[targetIndex].transform;
 
-        // Move platform toward nextPoint
-        while (Vector2.Distance(platform.position, nextPoint.position) > 0.1f)
+        // Move Platform toward nextPoint
+        while (Vector2.Distance(Platform.position, nextPoint.position) > 0.1f)
         {
-            Vector2 newPosition = Vector2.MoveTowards(platform.position, nextPoint.position, Time.fixedDeltaTime * speed);
+            Vector2 newPosition = Vector2.MoveTowards(Platform.position, nextPoint.position, Time.fixedDeltaTime * speed);
             rb.MovePosition(newPosition);
 
 
@@ -275,9 +257,6 @@ public class ElevatorTile : MonoBehaviour
         // Button will be reset when player leaves the elevator zone
     }
     
-    /// <summary>
-    /// Reset ButtonUp animation after a short delay
-    /// </summary>
     private IEnumerator ResetButtonUpAnimation()
     {
         yield return new WaitForSeconds(0.5f);
@@ -288,9 +267,6 @@ public class ElevatorTile : MonoBehaviour
         }
     }
     
-    /// <summary>
-    /// Open sidegates when player enters elevator zone
-    /// </summary>
     private void OpenSidegates()
     {
         if (sidegateAnimators != null && sidegateAnimators.Length > 0)
@@ -307,9 +283,6 @@ public class ElevatorTile : MonoBehaviour
         }
     }
     
-    /// <summary>
-    /// Close sidegates when elevator reaches destination
-    /// </summary>
     private void CloseSidegates()
     {
         if (sidegateAnimators != null && sidegateAnimators.Length > 0)
@@ -346,13 +319,12 @@ public class ElevatorTile : MonoBehaviour
 
     private void OnDrawGizmos()
     {
-        // Draw lines between waypoints for visualization in the editor
-        if (elevatorEntries == null || elevatorEntries.Count < 2) return;
+        if (ElevatorEntries == null || ElevatorEntries.Count < 2) return;
         Gizmos.color = Color.green;
-        for (int i = 0; i < elevatorEntries.Count; i++)
+        for (int i = 0; i < ElevatorEntries.Count; i++)
         {
-            Vector3 current = elevatorEntries[i].transform.position;
-            Vector3 next = elevatorEntries[(i + 1) % elevatorEntries.Count].transform.position;
+            Vector3 current = ElevatorEntries[i].transform.position;
+            Vector3 next = ElevatorEntries[(i + 1) % ElevatorEntries.Count].transform.position;
             Gizmos.DrawLine(current, next);
         }
     }
