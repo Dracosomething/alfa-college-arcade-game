@@ -1,7 +1,7 @@
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-public class Level_select : MonoBehaviour
+public class LevelSelect : MonoBehaviour
 {
 
     [SerializeField]

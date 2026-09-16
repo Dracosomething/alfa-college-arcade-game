@@ -7,9 +7,9 @@ public class SoundEffectManager : MonoBehaviour
     // SoundEffectManager.Play("LIBRARY NAME");
     // Ex.: SoundEffectManager.Play("Footsteps");
     private static SoundEffectManager _instance;
-
     private static AudioSource _audioSource;
     private static SoundEffectLibrary _soundEffectLibrary;
+
     [SerializeField] private Slider sfxSlider;
 
     private void Awake()

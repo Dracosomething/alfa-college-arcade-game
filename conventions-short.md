@@ -46,11 +46,14 @@ operators
 - Tussen elke static en constant field heb je een lege regel.
 - Tussen alle properties en methods heb je een lege regel.
 - Fields, constants en properties order je op access modifier, dit doe je in de volgende volgorde:
+operators
 private
 internal
 protected
 protected internal
 public
+- Tussen elke static en constant field heb je een lege regel.
+- Tussen alle properties en methods heb je een lege regel.
 - methods, constructors, etc order je op access modifer, dit doe je in de volgende volgorde:
 public
 protected internal
