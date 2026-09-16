@@ -4,7 +4,7 @@ public abstract class Enemy : MonoBehaviour
 {
     [Header("Attack")]
     [SerializeField] private CustomTimeSpan _attackCooldown = new(minutes: 0, seconds: 0);
-    [SerializeField] protected int _damage = 1;
+    [SerializeField] protected int Damage = 1;
 
     private long _remainingCooldownTimeInSeconds;
     private Vector2 _previousPosition;
@@ -64,7 +64,7 @@ public abstract class Enemy : MonoBehaviour
 
     private void DealDamageToPlayer(GameObject player)
     {
-        PlayerHealthComponent.TakeDamage(_damage, transform);
+        PlayerHealthComponent.TakeDamage(Damage, transform);
         
         StartAttackCooldown();
     }
