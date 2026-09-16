@@ -73,12 +73,16 @@ public class DialogueManager : MonoBehaviour
             DialogueTextContainer.SetActive(true);
             
             // Ensure Canvas Group doesn't block interactions
-            var canvasGroup = DialogueTextContainer.GetComponent<CanvasGroup>();
+            var canvasGroup = DialogueTextContainer.TryGetComponent<CanvasGroup>(out var cg) ? cg : DialogueTextContainer.AddComponent<CanvasGroup>();
             if (canvasGroup != null)
             {
                 canvasGroup.interactable = true;
                 canvasGroup.blocksRaycasts = true;
                 canvasGroup.alpha = 1f;
+            }
+            else
+            {
+                Debug.LogWarning("DialogueManager: DialogueTextContainer does not have a CanvasGroup component. Adding one.");
             }
         }
         
@@ -102,9 +106,13 @@ public class DialogueManager : MonoBehaviour
                 button.interactable = true;
             }
         }
-        
+        else
+        {
+            Debug.LogWarning("DialogueManager: xButton reference is not assigned. Please assign it in the inspector.");
+        }
+
         // choicesContainer will be activated when needed in DisplayNode
-        
+
         // Hide the health bar during dialogue
         HideHealthBar();
         

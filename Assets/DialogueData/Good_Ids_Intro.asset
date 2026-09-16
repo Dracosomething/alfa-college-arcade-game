@@ -18,7 +18,7 @@ MonoBehaviour:
   dialogueNodes:
   - characterName: Ids Osinga
     dialogueText: Er staat een man in een blousje met een bril op voor je. Hij heeft
-      een vrolijke grijns op zijn gezicht. "Hallo!"
+      een vrolijke grijns op zijn gezicht. "Hallo vriend!"
     choices:
     - choiceText: Volgende
       nextNodeIndex: 1
@@ -39,7 +39,7 @@ MonoBehaviour:
     - choiceText: Oh! ik snap 'm
       nextNodeIndex: 5
   - characterName: Ids Osinga
-    dialogueText: '"Ik durf het bijna niet te vragen, maar jij bent een persoon,
+    dialogueText: '"Ik durf het bijna niet te vragen, maar je bent wel een persoon,
       toch?"'
     choices:
     - choiceText: Ja?

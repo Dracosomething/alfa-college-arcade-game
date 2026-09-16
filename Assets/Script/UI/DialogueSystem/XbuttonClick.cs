@@ -31,10 +31,10 @@ public class XbuttonClick : MonoBehaviour
 
     void Start()
     {
-        button = GetComponent<Button>();
+        button = TryGetComponent<Button>(out Button btn) ? btn : null;
         if (button == null)
         {
-            // No Button component found
+            Debug.LogError("XbuttonClick: No Button component found on this GameObject. Use ESC to close the panel.");
             return;
         }
         
@@ -63,7 +63,7 @@ public class XbuttonClick : MonoBehaviour
             dialogueManager = FindFirstObjectByType<DialogueManager>();
             if (dialogueManager == null)
             {
-                // No DialogueManager found
+                Debug.LogError("XbuttonClick: No DialogueManager found in the scene. Please assign one in the inspector or ensure one exists in the scene.");
             }
         }
     }
@@ -73,7 +73,7 @@ public class XbuttonClick : MonoBehaviour
         // Panel reference should be assigned in inspector
         if (panelToDisable == null)
         {
-            // No panel assigned
+            Debug.LogError("XbuttonClick: No panel assigned to disable. Please assign a panel in the inspector.");
         }
     }
     
@@ -85,7 +85,7 @@ public class XbuttonClick : MonoBehaviour
             powerTerminalMinigame = FindFirstObjectByType<PowerTerminalMinigame>();
             if (powerTerminalMinigame == null)
             {
-                // No PowerTerminalMinigame found
+                Debug.LogError("XbuttonClick: No PowerTerminalMinigame found in the scene. Please assign one in the inspector or ensure one exists in the scene.");
             }
         }
         
