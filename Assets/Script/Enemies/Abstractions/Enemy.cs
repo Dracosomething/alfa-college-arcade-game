@@ -3,13 +3,12 @@ using UnityEngine;
 public abstract class Enemy : MonoBehaviour
 {
     [Header("Attack")]
-    [SerializeField] private CustomTimeSpan _attackCooldown = new(minutes: 0, seconds: 0);
+    [SerializeField] private Cooldown _attackCooldown = new(minutes: 0, seconds: 0);
     [SerializeField] protected int Damage = 1;
 
     private long _remainingCooldownTimeInSeconds;
     private Vector2 _previousPosition;
     private SpriteRenderer _spriteRenderer;
-    protected GameObject Player;
     protected Health PlayerHealthComponent;
     protected Rigidbody2D RigidBody;
     [SerializeField] protected int Health = 1;
@@ -17,12 +16,12 @@ public abstract class Enemy : MonoBehaviour
 
     protected virtual void Awake()
     {
-        if (!SceneHelper.TryFindGameObjectInScene(Constants.PlayerGameObjectName, out Player))
+        if (!SceneHelper.TryFindGameObjectInScene(Constants.PlayerGameObjectName, out GameObject playerObject))
             throw new CouldNotFindGameObjectException(Constants.PlayerGameObjectName);
         
         if (!(TryGetComponent<Rigidbody2D>(out RigidBody) &&
               TryGetComponent<SpriteRenderer>(out _spriteRenderer) &&
-              Player.TryGetComponent<Health>(out PlayerHealthComponent)))
+              playerObject.TryGetComponent<Health>(out PlayerHealthComponent)))
             throw new MissingComponentException("GameObject Enemy is missing one of the following components:" +
                                                 "RigidBody2D, SpriteRenderer, Health");
         
@@ -39,9 +38,12 @@ public abstract class Enemy : MonoBehaviour
 
     protected abstract void Move();
     
+    private void FixedUpdate() =>
+        Move();
+    
     private void OnCollisionStay2D(Collision2D collision)
     {
-        if (IsCooldownActive())
+        if (_attackCooldown.IsCooldownActive())
             return;
 
         var collidedObject = collision.gameObject;
@@ -66,30 +68,6 @@ public abstract class Enemy : MonoBehaviour
     {
         PlayerHealthComponent.TakeDamage(Damage, transform);
         
-        StartAttackCooldown();
+        _attackCooldown.StartCooldown();
     }
-
-    private void DecreaseCooldownEverySecond()
-    {
-        if (!IsCooldownActive())
-            RemoveAttackCooldown();
-        
-        _remainingCooldownTimeInSeconds--;
-    }
-
-    private bool IsCooldownActive() =>
-        _remainingCooldownTimeInSeconds > 0;
-
-    private void StartAttackCooldown()
-    {
-        const float IntervalRepeatingOffsetInSeconds = 0f;
-        const float IntervalInSeconds = 1f;
-       
-        _remainingCooldownTimeInSeconds = _attackCooldown.TimeInSeconds;
-        
-        InvokeRepeating(nameof(DecreaseCooldownEverySecond), IntervalRepeatingOffsetInSeconds, IntervalInSeconds);
-    }
-
-    private void RemoveAttackCooldown() =>
-        CancelInvoke(nameof(DecreaseCooldownEverySecond));
 }
