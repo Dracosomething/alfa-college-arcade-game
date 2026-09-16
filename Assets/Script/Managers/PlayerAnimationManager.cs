@@ -10,7 +10,6 @@ public class PlayerAnimationManager
     private const string ClimbingAnimatorVariableName = "isClimbing";
     private const string DashingAnimatorVariableName = "isDashing";
     
-    
     private Animator _playerAnimator;
 
     public Direction FacingDirection

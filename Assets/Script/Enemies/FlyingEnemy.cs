@@ -2,7 +2,6 @@ using System.Collections;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.AI;
-using UnityEngine.Serialization;
 
 public class FlyingEnemy : Enemy
 {
@@ -17,7 +16,7 @@ public class FlyingEnemy : Enemy
     [SerializeField] private float _forgetDelay = 10f;
     [SerializeField] private float _sightDistance = 10f;
 
-    public override void Awake()
+    protected override void Awake()
     {
         base.Awake();
         
@@ -31,7 +30,7 @@ public class FlyingEnemy : Enemy
             _wanderCoroutine = StartCoroutine(WanderRoutine());
     }
 
-    public override void Update()
+    protected override void Update()
     {
         base.Update();
         CheckIfPlayerCanBeSeen();
@@ -108,7 +107,7 @@ public class FlyingEnemy : Enemy
         _forgetCoroutine = null;
     }
 
-    private void Move()
+    protected override void Move()
     {
         _agent.SetDestination(_targetPosition);
     }

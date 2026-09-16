@@ -10,10 +10,15 @@ public class WalkingEnemy : Enemy
         DrawDebug();
     }
     
-    public override void Update()
+    protected override void Update()
     {
         base.Update();
         Patrol();
+    }
+
+    protected override void Move()
+    {
+        throw new System.NotImplementedException();
     }
 
     private void Patrol()
