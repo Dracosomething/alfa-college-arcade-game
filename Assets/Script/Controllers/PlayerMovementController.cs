@@ -15,7 +15,7 @@ public class PlayerMovementController : MonoBehaviour
 
     [Header("Jump Settings")]
     [SerializeField] private float _jumpHeight = 5f;
-    [SerializeField] private GameObject _groundCheckPoint;
+    [SerializeField] private GameObject _groundCheckObject;
     private bool _isGrounded = true;
     public bool canJump = true;
 
@@ -37,14 +37,10 @@ public class PlayerMovementController : MonoBehaviour
         if (_movementInputActionReference == null && _jumpInputActionReference == null && _dashInputActionReference == null)
             throw new MissingReferenceException("Input Action References are not assigned in the inspector. Please assign them in the inspector.");
 
-        if (!(TryGetComponent<Rigidbody2D>(out _playerRigidbody2D)))
-        {
+        if (!TryGetComponent<Rigidbody2D>(out _playerRigidbody2D))
             throw new MissingComponentException("Rigidbody2D component is missing from the GameObject. Please add a Rigidbody2D component.");
-        }
         else
-        {
             _originalGravityScale = _playerRigidbody2D.gravityScale;
-        }
     }
 
     private void OnEnable()
@@ -63,7 +59,7 @@ public class PlayerMovementController : MonoBehaviour
 
     private void Update()
     {
-        _isGrounded = Physics2D.OverlapCircle(_groundCheckPoint.transform.position, 0.1f, _walkableGroundLayerMask);
+        _isGrounded = Physics2D.OverlapCircle(_groundCheckObject.transform.position, 0.1f, _walkableGroundLayerMask);
 
         if (_movementInputActionReference != null)
             _movementInputs = _movementInputActionReference.action.ReadValue<Vector2>();
@@ -102,7 +98,19 @@ public class PlayerMovementController : MonoBehaviour
             {
                 return adjustedVelocity;
             }
+            else if (adjustedVelocity.y > 0 && hitInfo.normal == Vector2.up)
+            {
+                return new Vector2(adjustedVelocity.x, 0);
+            }
         }
         return velocity;
+    }
+
+    private void OnDrawGizmosSelected()
+    {
+        RaycastHit2D hitInfo = Physics2D.Raycast(transform.position, Vector2.down, 1f, _walkableGroundLayerMask);
+
+        Gizmos.DrawLine(transform.position, hitInfo.point);
+        Gizmos.color = Color.red;
     }
 }

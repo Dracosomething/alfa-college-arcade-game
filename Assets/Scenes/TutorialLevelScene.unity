@@ -116577,7 +116577,7 @@ Tilemap:
       - {fileID: 975423156, guid: 76b4ee3e7af644b45b3abd62fddfb81f, type: 3}
       - {fileID: 975423156, guid: 76b4ee3e7af644b45b3abd62fddfb81f, type: 3}
       - {fileID: 975423156, guid: 76b4ee3e7af644b45b3abd62fddfb81f, type: 3}
-      m_AnimationSpeed: 3.0000002
+      m_AnimationSpeed: 3
       m_AnimationTimeOffset: 0
       m_Flags: 0
   - first: {x: 61, y: 19, z: 0}
@@ -116611,7 +116611,7 @@ Tilemap:
       - {fileID: 975423156, guid: 76b4ee3e7af644b45b3abd62fddfb81f, type: 3}
       - {fileID: 975423156, guid: 76b4ee3e7af644b45b3abd62fddfb81f, type: 3}
       - {fileID: 975423156, guid: 76b4ee3e7af644b45b3abd62fddfb81f, type: 3}
-      m_AnimationSpeed: 3.0000002
+      m_AnimationSpeed: 3
       m_AnimationTimeOffset: 0
       m_Flags: 0
   - first: {x: 75, y: 20, z: 0}
@@ -117396,7 +117396,7 @@ Transform:
   m_GameObject: {fileID: 8722704972272791611}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -23.67, y: 1.73, z: 0}
+  m_LocalPosition: {x: -23.665, y: 1.628, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -117999,6 +117999,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 4139244258957994005, guid: bed9c48028e9b264b9dc04a4795ecd4b, type: 3}
+      propertyPath: _cancelInputActionReference
+      value: 
+      objectReference: {fileID: 7727032971491509709, guid: 2bcd2660ca9b64942af0de543d8d7100, type: 3}
     - target: {fileID: 5573460194843779223, guid: bed9c48028e9b264b9dc04a4795ecd4b, type: 3}
       propertyPath: m_Name
       value: Canvas
@@ -118409,7 +118413,7 @@ MonoBehaviour:
   _movementSpeed: 5
   canMove: 1
   _jumpHeight: 5
-  _groundCheckPoint: {fileID: 7401445588005155687}
+  _groundCheckObject: {fileID: 7401445588005155687}
   canJump: 1
   _dashForce: 10
   canDash: 1

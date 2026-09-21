@@ -1,9 +1,11 @@
 using UnityEngine;
+using UnityEngine.InputSystem;
 using UnityEngine.SceneManagement;
 
 public class MenuManager : MonoBehaviour
 {
-    public GameObject pauseUI;
+    [SerializeField] private InputActionReference _cancelInputActionReference;
+    [SerializeField] private GameObject pauseUI;
     private void Start()
     {
         pauseUI.SetActive(false);
@@ -11,7 +13,7 @@ public class MenuManager : MonoBehaviour
 
     private void Update()
     {
-        if (Input.GetKeyDown(KeyCode.Escape))
+        if (_cancelInputActionReference.action.triggered)
         {
             PauseApplication();
         }
