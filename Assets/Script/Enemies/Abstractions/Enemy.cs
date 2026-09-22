@@ -1,31 +1,30 @@
+using Unity.VisualScripting;
 using UnityEngine;
 
 public abstract class Enemy : MonoBehaviour
 {
     [Header("Attack")]
-    [SerializeField] private Cooldown _attackCooldown = new(minutes: 0, seconds: 0);
+    [SerializeField] private CustomTimeSpan _attackCooldownDuration = new(minutes: 0, seconds: 0);
     [SerializeField] protected int Damage = 1;
 
     private long _remainingCooldownTimeInSeconds;
     private Vector2 _previousPosition;
     private SpriteRenderer _spriteRenderer;
-    protected Health PlayerHealthComponent;
+    private CooldownWrapper _attackCooldownWrapper;
     protected Rigidbody2D RigidBody;
     [SerializeField] protected int Health = 1;
     [SerializeField] protected float Speed = 1;
 
     protected virtual void Awake()
     {
-        if (!SceneHelper.TryFindGameObjectInScene(Constants.PlayerGameObjectName, out GameObject playerObject))
-            throw new CouldNotFindGameObjectException(Constants.PlayerGameObjectName);
-        
         if (!(TryGetComponent<Rigidbody2D>(out RigidBody) &&
-              TryGetComponent<SpriteRenderer>(out _spriteRenderer) &&
-              playerObject.TryGetComponent<Health>(out PlayerHealthComponent)))
+              TryGetComponent<SpriteRenderer>(out _spriteRenderer)))
             throw new MissingComponentException("GameObject Enemy is missing one of the following components:" +
-                                                "RigidBody2D, SpriteRenderer, Health");
+                                                "RigidBody2D, SpriteRenderer");
         
         _previousPosition = RigidBody.position;
+        _attackCooldownWrapper = this.AddComponent<CooldownWrapper>();
+        _attackCooldownWrapper.InitializeCooldownWrapper(_attackCooldownDuration);
     }
 
     protected virtual void Update()
@@ -43,7 +42,7 @@ public abstract class Enemy : MonoBehaviour
     
     private void OnCollisionStay2D(Collision2D collision)
     {
-        if (_attackCooldown.IsCooldownActive())
+        if (_attackCooldownWrapper.IsCooldownActive())
             return;
 
         var collidedObject = collision.gameObject;
@@ -66,8 +65,11 @@ public abstract class Enemy : MonoBehaviour
 
     private void DealDamageToPlayer(GameObject player)
     {
-        PlayerHealthComponent.TakeDamage(Damage, transform);
+        if (!player.TryGetComponent<Health>(out var playerHealth))
+            throw new MissingComponentException("Gameobject Player is missing Health component!");
         
-        _attackCooldown.StartCooldown();
+        playerHealth.TakeDamage(Damage, transform);
+        
+        _attackCooldownWrapper.StartCooldown();
     }
 }

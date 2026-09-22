@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Linq;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.AI;
 
@@ -8,22 +9,16 @@ public class FlyingEnemy : Enemy
     [SerializeField] private float _wanderRadius = 1f;
     [SerializeField] private float _sightDistance = 1f;
     private bool _hasSeenPlayerRecently;
-    [SerializeField] private Cooldown _newWanderPositionCooldown = new(minutes: 3);
-    [SerializeField] private Cooldown _forgetDelay = new(minutes: 10);
+    [SerializeField] private CustomTimeSpan _newWanderPositionCooldownDuration = new(seconds: 1);
+    private CooldownWrapper _newWanderPositionCooldown;
     private NavMeshAgent _agent;
     private Coroutine _wanderCoroutine;
     private Coroutine _forgetCoroutine;
-    private Transform _playerTransform;
     private Vector2 _spawnPosition;
 
     protected override void Awake()
     {
         base.Awake();
-        
-        if (!SceneHelper.TryFindGameObjectInScene(Constants.PlayerGameObjectName, out GameObject playerObject))
-            throw new CouldNotFindGameObjectException(Constants.PlayerGameObjectName);
-
-        _playerTransform = playerObject.transform;
         
         if (!TryGetComponent<NavMeshAgent>(out _agent))
             throw new MissingComponentException("FlyingEnemy is missing a NavMeshAgent component.");
@@ -33,6 +28,9 @@ public class FlyingEnemy : Enemy
 
         _spawnPosition = (Vector2)transform.position;
 
+        _newWanderPositionCooldown = this.AddComponent<CooldownWrapper>();
+        _newWanderPositionCooldown.InitializeCooldownWrapper(_newWanderPositionCooldownDuration);
+        
         // _wanderCoroutine = StartCoroutine(WanderRoutine());
     }
 
@@ -45,36 +43,34 @@ public class FlyingEnemy : Enemy
 
     protected override void Move()
     {
-        // If player seen and forget delay active, stop
-        
-        Vector2 _targetPosition;
-        
-        if (CanSeePlayer())
-        {
-            _targetPosition = (Vector2)_playerTransform.position;
-            // Start delay for forgetting
-        }
+        if (CanSeePlayerAndGetPlayerPosition(out var playerPosition))
+            _agent.SetDestination((Vector3)(playerPosition!));
         else
         {
             if (_newWanderPositionCooldown.IsCooldownActive())
                 return;
-             
-            _targetPosition = GetNewWanderPosition();
+            _agent.SetDestination((Vector3)GetNewWanderPosition());
+            
             _newWanderPositionCooldown.StartCooldown();
         }
-             
-        _agent.SetDestination(_targetPosition);
     }
 
-    private bool CanSeePlayer()
+    private bool CanSeePlayerAndGetPlayerPosition(out Vector2? playerPosition)
     {
-        var selfPosition = (Vector2)transform.position;
+        playerPosition = null;
         
-        Vector2 directionToPlayer = ((Vector2)_playerTransform.position - selfPosition);
-        RaycastHit2D objectHitByRaycast = Physics2D.Raycast(origin: selfPosition, directionToPlayer, _sightDistance);
+        var selfPosition = (Vector2)transform.position;
 
-        return (bool)objectHitByRaycast.collider &&
-               objectHitByRaycast.collider.CompareTag(Constants.PlayerGameObjectName);
+        Collider2D[] collidingObjects = Physics2D.OverlapCircleAll(point: selfPosition, _sightDistance);
+        Collider2D playerObject = collidingObjects
+            .FirstOrDefault(collidedObject => collidedObject.CompareTag(Constants.PlayerGameObjectName));
+
+        if (!playerObject)
+            return false;
+
+        playerPosition = playerObject.transform.position;
+        
+        return playerObject.CompareTag(Constants.PlayerGameObjectName);
     }
 
     private Vector2 GetNewWanderPosition()
