@@ -162,6 +162,14 @@ PrefabInstance:
       propertyPath: m_Name
       value: Flying cleaner robot (2)
       objectReference: {fileID: 0}
+    - target: {fileID: 5319408078666976827, guid: c6211b613e621a5449db5d76ac624996, type: 3}
+      propertyPath: _newWanderPositionCooldownDuration.<Minutes>k__BackingField
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5319408078666976827, guid: c6211b613e621a5449db5d76ac624996, type: 3}
+      propertyPath: _newWanderPositionCooldownDuration.<Seconds>k__BackingField
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 5529856907466094711, guid: c6211b613e621a5449db5d76ac624996, type: 3}
       propertyPath: m_LocalScale.x
       value: 2
@@ -496,6 +504,14 @@ PrefabInstance:
       propertyPath: m_Name
       value: Flying cleaner robot
       objectReference: {fileID: 0}
+    - target: {fileID: 5319408078666976827, guid: c6211b613e621a5449db5d76ac624996, type: 3}
+      propertyPath: _newWanderPositionCooldownDuration.<Minutes>k__BackingField
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5319408078666976827, guid: c6211b613e621a5449db5d76ac624996, type: 3}
+      propertyPath: _newWanderPositionCooldownDuration.<Seconds>k__BackingField
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 5529856907466094711, guid: c6211b613e621a5449db5d76ac624996, type: 3}
       propertyPath: m_LocalScale.x
       value: 2
@@ -647,13 +663,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f0d79d83c2fdee84dae702253c016b84, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Damage: 1
-  AttackCooldown:
+  _attackCooldownDuration:
     <Minutes>k__BackingField: 0
     <Seconds>k__BackingField: 0
+  Damage: 1
   Health: 0
   Speed: 0
-  PatrolPoints: []
+  _endPosition: {x: 15, y: 0}
 --- !u!1 &512119644
 GameObject:
   m_ObjectHideFlags: 0
@@ -9192,7 +9208,7 @@ Tilemap:
       - {fileID: -1240626031211899577, guid: 76b4ee3e7af644b45b3abd62fddfb81f, type: 3}
       - {fileID: -1240626031211899577, guid: 76b4ee3e7af644b45b3abd62fddfb81f, type: 3}
       - {fileID: -1240626031211899577, guid: 76b4ee3e7af644b45b3abd62fddfb81f, type: 3}
-      m_AnimationSpeed: 3.0000002
+      m_AnimationSpeed: 3
       m_AnimationTimeOffset: 0
       m_Flags: 0
   - first: {x: 48, y: 17, z: 0}
@@ -9277,7 +9293,7 @@ Tilemap:
       - {fileID: 975423156, guid: 76b4ee3e7af644b45b3abd62fddfb81f, type: 3}
       - {fileID: 975423156, guid: 76b4ee3e7af644b45b3abd62fddfb81f, type: 3}
       - {fileID: 975423156, guid: 76b4ee3e7af644b45b3abd62fddfb81f, type: 3}
-      m_AnimationSpeed: 3.0000002
+      m_AnimationSpeed: 3
       m_AnimationTimeOffset: 0
       m_Flags: 0
   m_TileAssetArray:
@@ -9491,6 +9507,14 @@ PrefabInstance:
     - target: {fileID: 2513276215096346287, guid: c6211b613e621a5449db5d76ac624996, type: 3}
       propertyPath: m_Name
       value: Flying cleaner robot (3)
+      objectReference: {fileID: 0}
+    - target: {fileID: 5319408078666976827, guid: c6211b613e621a5449db5d76ac624996, type: 3}
+      propertyPath: _newWanderPositionCooldownDuration.<Minutes>k__BackingField
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5319408078666976827, guid: c6211b613e621a5449db5d76ac624996, type: 3}
+      propertyPath: _newWanderPositionCooldownDuration.<Seconds>k__BackingField
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 5529856907466094711, guid: c6211b613e621a5449db5d76ac624996, type: 3}
       propertyPath: m_LocalScale.x
@@ -10874,6 +10898,14 @@ PrefabInstance:
     - target: {fileID: 2513276215096346287, guid: c6211b613e621a5449db5d76ac624996, type: 3}
       propertyPath: m_Name
       value: Flying cleaner robot (1)
+      objectReference: {fileID: 0}
+    - target: {fileID: 5319408078666976827, guid: c6211b613e621a5449db5d76ac624996, type: 3}
+      propertyPath: _newWanderPositionCooldownDuration.<Minutes>k__BackingField
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5319408078666976827, guid: c6211b613e621a5449db5d76ac624996, type: 3}
+      propertyPath: _newWanderPositionCooldownDuration.<Seconds>k__BackingField
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 5529856907466094711, guid: c6211b613e621a5449db5d76ac624996, type: 3}
       propertyPath: m_LocalScale.x
