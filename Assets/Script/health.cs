@@ -86,12 +86,7 @@ public class Health : MonoBehaviour
         invincibilityCoroutine = StartCoroutine(BecomeTemporarilyInvincible());
     }
 
-    public void TakeDamage(int damage, Transform damageSource)
-    {
-        TakeDamage(damage, damageSource, false); // Default to not playing timeline
-    }
-
-    public void TakeDamage(int damage, Transform damageSource, bool playTimelineOnRespawn)
+    public void TakeDamage(int damage, Transform damageSource, bool playTimelineOnRespawn = false)
     {
         
         if (isInvincible) 
