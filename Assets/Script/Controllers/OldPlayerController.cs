@@ -67,7 +67,7 @@ public class OldPlayerController : MonoBehaviour
     private float _footstepTimer = 0f;
 
     [Header("SubCheckpoints")]
-    private Vector2 _subCheckPointPosition;
+    public Vector2 _subCheckPointPosition;
 
     private float _timeOfLastGroundTouch = 0f;
     private Rigidbody2D _playerRigidbody;
