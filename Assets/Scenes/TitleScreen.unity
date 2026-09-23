@@ -162,6 +162,14 @@ PrefabInstance:
       propertyPath: m_Name
       value: Flying cleaner robot (2)
       objectReference: {fileID: 0}
+    - target: {fileID: 5319408078666976827, guid: c6211b613e621a5449db5d76ac624996, type: 3}
+      propertyPath: _newWanderPositionCooldownDuration.<Minutes>k__BackingField
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5319408078666976827, guid: c6211b613e621a5449db5d76ac624996, type: 3}
+      propertyPath: _newWanderPositionCooldownDuration.<Seconds>k__BackingField
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 5529856907466094711, guid: c6211b613e621a5449db5d76ac624996, type: 3}
       propertyPath: m_LocalScale.x
       value: 2
@@ -501,6 +509,14 @@ PrefabInstance:
       propertyPath: m_Name
       value: Flying cleaner robot
       objectReference: {fileID: 0}
+    - target: {fileID: 5319408078666976827, guid: c6211b613e621a5449db5d76ac624996, type: 3}
+      propertyPath: _newWanderPositionCooldownDuration.<Minutes>k__BackingField
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5319408078666976827, guid: c6211b613e621a5449db5d76ac624996, type: 3}
+      propertyPath: _newWanderPositionCooldownDuration.<Seconds>k__BackingField
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 5529856907466094711, guid: c6211b613e621a5449db5d76ac624996, type: 3}
       propertyPath: m_LocalPosition.x
       value: -3.3900003
@@ -647,11 +663,39 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 3263175614833953919, guid: 89e3e5466d3307c429b216b96243c689, type: 3}
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 5903191455718190286, guid: 89e3e5466d3307c429b216b96243c689, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 392064828}
   m_SourcePrefab: {fileID: 100100000, guid: 89e3e5466d3307c429b216b96243c689, type: 3}
+--- !u!1 &392064827 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 5903191455718190286, guid: 89e3e5466d3307c429b216b96243c689, type: 3}
+  m_PrefabInstance: {fileID: 392064826}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &392064828
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 392064827}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f0d79d83c2fdee84dae702253c016b84, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _attackCooldownDuration:
+    <Minutes>k__BackingField: 0
+    <Seconds>k__BackingField: 0
+  Damage: 1
+  Health: 0
+  Speed: 0
+  _endPosition: {x: 15, y: 0}
 --- !u!1 &512119644
 GameObject:
   m_ObjectHideFlags: 0
@@ -9285,7 +9329,7 @@ Tilemap:
       - {fileID: 975423156, guid: 76b4ee3e7af644b45b3abd62fddfb81f, type: 3}
       - {fileID: 975423156, guid: 76b4ee3e7af644b45b3abd62fddfb81f, type: 3}
       - {fileID: 975423156, guid: 76b4ee3e7af644b45b3abd62fddfb81f, type: 3}
-      m_AnimationSpeed: 3.0000002
+      m_AnimationSpeed: 3
       m_AnimationTimeOffset: 0
       m_Flags: 0
   m_TileAssetArray:
@@ -9499,6 +9543,14 @@ PrefabInstance:
     - target: {fileID: 2513276215096346287, guid: c6211b613e621a5449db5d76ac624996, type: 3}
       propertyPath: m_Name
       value: Flying cleaner robot (3)
+      objectReference: {fileID: 0}
+    - target: {fileID: 5319408078666976827, guid: c6211b613e621a5449db5d76ac624996, type: 3}
+      propertyPath: _newWanderPositionCooldownDuration.<Minutes>k__BackingField
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5319408078666976827, guid: c6211b613e621a5449db5d76ac624996, type: 3}
+      propertyPath: _newWanderPositionCooldownDuration.<Seconds>k__BackingField
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 5529856907466094711, guid: c6211b613e621a5449db5d76ac624996, type: 3}
       propertyPath: m_LocalScale.x
@@ -10924,6 +10976,14 @@ PrefabInstance:
     - target: {fileID: 2513276215096346287, guid: c6211b613e621a5449db5d76ac624996, type: 3}
       propertyPath: m_Name
       value: Flying cleaner robot (1)
+      objectReference: {fileID: 0}
+    - target: {fileID: 5319408078666976827, guid: c6211b613e621a5449db5d76ac624996, type: 3}
+      propertyPath: _newWanderPositionCooldownDuration.<Minutes>k__BackingField
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5319408078666976827, guid: c6211b613e621a5449db5d76ac624996, type: 3}
+      propertyPath: _newWanderPositionCooldownDuration.<Seconds>k__BackingField
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 5529856907466094711, guid: c6211b613e621a5449db5d76ac624996, type: 3}
       propertyPath: m_LocalScale.x

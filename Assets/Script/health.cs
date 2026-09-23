@@ -212,11 +212,11 @@ public class Health : MonoBehaviour
     private System.Collections.IEnumerator RespawnCoroutine(Health playerHealth)
     {
         // Get player controller to disable input
-        PlayerController playerController = gameObject.GetComponent<PlayerController>();
-        if (playerController != null)
+        OldPlayerController oldPlayerController = gameObject.GetComponent<OldPlayerController>();
+        if (oldPlayerController != null)
         {
             // Disable player input immediately
-            playerController.SetInputEnabled(false);
+            oldPlayerController.SetInputEnabled(false);
         }
         
         // Stop any ongoing knockback when respawning
@@ -240,18 +240,18 @@ public class Health : MonoBehaviour
         playerHealth.Heal(playerHealth.maxHealth);
         
         // Reset player animations when respawning after death
-        if (playerController != null)
+        if (oldPlayerController != null)
         {
-            playerController.ResetAnimations();
+            oldPlayerController.ResetAnimations();
         }
         
         // Wait additional 0.2 seconds (total 0.5 seconds of disabled input)
         yield return new WaitForSeconds(0.2f);
         
         // Re-enable player input
-        if (playerController != null)
+        if (oldPlayerController != null)
         {
-            playerController.SetInputEnabled(true);
+            oldPlayerController.SetInputEnabled(true);
         }
         
         // Reset the dead flag

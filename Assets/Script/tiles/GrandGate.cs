@@ -60,7 +60,7 @@ public class GrandGate : MonoBehaviour
     private bool isPanning = false;
     
     // Player control management
-    private PlayerController playerController;
+    private OldPlayerController oldPlayerController;
     private bool playerControlsWereDisabled = false;
 
     void Start()
@@ -291,18 +291,18 @@ public class GrandGate : MonoBehaviour
     /// </summary>
     private void DisablePlayerControls()
     {
-        if (playerController == null)
+        if (oldPlayerController == null)
         {
-            playerController = FindFirstObjectByType<PlayerController>();
+            oldPlayerController = FindFirstObjectByType<OldPlayerController>();
         }
         
-        if (playerController != null)
+        if (oldPlayerController != null)
         {
-            var inputEnabledField = typeof(PlayerController).GetField("InputEnabled", 
+            var inputEnabledField = typeof(OldPlayerController).GetField("InputEnabled", 
                 System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
             if (inputEnabledField != null)
             {
-                inputEnabledField.SetValue(playerController, false);
+                inputEnabledField.SetValue(oldPlayerController, false);
                 playerControlsWereDisabled = true;
                 Debug.Log("Player controls disabled for camera pan");
             }
@@ -314,18 +314,18 @@ public class GrandGate : MonoBehaviour
     /// </summary>
     private void EnablePlayerControls()
     {
-        if (playerController == null)
+        if (oldPlayerController == null)
         {
-            playerController = FindFirstObjectByType<PlayerController>();
+            oldPlayerController = FindFirstObjectByType<OldPlayerController>();
         }
         
-        if (playerController != null)
+        if (oldPlayerController != null)
         {
-            var inputEnabledField = typeof(PlayerController).GetField("InputEnabled", 
+            var inputEnabledField = typeof(OldPlayerController).GetField("InputEnabled", 
                 System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
             if (inputEnabledField != null)
             {
-                inputEnabledField.SetValue(playerController, true);
+                inputEnabledField.SetValue(oldPlayerController, true);
                 Debug.Log("Player controls enabled after camera pan");
             }
         }
