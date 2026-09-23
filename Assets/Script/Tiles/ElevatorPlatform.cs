@@ -10,16 +10,16 @@ public class ElevatorPlatform : MonoBehaviour
     
     [Header("Side Gates")]
     [Tooltip("Sidegate objects that will open when the player enters and close when elevator reaches destination.")]
-    [SerializeField] private Animator[] SideGateAnimators = new Animator[2];
+    [SerializeField] private Animator[] _sideGateAnimators = new Animator[2];
     
     [Header("Button")]
-    [SerializeField] private Animator ButtonAnimator;
+    [SerializeField] private Animator _buttonAnimator;
 
     [Tooltip("The actual button GameObject/Collider that player must stand on")]
-    [SerializeField] private Collider2D ButtonCollider;
+    [SerializeField] private Collider2D _buttonCollider;
 
     [Tooltip("Time in seconds the player must stand on button to activate elevator")]
-    [SerializeField] private float ButtonPressTime = 2f;
+    [SerializeField] private float _requiredButtonPressTime = 2f;
     
     [Header("")]
     private Vector2 _previousPosition;
@@ -29,18 +29,18 @@ public class ElevatorPlatform : MonoBehaviour
     private bool _isPlayerRequiredToLeaveButton = false;
     private bool _isWaitingForPlayerToLeaveZone = false;
     private GameObject _playerGameObject;
-    [SerializeField] private List<ElevatorEntry> ElevatorEntries = new List<ElevatorEntry>();
-    [SerializeField] private int ElevatorEntriesIndex;
-    [SerializeField] private Transform PlatformTransform;
-    [SerializeField] private float Speed;
-    [SerializeField] private float StartMovingDelay = 1.5f;
+    [SerializeField] private List<ElevatorEntry> _elevatorEntries = new List<ElevatorEntry>();
+    [SerializeField] private int _elevatorEntriesIndex;
+    [SerializeField] private Transform _platformTransform;
+    [SerializeField] private float _speed;
+    [SerializeField] private float _startMovingDelay = 1.5f;
 
     private void Start()
     {
-        if (ElevatorEntries.Count <= 1)
-            throw new Exception("Needs at least 2 points!");
+        if (_elevatorEntries.Count <= 1)
+            throw new Exception("Elevator Entries need at least 2 points.");
 
-        _rigidBody = PlatformTransform.GetComponent<Rigidbody2D>();
+        _rigidBody = _platformTransform.GetComponent<Rigidbody2D>();
         _previousPosition = _rigidBody.position;
     }
     
@@ -54,7 +54,7 @@ public class ElevatorPlatform : MonoBehaviour
     
     private void CheckPlayerOnButton()
     {
-        if (ButtonCollider == null || _isElevatorActivated)
+        if (_buttonCollider == null || _isElevatorActivated)
             return;
         
 	if (!SceneHelper.TryFindGameObjectWithTagInScene("Player", out var playerGameObject))
@@ -62,7 +62,7 @@ public class ElevatorPlatform : MonoBehaviour
         
         Collider2D playerCollider = playerGameObject.GetComponent<Collider2D>();
 
-        if (playerCollider != null && ButtonCollider.bounds.Intersects(playerCollider.bounds))
+        if (playerCollider != null && _buttonCollider.bounds.Intersects(playerCollider.bounds))
         {
             if (!_isPlayerOnButton)
             {
@@ -71,7 +71,7 @@ public class ElevatorPlatform : MonoBehaviour
                 if (_isPlayerRequiredToLeaveButton)
                     return;
                 
-                int currentZoneId = ElevatorEntriesIndex;
+                int currentZoneId = _elevatorEntriesIndex;
                 StartCoroutine(ButtonActivationProcess(currentZoneId));
             }
 
@@ -90,7 +90,7 @@ public class ElevatorPlatform : MonoBehaviour
 	if (!SceneHelper.TryFindGameObjectWithTagInScene("Player", out var playerGameObject))
 		return;
         
-        Collider2D currentZoneCollider = ElevatorEntries[ElevatorEntriesIndex].Collider;
+        Collider2D currentZoneCollider = _elevatorEntries[_elevatorEntriesIndex].Collider;
 
         if (currentZoneCollider == null)
 		return;
@@ -99,10 +99,10 @@ public class ElevatorPlatform : MonoBehaviour
 
         if (playerCollider != null && !currentZoneCollider.bounds.Intersects(playerCollider.bounds))
         {
-            if (ButtonAnimator != null)
+            if (_buttonAnimator != null)
             {
-                ButtonAnimator.SetBool("ButtonUp", true);
-                ButtonAnimator.SetBool("ButtonDown", false);
+                _buttonAnimator.SetBool("ButtonUp", true);
+                _buttonAnimator.SetBool("ButtonDown", false);
             }
             
             _isWaitingForPlayerToLeaveZone = false;
@@ -128,19 +128,19 @@ public class ElevatorPlatform : MonoBehaviour
     {
         float buttonTimer = 0f;
         
-        while (_isPlayerOnButton && buttonTimer < ButtonPressTime && !_isElevatorActivated)
+        while (_isPlayerOnButton && buttonTimer < _requiredButtonPressTime && !_isElevatorActivated)
         {
             buttonTimer += Time.deltaTime;
             
             yield return null;
         }
         
-        if (_isPlayerOnButton && buttonTimer >= ButtonPressTime && !_isElevatorActivated)
+        if (_isPlayerOnButton && buttonTimer >= _requiredButtonPressTime && !_isElevatorActivated)
         {
             _isElevatorActivated = true;
             
-            if (ButtonAnimator != null)
-                ButtonAnimator.SetBool("ButtonDown", true);
+            if (_buttonAnimator != null)
+                _buttonAnimator.SetBool("ButtonDown", true);
             
             StartCoroutine(GoToNextPoint(zoneId));
         }
@@ -148,7 +148,7 @@ public class ElevatorPlatform : MonoBehaviour
 
     private IEnumerator GoToNextPoint(int zoneId)
     {
-        if (zoneId < 0 || zoneId >= ElevatorEntries.Count)
+        if (zoneId < 0 || zoneId >= _elevatorEntries.Count)
         {
             Debug.LogWarning($"Invalid zoneId: {zoneId}");
 
@@ -157,13 +157,13 @@ public class ElevatorPlatform : MonoBehaviour
 
         int targetIndex;
 
-        if (ElevatorEntriesIndex == zoneId)
+        if (_elevatorEntriesIndex == zoneId)
         {
-            targetIndex = (ElevatorEntriesIndex + 1) % ElevatorEntries.Count;
+            targetIndex = (_elevatorEntriesIndex + 1) % _elevatorEntries.Count;
 
             OpenSideGates();
 
-            yield return new WaitForSeconds(StartMovingDelay);
+            yield return new WaitForSeconds(_startMovingDelay);
         }
         else
         {
@@ -172,11 +172,11 @@ public class ElevatorPlatform : MonoBehaviour
             OpenSideGates();
         }
 
-        Transform nextPoint = ElevatorEntries[targetIndex].Transform;
+        Transform nextPoint = _elevatorEntries[targetIndex].Transform;
 
-        while (Vector2.Distance(PlatformTransform.position, nextPoint.position) > 0.1f)
+        while (Vector2.Distance(_platformTransform.position, nextPoint.position) > 0.1f)
         {
-            Vector2 newPosition = Vector2.MoveTowards(PlatformTransform.position, nextPoint.position, Time.fixedDeltaTime * Speed);
+            Vector2 newPosition = Vector2.MoveTowards(_platformTransform.position, nextPoint.position, Time.fixedDeltaTime * _speed);
             _rigidBody.MovePosition(newPosition);
 
             _rigidBody.linearVelocity = (newPosition - _previousPosition) / Time.fixedDeltaTime;
@@ -187,7 +187,7 @@ public class ElevatorPlatform : MonoBehaviour
 
         _rigidBody.MovePosition(nextPoint.position);
         _rigidBody.linearVelocity = Vector2.zero;
-        ElevatorEntriesIndex = targetIndex;
+        _elevatorEntriesIndex = targetIndex;
         
         CloseSideGates();
         
@@ -199,16 +199,16 @@ public class ElevatorPlatform : MonoBehaviour
     {
         yield return new WaitForSeconds(0.5f);
         
-        if (ButtonAnimator != null)
-            ButtonAnimator.SetBool("ButtonUp", false);
+        if (_buttonAnimator != null)
+            _buttonAnimator.SetBool("ButtonUp", false);
     }
     
     private void OpenSideGates()
     {
-        if (SideGateAnimators == null || SideGateAnimators.Length == 0)
+        if (_sideGateAnimators == null || _sideGateAnimators.Length == 0)
 		return;
 
-        foreach (Animator sideGateAnimator in SideGateAnimators)
+        foreach (Animator sideGateAnimator in _sideGateAnimators)
         {
             if (sideGateAnimator != null)
 		    continue;
@@ -220,10 +220,10 @@ public class ElevatorPlatform : MonoBehaviour
     
     private void CloseSideGates()
     {
-        if (SideGateAnimators == null || SideGateAnimators.Length == 0)
+        if (_sideGateAnimators == null || _sideGateAnimators.Length == 0)
 		return;
 
-        foreach (Animator sideGateAnimator in SideGateAnimators)
+        foreach (Animator sideGateAnimator in _sideGateAnimators)
         {
 	    if (sideGateAnimator != null)
 		    continue;
@@ -247,14 +247,14 @@ public class ElevatorPlatform : MonoBehaviour
 
     private void OnDrawGizmos()
     {
-        if (ElevatorEntries == null || ElevatorEntries.Count < 2) return;
+        if (_elevatorEntries == null || _elevatorEntries.Count < 2) return;
 
         Gizmos.color = Color.green;
         
-	for (int i = 0; i < ElevatorEntries.Count; i++)
+	for (int i = 0; i < _elevatorEntries.Count; i++)
         {
-            Vector3 current = ElevatorEntries[i].Transform.position;
-            Vector3 next = ElevatorEntries[(i + 1) % ElevatorEntries.Count].Transform.position;
+            Vector3 current = _elevatorEntries[i].Transform.position;
+            Vector3 next = _elevatorEntries[(i + 1) % _elevatorEntries.Count].Transform.position;
             Gizmos.DrawLine(current, next);
         }
     }
