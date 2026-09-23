@@ -1,17 +1,14 @@
+using System;
 using UnityEngine;
 
 public class ElevatorZone : MonoBehaviour
 {
-    public int id; // Unique ID for this zone
-    public ElevatorTile elevatorTile; // Reference to the main ElevatorTile script
+    [SerializeField] private int _zoneId;
+    [SerializeField] private ElevatorPlatform _elevatorPlatform;
 
-    private void OnTriggerEnter2D(Collider2D other)
+    private void OnTriggerEnter2D(Collider2D collidedObject)
     {
-        Debug.Log("test");
-        if (other.CompareTag("Player"))
-        {
-            Debug.Log($"Player entered elevator zone {id}");
-            elevatorTile.OnPlayerEnteredZone(id, other.transform);
-        }
+        if (collidedObject.CompareTag("Player"))
+            _elevatorPlatform.OnPlayerEnteredZone(_zoneId, collidedObject.transform);
     }
 }
