@@ -776,6 +776,22 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 1820318957135127313, guid: 897b8cce94c30addf9907b2aa4d0cad2, type: 3}
+      propertyPath: GroundCheck
+      value: 
+      objectReference: {fileID: 943279826}
+    - target: {fileID: 1820318957135127313, guid: 897b8cce94c30addf9907b2aa4d0cad2, type: 3}
+      propertyPath: StartPosition
+      value: 
+      objectReference: {fileID: 958517192}
+    - target: {fileID: 1820318957135127313, guid: 897b8cce94c30addf9907b2aa4d0cad2, type: 3}
+      propertyPath: GroundLayer.m_Bits
+      value: 8
+      objectReference: {fileID: 0}
+    - target: {fileID: 1820318957135127313, guid: 897b8cce94c30addf9907b2aa4d0cad2, type: 3}
+      propertyPath: DashStopLayer.m_Bits
+      value: 8
+      objectReference: {fileID: 0}
     - target: {fileID: 4606891834182750813, guid: 897b8cce94c30addf9907b2aa4d0cad2, type: 3}
       propertyPath: m_LocalPosition.x
       value: -24.95
@@ -63167,6 +63183,11 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 8932587006463838828, guid: f21f7f589417385bb829c53c1464d75b, type: 3}
   m_PrefabInstance: {fileID: 643318620}
   m_PrefabAsset: {fileID: 0}
+--- !u!4 &943279826 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 7171812328300759298, guid: 897b8cce94c30addf9907b2aa4d0cad2, type: 3}
+  m_PrefabInstance: {fileID: 550304586}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &958517191
 GameObject:
   m_ObjectHideFlags: 0
@@ -117396,7 +117417,7 @@ Transform:
   m_GameObject: {fileID: 8722704972272791611}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -23.665, y: 1.628, z: 0}
+  m_LocalPosition: {x: -24.43, y: 1.72, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -118411,12 +118432,12 @@ MonoBehaviour:
   _jumpInputActionReference: {fileID: -2099379676528639254, guid: 2bcd2660ca9b64942af0de543d8d7100, type: 3}
   _dashInputActionReference: {fileID: -8936932682107720902, guid: 2bcd2660ca9b64942af0de543d8d7100, type: 3}
   _movementSpeed: 5
-  canMove: 1
+  moveEnabled: 1
   _jumpHeight: 5
   _groundCheckObject: {fileID: 7401445588005155687}
-  canJump: 1
+  jumpEnabled: 1
   _dashForce: 10
-  canDash: 1
+  dashEnabled: 1
   _walkableGroundLayerMask:
     serializedVersion: 2
     m_Bits: 8
