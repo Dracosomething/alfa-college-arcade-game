@@ -44,6 +44,7 @@ public class PlayerMovementController : MonoBehaviour
         if (IsInputActionReferenceNull())
             throw new MissingReferenceException("Input Action References are not assigned in the inspector. Please assign them in the inspector.");
 
+// TODO: change this to add a rigidbody with default values instead 
         if (!TryGetComponent<Rigidbody2D>(out _playerRigidbody2D))
             throw new MissingComponentException("Rigidbody2D component is missing from the GameObject. Please add a Rigidbody2D component.");
         else
@@ -73,7 +74,7 @@ public class PlayerMovementController : MonoBehaviour
     #region Update Methods
     private void Update()
     {
-        // Convert player input into a Vector2 for use to move the player.
+        // Convert the player inputs into a Vector2 to use this to move the player.
         if (_movementInputActionReference != null)
             _movementInputs = _movementInputActionReference.action.ReadValue<Vector2>();
 
