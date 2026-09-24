@@ -46,19 +46,20 @@ public class ElevatorPlatform : MonoBehaviour
     
     private void Update()
     {
-        CheckPlayerOnButton();
+        if (IsPlayerOnButton())
+            StartCoroutine(ButtonActivationProcess(_elevatorEntriesIndex));
         
         if (_isWaitingForPlayerToLeaveZone)
             CheckPlayerInElevatorZone();
     }
     
-    private void CheckPlayerOnButton()
+    private bool IsPlayerOnButton()
     {
         if (_buttonCollider == null || _isElevatorActivated)
-            return;
+            return false;
         
 	if (!SceneHelper.TryFindGameObjectWithTagInScene("Player", out var playerGameObject))
-            return;
+            return false;
         
         Collider2D playerCollider = playerGameObject.GetComponent<Collider2D>();
 
@@ -69,13 +70,12 @@ public class ElevatorPlatform : MonoBehaviour
                 _isPlayerOnButton = true;
                 
                 if (_isPlayerRequiredToLeaveButton)
-                    return;
-                
-                int currentZoneId = _elevatorEntriesIndex;
-                StartCoroutine(ButtonActivationProcess(currentZoneId));
+                    return false;
+
+		return true;
             }
 
-	    return;
+	    return false;
         }
 
         if (_isPlayerOnButton)
@@ -83,6 +83,8 @@ public class ElevatorPlatform : MonoBehaviour
 	    _isPlayerOnButton = false;
 	    _isPlayerRequiredToLeaveButton = false;
     	}
+
+	return false;
     }
     
     private void CheckPlayerInElevatorZone()
@@ -242,8 +244,6 @@ public class ElevatorPlatform : MonoBehaviour
         if (animator != null)
             animator.SetBool("Close", false);
     }
-
-
 
     private void OnDrawGizmos()
     {
