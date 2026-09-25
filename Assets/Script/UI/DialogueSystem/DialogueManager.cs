@@ -1,79 +1,56 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-[System.Serializable]
-public class DialogueNode
-{
-    public string characterName;
-    [TextArea(3, 10)]
-    public string dialogueText;
-    public List<DialogueChoice> choices;
-}
-
-[System.Serializable]
-public class DialogueChoice
-{
-    public string choiceText;
-    public int nextNodeIndex;
-}
-
 public class DialogueManager : MonoBehaviour
 {
-    public Text dialogueText;
-    public Text characterNameText;
-    public GameObject choicesContainer;
-    public Button choiceButtonPrefab;
-    public GameObject DialogueTextContainer;
-    public GameObject xButton;
-    
     [Header("UI References")]
-    [Tooltip("Reference to the player's health bar to hide during dialogue")]
-    public HealthBar playerHealthBar;
-    
     [Tooltip("Additional UI elements to hide during dialogue (e.g., health bar fill, UI panels)")]
-    public GameObject[] uiElementsToHide;
-    
-    [Header("Dialogue State")]
-    public bool IsDialogueActive { get; private set; } = false;
+    [SerializeField] private GameObject[] _uiElementsToHide;
     
     [Header("Typewriter Settings")]
     [Tooltip("Speed of the typewriter effect (characters per second)")]
-    public float typewriterSpeed = 30f;
-    
+    [SerializeField] private float _typewriterSpeed = 30f;
     [Tooltip("Allow clicking to skip typewriter animation")]
-    public bool allowSkip = true;
+    [SerializeField] private bool _allowSkip = true;
+    
+    [Header("Dialogue State")]
+    [field: SerializeField] public bool IsDialogueActive { get; private set; } = false;
+    
+    [SerializeField] private Text _dialogueText;
+    [SerializeField] private Text _characterNameText;
+    [SerializeField] private GameObject _choicesContainer;
+    [SerializeField] private GameObject _dialogueTextContainer;
+    [SerializeField] private GameObject _exitButton;
+    [SerializeField] private Button _choiceButtonPrefab;
+    private List<DialogueNode> _dialogueNodes;
+    private Coroutine _typewriterCoroutine;
+    private bool _skipRequested = false;
+    private bool _isTyping = false;
+    private string _currentFullText = "";
+    private int _currentNodeIndex = 0;
 
-    private List<DialogueNode> dialogueNodes;
-    private int currentNodeIndex = 0;
-    private Coroutine typewriterCoroutine;
-    private bool isTyping = false;
-    private string currentFullText = "";
-    private bool skipRequested = false;
-
-    private void Update()
+    private void Awake()
     {
-        // Allow skipping typewriter effect with mouse click or space/enter
-        if (allowSkip && isTyping && (Input.GetMouseButtonDown(0) || Input.GetKeyDown(KeyCode.Space) || Input.GetKeyDown(KeyCode.Return)))
-        {
-            skipRequested = true;
-        }
+        if (!((bool)_exitButton && (bool)_dialogueTextContainer))
+            throw new SerializeFieldNotSetException("One if the following fields has not been set." +
+                                                    "_exitButton, _dialogueTextContainer, _typeWriterCoroutine.");
     }
 
     public void StartDialogue(List<DialogueNode> nodes)
     {
-        IsDialogueActive = true;
-        dialogueNodes = nodes;
-        currentNodeIndex = 0;
+        _dialogueNodes = nodes;
+        _currentNodeIndex = 0;
         
         // Activate UI panels and ensure they're interactable
-        if (DialogueTextContainer != null)
+        if (_dialogueTextContainer != null)
         {
-            DialogueTextContainer.SetActive(true);
+            _dialogueTextContainer.SetActive(true);
             
             // Ensure Canvas Group doesn't block interactions
-            var canvasGroup = DialogueTextContainer.TryGetComponent<CanvasGroup>(out var cg) ? cg : DialogueTextContainer.AddComponent<CanvasGroup>();
+            var canvasGroup = _dialogueTextContainer.TryGetComponent<CanvasGroup>(out var cg) ? cg : _dialogueTextContainer.AddComponent<CanvasGroup>();
             if (canvasGroup != null)
             {
                 canvasGroup.interactable = true;
@@ -86,12 +63,12 @@ public class DialogueManager : MonoBehaviour
             }
         }
         
-        if (xButton != null)
+        if (_exitButton != null)
         {
-            xButton.SetActive(true);
+            _exitButton.SetActive(true);
             
             // Ensure Canvas Group doesn't block interactions
-            var canvasGroup = xButton.GetComponent<CanvasGroup>();
+            var canvasGroup = _exitButton.GetComponent<CanvasGroup>();
             if (canvasGroup != null)
             {
                 canvasGroup.interactable = true;
@@ -100,7 +77,7 @@ public class DialogueManager : MonoBehaviour
             }
             
             // Ensure button component is interactable
-            var button = xButton.GetComponent<Button>();
+            var button = _exitButton.GetComponent<Button>();
             if (button != null)
             {
                 button.interactable = true;
@@ -111,66 +88,70 @@ public class DialogueManager : MonoBehaviour
             Debug.LogWarning("DialogueManager: xButton reference is not assigned. Please assign it in the inspector.");
         }
 
-        // choicesContainer will be activated when needed in DisplayNode
-
-        // Hide the health bar during dialogue
-        HideHealthBar();
-        
         DisplayNode();
     }
 
+    private void Update()
+    {
+        // Allow skipping typewriter effect with mouse click or space/enter
+        if (_allowSkip && _isTyping && (Input.GetMouseButtonDown(0) || Input.GetKeyDown(KeyCode.Space) || Input.GetKeyDown(KeyCode.Return)))
+        {
+            _skipRequested = true;
+        }
+    }
+    
     private void DisplayNode()
     {
-        if (currentNodeIndex < 0 || currentNodeIndex >= dialogueNodes.Count) return;
+        if (_currentNodeIndex < 0 || _currentNodeIndex >= _dialogueNodes.Count) return;
         
-        DialogueNode node = dialogueNodes[currentNodeIndex];
-        characterNameText.text = node.characterName;
+        DialogueNode nodeScriptableObject = _dialogueNodes[_currentNodeIndex];
+        _characterNameText.text = nodeScriptableObject.characterName;
         
         // Stop any existing typewriter coroutine
-        if (typewriterCoroutine != null)
+        if (_typewriterCoroutine != null)
         {
-            StopCoroutine(typewriterCoroutine);
+            StopCoroutine(_typewriterCoroutine);
         }
         
         // Clear choices until typing is complete
-        foreach (Transform child in choicesContainer.transform)
+        foreach (Transform child in _choicesContainer.transform)
         {
             Destroy(child.gameObject);
         }
         
         // Start typewriter effect
-        currentFullText = node.dialogueText;
-        skipRequested = false;
-        typewriterCoroutine = StartCoroutine(TypewriterEffect(node));
+        _currentFullText = nodeScriptableObject.dialogueText;
+        _skipRequested = false;
+        _typewriterCoroutine = StartCoroutine(TypewriterEffect(nodeScriptableObject));
     }
     
-    private IEnumerator TypewriterEffect(DialogueNode node)
+    private IEnumerator TypewriterEffect(DialogueNode nodeScriptableObject)
     {
-        isTyping = true;
-        dialogueText.text = "";
+        _isTyping = true;
+        _dialogueText.text = "";
         
-        for (int i = 0; i <= currentFullText.Length; i++)
+        for (int i = 0; i <= _currentFullText.Length; i++)
         {
-            if (skipRequested)
+            if (_skipRequested)
             {
-                dialogueText.text = currentFullText;
+                _dialogueText.text = _currentFullText;
                 break;
             }
             
-            dialogueText.text = currentFullText.Substring(0, i);
-            yield return new WaitForSeconds(1f / typewriterSpeed);
+            _dialogueText.text = _currentFullText.Substring(0, i);
+            yield return new WaitForSeconds(1f / _typewriterSpeed);
         }
         
-        isTyping = false;
-        skipRequested = false;
+        _isTyping = false;
+        _skipRequested = false;
         
         // Now create the choice buttons after typing is complete
-        if (node.choices.Count > 0)
+        if (nodeScriptableObject.choices.Count > 0)
         {
             // Activate choices container and ensure it's interactable
-            choicesContainer.SetActive(true);
+            _choicesContainer.SetActive(true);
             
-            var canvasGroup = choicesContainer.GetComponent<CanvasGroup>();
+            var canvasGroup = _choicesContainer.GetComponent<CanvasGroup>();
             if (canvasGroup != null)
             {
                 canvasGroup.interactable = true;
@@ -178,9 +159,9 @@ public class DialogueManager : MonoBehaviour
                 canvasGroup.alpha = 1f;
             }
             
-            foreach (var choice in node.choices)
+            foreach (var choice in nodeScriptableObject.choices)
             {
-                Button choiceButton = Instantiate(choiceButtonPrefab, choicesContainer.transform);
+                Button choiceButton = Instantiate(_choiceButtonPrefab, _choicesContainer.transform);
                 choiceButton.GetComponentInChildren<Text>().text = choice.choiceText;
                 choiceButton.onClick.AddListener(() => SelectChoice(choice.nextNodeIndex));
                 
@@ -189,7 +170,7 @@ public class DialogueManager : MonoBehaviour
             }
         }
 
-        if (node.choices.Count == 0)
+        if (nodeScriptableObject.choices.Count == 0)
         {
             StartCoroutine(HideDialogueAfterDelay(5f));
         }
@@ -197,9 +178,9 @@ public class DialogueManager : MonoBehaviour
 
     public void SelectChoice(int nextNodeIndex)
     {
-        if (nextNodeIndex >= 0 && nextNodeIndex < dialogueNodes.Count)
+        if (nextNodeIndex >= 0 && nextNodeIndex < _dialogueNodes.Count)
         {
-            currentNodeIndex = nextNodeIndex;
+            _currentNodeIndex = nextNodeIndex;
             DisplayNode();
         }
         else
@@ -213,86 +194,25 @@ public class DialogueManager : MonoBehaviour
         IsDialogueActive = false;
         
         // Stop typewriter coroutine if running
-        if (typewriterCoroutine != null)
+        if (_typewriterCoroutine != null)
         {
-            StopCoroutine(typewriterCoroutine);
-            typewriterCoroutine = null;
+            StopCoroutine(_typewriterCoroutine);
+            _typewriterCoroutine = null;
         }
         
-        isTyping = false;
-        dialogueText.text = "";
-        characterNameText.text = "";
-        choicesContainer.SetActive(false);
+        _isTyping = false;
+        _dialogueText.text = "";
+        _characterNameText.text = "";
+        _choicesContainer.SetActive(false);
 
-        if (DialogueTextContainer != null)
-        {
-            DialogueTextContainer.SetActive(false);
-        }
+        _dialogueTextContainer.SetActive(false);
         
-        if (xButton != null)
-        {
-            xButton.SetActive(false);
-        }
-        
-        // Show the health bar again when dialogue ends
-        ShowHealthBar();
+        _exitButton.SetActive(false);
     }
 
     private IEnumerator HideDialogueAfterDelay(float delay)
     {
         yield return new WaitForSeconds(delay);
         EndDialogue();
-    }
-    
-    /// <summary>
-    /// Hides the player's health bar and additional UI elements during dialogue
-    /// </summary>
-    private void HideHealthBar()
-    {
-        if (playerHealthBar == null)
-        {
-            // Try to find the health bar automatically
-            playerHealthBar = FindFirstObjectByType<HealthBar>();
-        }
-        
-        if (playerHealthBar != null)
-        {
-            playerHealthBar.gameObject.SetActive(false);
-        }
-        
-        // Hide additional UI elements
-        if (uiElementsToHide != null)
-        {
-            foreach (GameObject uiElement in uiElementsToHide)
-            {
-                if (uiElement != null)
-                {
-                    uiElement.SetActive(false);
-                }
-            }
-        }
-    }
-    
-    /// <summary>
-    /// Shows the player's health bar and additional UI elements when dialogue ends
-    /// </summary>
-    private void ShowHealthBar()
-    {
-        if (playerHealthBar != null)
-        {
-            playerHealthBar.gameObject.SetActive(true);
-        }
-        
-        // Show additional UI elements
-        if (uiElementsToHide != null)
-        {
-            foreach (GameObject uiElement in uiElementsToHide)
-            {
-                if (uiElement != null)
-                {
-                    uiElement.SetActive(true);
-                }
-            }
-        }
     }
 }

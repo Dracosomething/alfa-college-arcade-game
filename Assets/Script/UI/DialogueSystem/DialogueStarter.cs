@@ -119,7 +119,7 @@ public class DialogueStarter : MonoBehaviour
     private void SetAnimation(AnimationType animationType, bool animationState)
     {
         if (!_characterAnimations.TryGet(animationType, out string animationName))
-            throw new AnimationNotDefinedException($"Animation of type {Enum.GetName<AnimationType>(animationType)} is not defined.");
+            throw new AnimationNotDefinedException($"Animation of type {Enum.GetName(typeof(AnimationType),animationType)} is not defined.");
         
         _characterAnimator.SetBool(animationName, animationState);
     }
