@@ -1,7 +1,7 @@
 using System.Collections;
 using UnityEngine;
 
-public class FallingPlatform : MonoBehaviour
+public class FallingPlatformTile : MonoBehaviour
 {
     [SerializeField] private float _fallDelay;
     [SerializeField] private float _resetDelay;

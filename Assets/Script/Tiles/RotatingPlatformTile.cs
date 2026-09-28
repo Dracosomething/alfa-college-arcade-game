@@ -1,7 +1,7 @@
 using System.Collections;
 using UnityEngine;
 
-public class RotatingPlatform : MonoBehaviour
+public class RotatingPlatformTile : MonoBehaviour
 {
     private const float _targetAngle = 180f;
     [SerializeField] private bool _isRotatingClockwise;

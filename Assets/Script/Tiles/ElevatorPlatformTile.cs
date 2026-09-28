@@ -5,7 +5,7 @@ using System.Linq;
 using TMPro;
 using UnityEngine;
 
-public class ElevatorPlatform : MonoBehaviour
+public class ElevatorPlatformTile : MonoBehaviour
 {
     
     [Header("Side Gates")]

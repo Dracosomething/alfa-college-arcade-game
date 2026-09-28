@@ -3,7 +3,7 @@ using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class DialogueManager : MonoBehaviour
+public class DialogueController : MonoBehaviour
 {
     private const string DialogueInputName = "Input"; // Change this constant when a proper input is decided
     

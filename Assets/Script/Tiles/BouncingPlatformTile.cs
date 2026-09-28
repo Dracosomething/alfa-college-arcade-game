@@ -1,7 +1,7 @@
 using UnityEngine;
 using System;
 
-public class BouncingPlatform : MonoBehaviour
+public class BouncingPlatformTile : MonoBehaviour
 {
     private Rigidbody2D _playerRigidbody;
 

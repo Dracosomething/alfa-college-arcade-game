@@ -1,7 +1,7 @@
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-public class LevelManager : MonoBehaviour
+public class LevelController : MonoBehaviour
 {
     [SerializeField] private string levelToLoadName;
 

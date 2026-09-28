@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class MovingPlatform : MonoBehaviour
+public class MovingPlatformTile : MonoBehaviour
 {
     private int _currentTargetIndex = 0;
     private OldPlayerController _oldPlayerController;

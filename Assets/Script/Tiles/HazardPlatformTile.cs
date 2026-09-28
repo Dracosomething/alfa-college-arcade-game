@@ -2,7 +2,7 @@ using System.Collections;
 using System.Threading;
 using UnityEngine;
 
-public class HazardPlatform : MonoBehaviour
+public class HazardPlatformTile : MonoBehaviour
 {
     [Header("Visual Effects")]
     [SerializeField] private GameObject _damageEffectPrefab;
@@ -32,19 +32,19 @@ public class HazardPlatform : MonoBehaviour
 
     public IEnumerator WaitForKnockbackThenRespawn(OldPlayerController oldPlayerController, GameObject player)
     {
-        Knockback knockback = player.GetComponent<Knockback>();
-        
-        if (knockback != null)
-        {
-            
-            while (knockback.IsBeingKnockedBack)
-            {
-                yield return new WaitForFixedUpdate();
-            }
-            
-            yield return new WaitForSeconds(0.1f);
-        }
-        
+        // Knockback knockback = player.GetComponent<Knockback>();
+
+        // if (knockback != null)
+        // {
+        //     
+        //     while (knockback.IsBeingKnockedBack)
+        //     {
+        //         yield return new WaitForFixedUpdate();
+        //     }
+        //     
+        yield return new WaitForSeconds(0.1f);
+        // }
+
         if (oldPlayerController != null)
             oldPlayerController.SubCheckpoints();
     }

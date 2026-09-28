@@ -53,7 +53,7 @@ public class OldPlayerController : MonoBehaviour
     private float _lastHorizontalInput = 0f;
 
     [Header("Dialogue")]
-    private DialogueManager _dialogueManager;
+    private DialogueController _dialogueController;
 
     [Header("Knockback")]
     // private Knockback _knockback;
@@ -86,7 +86,7 @@ public class OldPlayerController : MonoBehaviour
               // TryGetComponent<Knockback>(out _knockback) &&
               // TryGetComponent<Health>(out _health) &&
               TryGetComponent<Animator>(out var playerAnimator) &&
-              SceneHelper.TryFindFirstObjectByTypeInScene<DialogueManager>(out _dialogueManager)))
+              SceneHelper.TryFindFirstObjectByTypeInScene<DialogueController>(out _dialogueController)))
         {
             throw new MissingComponentException("GameObject PlayerController is missing one of the following" +
                                                 "components: RigidBody2D, TrialRenderer, Knockback, Health, Animator or DialogueManager.");
