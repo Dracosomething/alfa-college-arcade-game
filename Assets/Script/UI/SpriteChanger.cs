@@ -147,12 +147,6 @@ public class SpriteChanger : MonoBehaviour
             targetParent = transform;
         }
         
-        // Start checking terminals if auto-check is enabled
-        if (autoCheckTerminals)
-        {
-            InvokeRepeating(nameof(CheckTerminalStatus), 1f, checkInterval);
-        }
-        
         // Preload sprite renderers to avoid lag spikes during gameplay
         if (preloadSpriteRenderers)
         {
@@ -251,31 +245,6 @@ public class SpriteChanger : MonoBehaviour
         if (showDebugLogs)
         {
             Debug.Log($"✓ PRELOADING COMPLETE: {cachedCount} sprite renderers cached, {precomputedCount} sprite changes precomputed");
-        }
-    }
-    
-    /// <summary>
-    /// Check if all terminals are completed and change sprites if so
-    /// </summary>
-    private void CheckTerminalStatus()
-    {
-        if (hasChangedSprites)
-        {
-            return; // Already changed, no need to keep checking
-        }
-        
-        // Check if all terminals are completed using the static method from PowerTerminalMinigame
-        if (PowerTerminalMinigame.AreAllTerminalsCompleted())
-        {
-            if (showDebugLogs)
-            {
-                Debug.Log("All terminals completed! Changing sprites to colored versions.");
-            }
-            
-            ChangeSpritesToColored();
-            
-            // Stop checking since we've completed the change
-            CancelInvoke(nameof(CheckTerminalStatus));
         }
     }
     
@@ -502,13 +471,6 @@ public class SpriteChanger : MonoBehaviour
         DeactivateSpotlights();
         
         hasChangedSprites = false;
-        
-        // Restart terminal checking if auto-check is enabled
-        if (autoCheckTerminals)
-        {
-            CancelInvoke(nameof(CheckTerminalStatus));
-            InvokeRepeating(nameof(CheckTerminalStatus), 1f, checkInterval);
-        }
     }
     
     /// <summary>
@@ -536,15 +498,6 @@ public class SpriteChanger : MonoBehaviour
     }
     
     /// <summary>
-    /// Manual method to check terminal status once
-    /// </summary>
-    [ContextMenu("Check Terminals Now")]
-    public void CheckTerminalsManually()
-    {
-        CheckTerminalStatus();
-    }
-    
-    /// <summary>
     /// Test method to toggle spotlights manually
     /// </summary>
     [ContextMenu("Toggle Spotlights")]
@@ -558,23 +511,5 @@ public class SpriteChanger : MonoBehaviour
         {
             ActivateSpotlights();
         }
-    }
-    
-    /// <summary>
-    /// Get info about current state
-    /// </summary>
-    public bool HasChangedSprites()
-    {
-        return hasChangedSprites;
-    }
-    
-    public int GetCachedRendererCount()
-    {
-        return cachedSpriteRenderers.Count;
-    }
-    
-    public int GetPrecomputedChangeCount()
-    {
-        return renderersToChange.Count;
     }
 }

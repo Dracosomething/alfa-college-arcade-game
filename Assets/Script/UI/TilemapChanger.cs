@@ -177,12 +177,6 @@ public class TilemapChanger : MonoBehaviour
             return;
         }
         
-        // Start checking terminals if auto-check is enabled
-        if (autoCheckTerminals)
-        {
-            InvokeRepeating(nameof(CheckTerminalStatus), 1f, checkInterval);
-        }
-        
         // Preload prefabs to avoid lag spikes during gameplay
         if (preloadPrefabs)
         {
@@ -275,28 +269,6 @@ public class TilemapChanger : MonoBehaviour
         }
         
         Debug.Log($"=== PRELOADING COMPLETE: {preloadedCount} prefabs preloaded, {precomputedTileCount} tile changes precomputed ===");
-    }
-    
-
-    private void CheckTerminalStatus()
-    {
-        // Only check if we haven't already changed the tiles
-        if (hasChangedTiles) return;
-        
-        // Check if all terminals are completed using the static method from PowerTerminalMinigame
-        if (PowerTerminalMinigame.AreAllTerminalsCompleted())
-        {
-            if (showDebugLogs)
-            {
-                Debug.Log("All terminals completed! Changing tilemap to colored tiles...");
-            }
-            
-            ChangeTilesToColored();
-            
-            // Stop checking since we've completed the change
-            CancelInvoke(nameof(CheckTerminalStatus));
-            hasChangedTiles = true;
-        }
     }
     
     /// <summary>
@@ -512,96 +484,6 @@ public class TilemapChanger : MonoBehaviour
         Debug.Log($"=== RESET COMPLETE: {changedTileCount} tiles reset, {disabledPrefabCount} prefabs disabled, {destroyedPrefabCount} runtime prefabs destroyed ===");
         
         hasChangedTiles = false;
-        
-        // Restart terminal checking if auto-check is enabled
-        if (autoCheckTerminals && !IsInvoking(nameof(CheckTerminalStatus)))
-        {
-            InvokeRepeating(nameof(CheckTerminalStatus), 1f, checkInterval);
-        }
-    }
-    
-    /// <summary>
-    /// Add a regular tile mapping programmatically
-    /// </summary>
-    /// <param name="defaultTile">The tile to replace</param>
-    /// <param name="coloredTile">The tile to replace it with</param>
-    public void AddTileMapping(TileBase defaultTile, TileBase coloredTile)
-    {
-        if (defaultTile == null || coloredTile == null)
-        {
-            Debug.LogWarning("TilemapChanger: Cannot add tile mapping with null tiles");
-            return;
-        }
-        
-        // Add to the serialized list
-        tileMappings.Add(new TileMapping 
-        { 
-            defaultTile = defaultTile, 
-            coloredTile = coloredTile 
-        });
-    }
-    
-    /// <summary>
-    /// Add a mixed tile mapping programmatically (TileBase to prefab or vice versa)
-    /// </summary>
-    /// <param name="defaultTile">The default tile (can be null if using defaultPrefab)</param>
-    /// <param name="defaultPrefab">The default prefab (can be null if using defaultTile)</param>
-    /// <param name="coloredTile">The colored tile (can be null if using coloredPrefab)</param>
-    /// <param name="coloredPrefab">The colored prefab (can be null if using coloredTile)</param>
-    public void AddMixedMapping(TileBase defaultTile, GameObject defaultPrefab, TileBase coloredTile, GameObject coloredPrefab)
-    {
-        TileMapping newMapping = new TileMapping
-        {
-            defaultTile = defaultTile,
-            defaultPrefab = defaultPrefab,
-            coloredTile = coloredTile,
-            coloredPrefab = coloredPrefab
-        };
-        
-        if (!newMapping.IsValid())
-        {
-            Debug.LogWarning("TilemapChanger: Cannot add invalid mapping. Must have at least one default and one colored tile/prefab.");
-            return;
-        }
-        
-        tileMappings.Add(newMapping);
-    }
-    
-    /// <summary>
-    /// Add a prefab tile mapping programmatically
-    /// </summary>
-    /// <param name="defaultPrefab">The prefab to replace</param>
-    /// <param name="coloredPrefab">The prefab to replace it with</param>
-    public void AddPrefabMapping(GameObject defaultPrefab, GameObject coloredPrefab)
-    {
-        AddMixedMapping(null, defaultPrefab, null, coloredPrefab);
-    }
-    
-    /// <summary>
-    /// Get the current tile change status
-    /// </summary>
-    /// <returns>True if tiles have been changed to colored versions</returns>
-    public bool HasChangedToColored()
-    {
-        return hasChangedTiles;
-    }
-    
-    /// <summary>
-    /// Manually set the terminal checking state
-    /// </summary>
-    /// <param name="enabled">Whether to automatically check terminals</param>
-    public void SetAutoCheckTerminals(bool enabled)
-    {
-        autoCheckTerminals = enabled;
-        
-        if (enabled && !hasChangedTiles && !IsInvoking(nameof(CheckTerminalStatus)))
-        {
-            InvokeRepeating(nameof(CheckTerminalStatus), 1f, checkInterval);
-        }
-        else if (!enabled && IsInvoking(nameof(CheckTerminalStatus)))
-        {
-            CancelInvoke(nameof(CheckTerminalStatus));
-        }
     }
     
     void OnValidate()
