@@ -1,63 +1,59 @@
 using System.Collections;
 using UnityEngine;
 
-public class FallingTile : MonoBehaviour
+public class FallingPlatform : MonoBehaviour
 {
+    [SerializeField] private float _fallDelay;
+    [SerializeField] private float _resetDelay;
     private Vector3 initialPosition;
-    public float fallDelay;
-    public float resetDelay;
     private bool hasFallen = false;
+    private Rigidbody2D _rigidbody;
+    private Animation _animation;
+    private SpriteRenderer _spriteRenderer;
+    private Collider2D _collider;
 
-
-    private Rigidbody2D rb;
-    private Animation anim;
-    private SpriteRenderer spriteRenderer;
-    private Collider2D col;
-
-    public void Start()
+    private void Start()
     {
-        rb = GetComponent<Rigidbody2D>();
+        _rigidbody = GetComponent<Rigidbody2D>();
         initialPosition = transform.position;
-        col = GetComponent<Collider2D>();
-        anim = GetComponent<Animation>();
-        spriteRenderer = GetComponent<SpriteRenderer>();
+        _collider = GetComponent<Collider2D>();
+        _animation = GetComponent<Animation>();
+        _spriteRenderer = GetComponent<SpriteRenderer>();
     }
 
-    public void OnCollisionEnter2D(Collision2D collision)
+    private void OnCollisionEnter2D(Collision2D collision)
     {
-        if (hasFallen) return;
+        if (hasFallen)
+	    return;
+
         hasFallen = true;
-        Debug.Log("FallingTile collided with " + collision.gameObject.name);
-        // start the coroutine that waits then makes the tile fall
+
         StartCoroutine(MakeFall());
-        // schedule reset as before
-        Invoke("ResetTile", resetDelay);
+        Invoke("ResetTile", _resetDelay);
     }
 
     private IEnumerator MakeFall()
     {
-        // wait for the configured delay before making the tile fall
-        yield return new WaitForSeconds(fallDelay);
+        yield return new WaitForSeconds(_fallDelay);
 
-        rb.bodyType = RigidbodyType2D.Dynamic;
-        rb.constraints = RigidbodyConstraints2D.FreezeRotation;
-        if (anim != null) anim.Play();
+        _rigidbody.bodyType = RigidbodyType2D.Dynamic;
+        _rigidbody.constraints = RigidbodyConstraints2D.FreezeRotation;
+        if (_animation != null) _animation.Play();
 
-        // disable the collider to prevent further collisions while falling
-        var col = GetComponent<Collider2D>();
-        if (col != null) col.enabled = false;
+        if (_collider != null)
+	    _collider.enabled = false;
     }
 
-    public void ResetTile()
+    private void ResetTile()
     {
         hasFallen = false;
-        rb.bodyType = RigidbodyType2D.Kinematic;
+        _rigidbody.bodyType = RigidbodyType2D.Kinematic;
         transform.position = initialPosition;
-        rb.linearVelocity = Vector2.zero;
-        rb.angularVelocity = 0f;
-        anim.Stop();
-        spriteRenderer.enabled = true;
-        spriteRenderer.color = new Color(1f, 1f, 1f, 1f);
-        col.enabled = true;
+        _rigidbody.linearVelocity = Vector2.zero;
+        _rigidbody.angularVelocity = 0f;
+        _animation.Stop();
+        _spriteRenderer.enabled = true;
+        _spriteRenderer.color = new Color(1f, 1f, 1f, 1f);
+        _collider.enabled = true;
     }
 }
