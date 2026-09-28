@@ -15,7 +15,7 @@ public class XbuttonClick : MonoBehaviour
     public GameObject panelToDisable;
     
     [Tooltip("The PowerTerminal to close minigame panel on.")]
-    public PowerTerminal powerTerminal;
+    public PowerTerminalTile powerTerminalTile;
     
     [Tooltip("The PowerTerminalMinigame to close minigame on.")]
     public PowerTerminalMinigame powerTerminalMinigame;
@@ -31,10 +31,10 @@ public class XbuttonClick : MonoBehaviour
 
     void Start()
     {
-        button = GetComponent<Button>();
+        button = TryGetComponent<Button>(out Button btn) ? btn : null;
         if (button == null)
         {
-            // No Button component found
+            Debug.LogError("XbuttonClick: No Button component found on this GameObject. Use ESC to close the panel.");
             return;
         }
         
@@ -63,7 +63,7 @@ public class XbuttonClick : MonoBehaviour
             dialogueManager = FindFirstObjectByType<DialogueManager>();
             if (dialogueManager == null)
             {
-                // No DialogueManager found
+                Debug.LogError("XbuttonClick: No DialogueManager found in the scene. Please assign one in the inspector or ensure one exists in the scene.");
             }
         }
     }
@@ -73,7 +73,7 @@ public class XbuttonClick : MonoBehaviour
         // Panel reference should be assigned in inspector
         if (panelToDisable == null)
         {
-            // No panel assigned
+            Debug.LogError("XbuttonClick: No panel assigned to disable. Please assign a panel in the inspector.");
         }
     }
     
@@ -85,15 +85,15 @@ public class XbuttonClick : MonoBehaviour
             powerTerminalMinigame = FindFirstObjectByType<PowerTerminalMinigame>();
             if (powerTerminalMinigame == null)
             {
-                // No PowerTerminalMinigame found
+                Debug.LogError("XbuttonClick: No PowerTerminalMinigame found in the scene. Please assign one in the inspector or ensure one exists in the scene.");
             }
         }
         
         // Find PowerTerminal if not assigned (backup)
-        if (powerTerminal == null)
+        if (powerTerminalTile == null)
         {
-            powerTerminal = FindFirstObjectByType<PowerTerminal>();
-            if (powerTerminal == null)
+            powerTerminalTile = FindFirstObjectByType<PowerTerminalTile>();
+            if (powerTerminalTile == null)
             {
                 // No PowerTerminal found
             }
@@ -147,10 +147,10 @@ public class XbuttonClick : MonoBehaviour
         {
             powerTerminalMinigame.CloseMinigame();
         }
-        else if (powerTerminal != null)
+        else if (powerTerminalTile != null)
         {
             // Fallback to PowerTerminal method (but this won't re-enable player controls)
-            powerTerminal.CloseMinigamePanel();
+            powerTerminalTile.CloseMinigamePanel();
         }
         else
         {

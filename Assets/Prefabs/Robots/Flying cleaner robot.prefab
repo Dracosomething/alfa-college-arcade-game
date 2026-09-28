@@ -103,12 +103,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 244dc680af9ccbf49ab4c3448d539979, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  health: 5
-  damage: 2
-  speed: 2
-  wanderRadius: 10
-  wanderInterval: 3
-  forgetDelay: 10
+  Health: 5
+  Damage: 2
+  Speed: 2
+  _wanderRadius: 10
+  _wanderInterval: 3
+  _forgetDelay: 10
+  _sightDistance: 10
 --- !u!50 &1841281455651686381
 Rigidbody2D:
   serializedVersion: 5
