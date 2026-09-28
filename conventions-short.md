@@ -41,15 +41,25 @@ fields
 properties
 constructor/awake en start methods
 methods
+static methods
 operators
 - Tussen elke static en constant field heb je een lege regel.
 - Tussen alle properties en methods heb je een lege regel.
-- Elke groep order je op access modifier, dit doe je in de volgende volgorde:
+- Fields, constants en properties order je op access modifier, dit doe je in de volgende volgorde:
+operators
 private
 internal
 protected
 protected internal
 public
+- Tussen elke static en constant field heb je een lege regel.
+- Tussen alle properties en methods heb je een lege regel.
+- methods, constructors, etc order je op access modifer, dit doe je in de volgende volgorde:
+public
+protected internal
+protected
+internal
+private
 - Je ordered de modifiers van fields, methods properties, classes, etc op de volgende manier:
 sealed
 new

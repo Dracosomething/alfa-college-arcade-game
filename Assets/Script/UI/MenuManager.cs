@@ -6,6 +6,11 @@ public class MenuManager : MonoBehaviour
     public GameObject pauseUI;
     private void Start()
     {
+        if (pauseUI == null)
+        {
+            Debug.LogError("Pause UI is not assigned in the inspector.");
+            return;
+        }
         pauseUI.SetActive(false);
     }
 
