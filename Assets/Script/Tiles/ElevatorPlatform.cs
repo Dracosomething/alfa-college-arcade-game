@@ -23,7 +23,7 @@ public class ElevatorPlatform : MonoBehaviour
     
     [Header("")]
     private Vector2 _previousPosition;
-    private Rigidbody2D _rigidBody;
+    private Rigidbody2D _rigidbody;
     private bool _isPlayerOnButton = false;
     private bool _isElevatorActivated = false;
     private bool _isPlayerRequiredToLeaveButton = false;
@@ -40,8 +40,8 @@ public class ElevatorPlatform : MonoBehaviour
         if (_elevatorEntries.Count <= 1)
             throw new Exception("Elevator Entries need at least 2 points.");
 
-        _rigidBody = _platformTransform.GetComponent<Rigidbody2D>();
-        _previousPosition = _rigidBody.position;
+        _rigidbody = _platformTransform.GetComponent<Rigidbody2D>();
+        _previousPosition = _rigidbody.position;
     }
     
     private void Update()
@@ -179,16 +179,16 @@ public class ElevatorPlatform : MonoBehaviour
         while (Vector2.Distance(_platformTransform.position, nextPoint.position) > 0.1f)
         {
             Vector2 newPosition = Vector2.MoveTowards(_platformTransform.position, nextPoint.position, Time.fixedDeltaTime * _speed);
-            _rigidBody.MovePosition(newPosition);
+            _rigidbody.MovePosition(newPosition);
 
-            _rigidBody.linearVelocity = (newPosition - _previousPosition) / Time.fixedDeltaTime;
+            _rigidbody.linearVelocity = (newPosition - _previousPosition) / Time.fixedDeltaTime;
             _previousPosition = newPosition;
 
             yield return new WaitForFixedUpdate();
         }
 
-        _rigidBody.MovePosition(nextPoint.position);
-        _rigidBody.linearVelocity = Vector2.zero;
+        _rigidbody.MovePosition(nextPoint.position);
+        _rigidbody.linearVelocity = Vector2.zero;
         _elevatorEntriesIndex = targetIndex;
         
         CloseSideGates();
