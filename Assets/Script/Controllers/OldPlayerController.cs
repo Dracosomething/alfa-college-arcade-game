@@ -273,8 +273,8 @@ public class OldPlayerController : MonoBehaviour
         if (!Input.GetButtonDown("Jump")) return;
 
         // Prevent jumping if dialogue is active OR if player is in dialogue interaction range
-        if (_dialogueManager != null && _dialogueManager.IsDialogueActive) return;
-        if (DialogueStarter.IsPlayerInAnyDialogueRange()) return;
+        // if (_dialogueManager != null && _dialogueManager.IsDialogueActive) return;
+        // if (DialogueManager.IsPlayerInAnyDialogueRange()) return;
 
         if (!IsGrounded() && !_isClimbing) return;
 
@@ -323,8 +323,8 @@ public class OldPlayerController : MonoBehaviour
         if (Input.GetButtonDown("Jump") && _isClimbing)
         {
             // Prevent climbing jump if dialogue is active OR if player is in dialogue interaction range
-            if (_dialogueManager != null && _dialogueManager.IsDialogueActive) return;
-            if (DialogueStarter.IsPlayerInAnyDialogueRange()) return;
+            // if (_dialogueManager != null && _dialogueManager.IsDialogueActive) return;
+            // if (DialogueManager.IsPlayerInAnyDialogueRange()) return;
 
             StopClimbing();
             StartCoroutine(ClimbCooldown(0.2f));
