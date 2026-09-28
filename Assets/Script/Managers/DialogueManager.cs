@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
@@ -13,7 +12,7 @@ public class DialogueManager : MonoBehaviour
     [SerializeField] private GameObject _characterNameComponent;
     
     [Header("Dialogue Selection")]
-    [SerializeField] private DialogueData _dialogueData;
+    [SerializeField] private DialogueDataScriptableObject dialogueDataScriptableObject;
 
     [Header("Character Animations")] 
     [SerializeField] private CharacterAnimationCollection _characterAnimations = new();
@@ -37,7 +36,7 @@ public class DialogueManager : MonoBehaviour
             _characterAnimator = this.AddComponent<Animator>();
 
         if (!((bool)_dialogueTextComponent && (bool)_characterNameComponent &&
-            (bool)_dialogueData && _characterAnimations != null))
+            (bool)dialogueDataScriptableObject && _characterAnimations != null))
             throw new MissingComponentException("Missing one of the following components. " +
                                                 "_dialogueTextComponent, _choicesComponent, _dialogueData");
 
@@ -64,7 +63,7 @@ public class DialogueManager : MonoBehaviour
     {
         ActivateUI();
         
-        _characterNameTextComponent.text = _dialogueData.characterName;
+        _characterNameTextComponent.text = dialogueDataScriptableObject.characterName;
         
         _oldPlayerController.SetInputEnabled(false);
         
@@ -110,7 +109,7 @@ public class DialogueManager : MonoBehaviour
 
         _isNotWritingText = false;
         
-        DialogueNode currentDialogueNode = _dialogueData.dialogueNodes[_currentDialogueNodeIndex];
+        DialogueNode currentDialogueNode = dialogueDataScriptableObject.dialogueNodes[_currentDialogueNodeIndex];
 
         if (Input.GetButtonDown(DialogueInputName))
             _dialogueTextTextComponent.text = currentDialogueNode.dialogueText;
@@ -131,7 +130,7 @@ public class DialogueManager : MonoBehaviour
             _currentDialogueNodeIndex++;
         }
         
-        if (_currentDialogueNodeIndex == (_dialogueData.dialogueNodes.Count - 1) &&  // We need to remove 1 from count to get the last index of the list
+        if (_currentDialogueNodeIndex == (dialogueDataScriptableObject.dialogueNodes.Count - 1) &&  // We need to remove 1 from count to get the last index of the list
             Input.GetButtonDown(DialogueInputName))
             EndDialogue();
         
