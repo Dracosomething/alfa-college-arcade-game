@@ -56,10 +56,10 @@ public class OldPlayerController : MonoBehaviour
     private DialogueManager _dialogueManager;
 
     [Header("Knockback")]
-    private Knockback _knockback;
+    // private Knockback _knockback;
 
     [Header("Health")]
-    private Health _health;
+    // private Health _health;
     
     [Header("Audio")]
     [SerializeField] private float FootstepInterval = 0.20f; // seconds between footsteps
@@ -72,7 +72,7 @@ public class OldPlayerController : MonoBehaviour
     private float _timeOfLastGroundTouch = 0f;
     private Rigidbody2D _playerRigidbody;
     private CapsuleCollider2D _playerCollider;
-    private PlayerAnimationManager _animationManager;
+    // private PlayerAnimationManager _animationManager;
     private InputState _inputState = InputState.Enabled;
     public bool RealGrounded;               //Grounded bool without coyote time
     public Rigidbody2D MovingTileRigidbody;
@@ -83,8 +83,8 @@ public class OldPlayerController : MonoBehaviour
     {
         if (!(TryGetComponent<Rigidbody2D>(out _playerRigidbody) &&
               TryGetComponent<TrailRenderer>(out _trailRenderer) &&
-              TryGetComponent<Knockback>(out _knockback) &&
-              TryGetComponent<Health>(out _health) &&
+              // TryGetComponent<Knockback>(out _knockback) &&
+              // TryGetComponent<Health>(out _health) &&
               TryGetComponent<Animator>(out var playerAnimator) &&
               SceneHelper.TryFindFirstObjectByTypeInScene<DialogueManager>(out _dialogueManager)))
         {
@@ -94,8 +94,8 @@ public class OldPlayerController : MonoBehaviour
         
         _subCheckPointPosition = (Vector2)StartPosition.position;
         
-        _animationManager = new PlayerAnimationManager(playerAnimator);
-        _animationManager.FacingDirection = Direction.Right;
+        // _animationManager = new PlayerAnimationManager(playerAnimator);
+        // _animationManager.FacingDirection = Direction.Right;
     }
 
     private void Update()
@@ -109,11 +109,11 @@ public class OldPlayerController : MonoBehaviour
         var rotationAngle = 0f;
         RealGrounded = (bool) Physics2D.OverlapBox((Vector2)GroundCheck.position, GroundCheckRadius, rotationAngle, (int)GroundLayer);
 
-        if (_animationManager.IsDashing || _knockback.IsBeingKnockedBack) 
-            return;
 
-        if (_isXPositionLocked && _animationManager.IsClimbing)
-            _playerRigidbody.linearVelocity = new Vector2(Constants.NoMovement, _playerRigidbody.linearVelocity.y);
+        // if (_animationManager.IsDashing || _knockback.IsBeingKnockedBack) 
+        //     return;
+        // if (_isXPositionLocked && _animationManager.IsClimbing)
+        //     _playerRigidbody.linearVelocity = new Vector2(Constants.NoMovement, _playerRigidbody.linearVelocity.y);
 
         Movement();
 
@@ -121,25 +121,25 @@ public class OldPlayerController : MonoBehaviour
 
         Gravity();
 
-        if (IsGrounded())
-            _animationManager.IsJumping = false;
+        // if (IsGrounded())
+        //     _animationManager.IsJumping = false;
 
         UpdateFootstepAudio();
     }
     
     private void FixedUpdate()
     {
-        if (_animationManager.IsDashing || _knockback.IsBeingKnockedBack) 
-            return;
+        // if (_animationManager.IsDashing || _knockback.IsBeingKnockedBack) 
+        //     return;
 
         var platformVelocityX = 0f;
         if (MovingTileRigidbody)
             platformVelocityX = MovingTileRigidbody.linearVelocity.x;
 
-        if (_isXPositionLocked && _animationManager.IsClimbing)
-            _playerRigidbody.linearVelocity = new Vector2(Constants.NoMovement, _playerRigidbody.linearVelocity.y);
-        else
-            _playerRigidbody.linearVelocity = new Vector2(_horizontalMovement * MovementSpeed + platformVelocityX, _playerRigidbody.linearVelocity.y);
+        // if (_isXPositionLocked && _animationManager.IsClimbing)
+        //     _playerRigidbody.linearVelocity = new Vector2(Constants.NoMovement, _playerRigidbody.linearVelocity.y);
+        // else
+        //     _playerRigidbody.linearVelocity = new Vector2(_horizontalMovement * MovementSpeed + platformVelocityX, _playerRigidbody.linearVelocity.y);
     }
     
     private void UpdateFootstepAudio()
@@ -158,7 +158,7 @@ public class OldPlayerController : MonoBehaviour
         
         if (_footstepTimer >= FootstepInterval)
         {
-            SoundEffectManager.Play(FootstepSoundEffectName, SoundEffectPitch);
+            // SoundEffectManager.Play(FootstepSoundEffectName, SoundEffectPitch);
             _footstepTimer = StartFootstepTime;
         }
     }
@@ -185,8 +185,8 @@ public class OldPlayerController : MonoBehaviour
 
     private void Gravity()
     {
-        if (_animationManager.IsClimbing) 
-            return;
+        // if (_animationManager.IsClimbing) 
+        //     return;
         
         if (_playerRigidbody.linearVelocity.y < 0)
         {
@@ -207,8 +207,8 @@ public class OldPlayerController : MonoBehaviour
                 Direction.Right : 
                 Direction.Left;
 
-            if (newFacingDirection != _animationManager.FacingDirection)
-                _animationManager.FacingDirection = newFacingDirection;
+            // if (newFacingDirection != _animationManager.FacingDirection)
+            //     _animationManager.FacingDirection = newFacingDirection;
         }
         
         _lastHorizontalInput = _horizontalMovement;
@@ -280,7 +280,7 @@ public class OldPlayerController : MonoBehaviour
 
 
         _playerRigidbody.linearVelocity = new Vector2(_playerRigidbody.linearVelocity.x, JumpForce);
-        SoundEffectManager.Play("Jump", 0.4f);
+        // SoundEffectManager.Play("Jump", 0.4f);
         _isJumping = true;
     }
     public void cutJumpShort()
@@ -358,7 +358,7 @@ public class OldPlayerController : MonoBehaviour
         // Set the minimum time the dash animation should stay active using the configurable duration
         _dashTimeLimit = Time.time + MaximumDashTime;
         // _playerAnimator.SetBool("isDashing", true);
-        SoundEffectManager.Play("Dash");
+        // SoundEffectManager.Play("Dash");
         float originalGravity = _playerRigidbody.gravityScale;
         _playerRigidbody.gravityScale = 0f;
         _trailRenderer.emitting = true;

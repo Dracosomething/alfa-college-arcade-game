@@ -65,10 +65,10 @@ public abstract class Enemy : MonoBehaviour
 
     private void DealDamageToPlayer(GameObject player)
     {
-        if (!player.TryGetComponent<Health>(out var playerHealth))
-            throw new MissingComponentException("Gameobject Player is missing Health component!");
-        
-        playerHealth.TakeDamage(Damage, transform);
+        // if (!player.TryGetComponent<Health>(out var playerHealth))
+        //     throw new MissingComponentException("Gameobject Player is missing Health component!");
+        //
+        // playerHealth.TakeDamage(Damage, transform);
         
         _attackCooldownWrapper.StartCooldown();
     }
