@@ -116530,7 +116530,7 @@ Tilemap:
       - {fileID: 975423156, guid: 76b4ee3e7af644b45b3abd62fddfb81f, type: 3}
       - {fileID: 975423156, guid: 76b4ee3e7af644b45b3abd62fddfb81f, type: 3}
       - {fileID: 975423156, guid: 76b4ee3e7af644b45b3abd62fddfb81f, type: 3}
-      m_AnimationSpeed: 3
+      m_AnimationSpeed: 3.0000002
       m_AnimationTimeOffset: 0
       m_Flags: 0
   - first: {x: 46, y: 12, z: 0}
@@ -118433,10 +118433,10 @@ MonoBehaviour:
   _dashInputActionReference: {fileID: -8936932682107720902, guid: 2bcd2660ca9b64942af0de543d8d7100, type: 3}
   _movementSpeed: 5
   moveEnabled: 1
-  _jumpHeight: 5
+  _jumpHeight: 10
   _groundCheckObject: {fileID: 7401445588005155687}
   jumpEnabled: 1
-  _dashForce: 10
+  _dashForceReference: 5
   dashEnabled: 1
   _walkableGroundLayerMask:
     serializedVersion: 2

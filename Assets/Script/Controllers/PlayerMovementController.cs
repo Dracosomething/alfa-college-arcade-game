@@ -1,6 +1,7 @@
 using UnityEditor.UIElements;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using static UnityEditor.Searcher.SearcherWindow.Alignment;
 
 public class PlayerMovementController : MonoBehaviour
 {
@@ -17,16 +18,26 @@ public class PlayerMovementController : MonoBehaviour
     public bool moveEnabled = true;
 
     [Header("Jump Settings")]
-    [SerializeField] private float _jumpHeight = 5f;
+    [SerializeField] private float _jumpHeight = 10f;
     [SerializeField] private GameObject _groundCheckObject;
-    private float _jumpGracePeriod = 0.1f; // The time window in which the player won't check for the ground after jumping.
-    private float _jumpGraceTimer = 0f;
-    private bool _jumpGracePeriodActive = false;
+    private float _groundCheckDelayLenght = 0.1f; // The time window in which the player won't check for the ground after jumping.
+    private float _groundCheckDelayTimer = 0f;
+    private bool _isGoundCheckDelayActive = false;
     private bool _isGrounded = true;
     public bool jumpEnabled = true;
 
+    [Header("Coyote Time settings")]
+    private float _coyoteTime = 0.1f;
+    private float _coyoteTimeTimer = 0f;
+    private bool _isGroundedWithCoyoteTime = false;
+
     [Header("Dash Settings")]
-    [SerializeField] private float _dashForce = 10f;
+    [SerializeField] private float _dashForceReference = 2.5f;
+    private float _dashForce = 1f;
+    private bool _canDash = false;
+    private bool _isDashing = false;
+    private float _dashDuration = 0.3f;
+    private float _dashTimer = 0f;
     public bool dashEnabled = true;
 
     [Header("Gravity Settings")]
@@ -44,7 +55,6 @@ public class PlayerMovementController : MonoBehaviour
         if (IsInputActionReferenceNull())
             throw new MissingReferenceException("Input Action References are not assigned in the inspector. Please assign them in the inspector.");
 
-// TODO: change this to add a rigidbody with default values instead 
         if (!TryGetComponent<Rigidbody2D>(out _playerRigidbody2D))
             throw new MissingComponentException("Rigidbody2D component is missing from the GameObject. Please add a Rigidbody2D component.");
         else
@@ -78,24 +88,25 @@ public class PlayerMovementController : MonoBehaviour
         if (_movementInputActionReference != null)
             _movementInputs = _movementInputActionReference.action.ReadValue<Vector2>();
 
-        // Check if the player is on the ground and whether the 'jump' key was pressed. If so, apply a vertical velocity to the player to make them jump.
-        if (_jumpInputActionReference.action.ReadValue<float>() > 0 && _isGrounded && jumpEnabled)
-        {
-            // Check if the player is on the ground to decide whether to allow jumping or not.
-            if (Physics2D.OverlapCircle(_groundCheckObject.transform.position, 0.1f, _walkableGroundLayerMask))
-            {
-                _playerRigidbody2D.linearVelocityY = Mathf.Sqrt((_jumpHeight * 1.2f) * -2f * _gravityValue);
-                _jumpGracePeriodActive = true;
-            }
-        }
+        #region Jump and ground in update
+        CheckForValidGround();
+        // Check if the player is on the ground and whether the 'jump' key was pressed. If so, call Jump().
+        if (_jumpInputActionReference.action.ReadValue<float>() > 0 && _isGroundedWithCoyoteTime && jumpEnabled)
+            Jump();
+        GroundCheckDelay();
+        #endregion
 
-        UpdateJumpGracePeriod();
+        if (_dashInputActionReference.action.triggered && dashEnabled)
+            if (!_isGrounded && _canDash && _movementInputs.x != 0)
+                _isDashing = true;
+        if (_isDashing)
+            Dash();
 
-        if (_movementInputs == Vector2.zero && _isGrounded && !_jumpGracePeriodActive)
+        if (_movementInputs == Vector2.zero && _isGrounded && !_isGoundCheckDelayActive)
             _playerRigidbody2D.linearVelocity = Vector2.zero;
 
         // Check whether the player is not moving and is on the ground. If so, disable gravity to avoid sliding off of slopes. Otherwise, enable gravity to allow the player to fall.
-        if (_slopeAngle != 0 && _isGrounded)
+        if ((_slopeAngle != 0 && _isGrounded) || _isDashing)
             _playerRigidbody2D.gravityScale = 0f;
         else
             _playerRigidbody2D.gravityScale = _originalGravityScale;
@@ -104,7 +115,7 @@ public class PlayerMovementController : MonoBehaviour
     private void FixedUpdate()
     {
         // Move the player horizontally based on the vectors resulting from the inputs, then multiply that by the movement speed value. The 'Y' value of this vector is unused as it is only relevant for climbing.
-        Vector2 velocity = new Vector2(_movementInputs.x * _movementSpeed, _playerRigidbody2D.linearVelocity.y);
+        Vector2 velocity = new Vector2(_movementInputs.x * _movementSpeed * _dashForce, _playerRigidbody2D.linearVelocity.y);
         _playerRigidbody2D.linearVelocity = AdjustedVelocityToSlope(velocity);
     }
     #endregion
@@ -128,31 +139,40 @@ public class PlayerMovementController : MonoBehaviour
                 return velocityDownwards;
             else if (velocityUpwards.y > 0)
                 return velocityUpwards;
-            // If the player is not moving and grounded, set the velocity to zero to avoid a bouncing effect on stairs.
-
         }
         return velocity;
     }
     #endregion
 
-    #region collision checks with ground
-    private void OnCollisionEnter2D(Collision2D collision)
+    #region Jump implementation
+    // apply a vertical velocity to the player to make them jump
+    private void Jump()
     {
-        // We first shift 1 by the colliding objects layer. Then we check if _walkableGroundLayerMask is equal to that by doing a bitwise OR.
-        if ((_walkableGroundLayerMask == (_walkableGroundLayerMask | (1 << collision.gameObject.layer))))
-            _isGrounded = true;
+        _playerRigidbody2D.linearVelocityY = Mathf.Sqrt(_jumpHeight * -2f * _gravityValue);
+        _isGoundCheckDelayActive = true;
     }
-
-    private void OnCollisionExit2D(Collision2D collision)
-    {
-        // We first shift 1 by the colliding objects layer. Then we check if _walkableGroundLayerMask is equal to that by doing a bitwise OR.
-        if (_walkableGroundLayerMask == (_walkableGroundLayerMask | (1 << collision.gameObject.layer)))
-            _isGrounded = false;
-    }
-
     #endregion
 
-    #region Null reference and jump grace period checks
+    #region Dash Implementation
+    private void Dash()
+    {
+        Debug.Log("Dashing");
+        _dashTimer += Time.deltaTime;
+        if (_dashTimer <= _dashDuration && _movementInputs.x != 0)
+        {
+            _dashForce = _dashForceReference;
+            _playerRigidbody2D.linearVelocityY = 0f;
+        }
+        else
+        {
+            _isDashing = false;
+            _dashTimer = 0f;
+            _dashForce = 1f;
+        }            
+    }
+    #endregion
+
+    #region Null reference and gound check delay
     private bool IsInputActionReferenceNull()
     {
         // Check if any control inputs are not assigned and return true if none are assigned, otherwise return false.
@@ -161,18 +181,43 @@ public class PlayerMovementController : MonoBehaviour
             _dashInputActionReference == null;
     }
 
-    // Adds a graceperiod to perform a successful jump without having interferance with the ground checks.
-    private void UpdateJumpGracePeriod()
+    // Adds a delay to check for the ground to perform a successful jump.
+    private void GroundCheckDelay()
     {
-        if (_jumpGracePeriodActive)
-            _jumpGraceTimer += Time.deltaTime;
-        if (_jumpGraceTimer >= _jumpGracePeriod)
+        if (_isGoundCheckDelayActive)
+            _groundCheckDelayTimer += Time.deltaTime;
+        if (_groundCheckDelayTimer >= _groundCheckDelayLenght)
         {
-            _jumpGracePeriodActive = false;
-            _jumpGraceTimer = 0f;
+            _isGoundCheckDelayActive = false;
+            _groundCheckDelayTimer = 0f;
         }
     }
 
+    #endregion
+
+    #region Ground check and coyote time
+    private void CheckForValidGround()
+    {
+        // check if the player is grounded.
+        if (Physics2D.OverlapCircle(_groundCheckObject.transform.position, 0.1f, _walkableGroundLayerMask))
+            _isGrounded = true;
+        else
+            _isGrounded = false;
+        // set a coyote time to allow the player to jump a but after leaving the ground.
+        if (!_isGrounded)
+        {
+            _canDash = true;
+            _coyoteTimeTimer += Time.deltaTime;
+            if (_coyoteTimeTimer > _coyoteTime)
+                _isGroundedWithCoyoteTime = false;
+        }
+        else
+        {
+            _canDash = false;
+            _coyoteTimeTimer = 0f;
+            _isGroundedWithCoyoteTime = true;
+        }
+    }
     #endregion
 
     #region Debugging
