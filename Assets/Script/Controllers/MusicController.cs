@@ -1,7 +1,6 @@
 using Unity.VisualScripting;
 using UnityEngine;
 
-[RequireComponent(typeof(AudioListener))]
 public class MusicController : MonoBehaviour
 {
     private AudioSource _audioSource;
