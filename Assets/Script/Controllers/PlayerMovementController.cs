@@ -1,7 +1,6 @@
-using UnityEditor.UIElements;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.InputSystem;
-using static UnityEditor.Searcher.SearcherWindow.Alignment;
 
 public class PlayerMovementController : MonoBehaviour
 {
@@ -32,8 +31,7 @@ public class PlayerMovementController : MonoBehaviour
     private bool _isGroundedWithCoyoteTime = false;
 
     [Header("Dash Settings")]
-    [SerializeField] private float _dashForceReference = 2.5f;
-    private float _dashForce = 1f;
+    [SerializeField] private float _dashForce = 5f;
     private bool _canDash = false;
     private bool _isDashing = false;
     private float _dashDuration = 0.3f;
@@ -84,28 +82,31 @@ public class PlayerMovementController : MonoBehaviour
     #region Update Methods
     private void Update()
     {
-        // Convert the player inputs into a Vector2 to use this to move the player.
-        if (_movementInputActionReference != null)
+        if (!_movementInputActionReference.IsUnityNull())
             _movementInputs = _movementInputActionReference.action.ReadValue<Vector2>();
 
         #region Jump and ground in update
         CheckForValidGround();
-        // Check if the player is on the ground and whether the 'jump' key was pressed. If so, call Jump().
         if (_jumpInputActionReference.action.ReadValue<float>() > 0 && _isGroundedWithCoyoteTime && jumpEnabled)
             Jump();
         GroundCheckDelay();
         #endregion
-
-        if (_dashInputActionReference.action.triggered && dashEnabled)
+        if (_dashInputActionReference.action.WasPressedThisFrame() && dashEnabled)
             if (!_isGrounded && _canDash && _movementInputs.x != 0)
                 _isDashing = true;
+        if (_dashInputActionReference.action.WasReleasedThisFrame() && dashEnabled)
+        {
+            _isDashing = false;
+            _canDash = false;
+            _dashTimer = 0f;
+        }
         if (_isDashing)
             Dash();
 
+        // break idc delete me
         if (_movementInputs == Vector2.zero && _isGrounded && !_isGoundCheckDelayActive)
             _playerRigidbody2D.linearVelocity = Vector2.zero;
 
-        // Check whether the player is not moving and is on the ground. If so, disable gravity to avoid sliding off of slopes. Otherwise, enable gravity to allow the player to fall.
         if ((_slopeAngle != 0 && _isGrounded) || _isDashing)
             _playerRigidbody2D.gravityScale = 0f;
         else
@@ -114,15 +115,22 @@ public class PlayerMovementController : MonoBehaviour
 
     private void FixedUpdate()
     {
-        // Move the player horizontally based on the vectors resulting from the inputs, then multiply that by the movement speed value. The 'Y' value of this vector is unused as it is only relevant for climbing.
-        Vector2 velocity = new Vector2(_movementInputs.x * _movementSpeed * _dashForce, _playerRigidbody2D.linearVelocity.y);
-        _playerRigidbody2D.linearVelocity = AdjustedVelocityToSlope(velocity);
+        Vector2 velocity;
+        if (_isDashing)
+        {
+            velocity = new Vector2(_movementInputs.x * _movementSpeed * _dashForce, 0f);
+            _playerRigidbody2D.linearVelocity = velocity;
+        }
+        else
+        {
+            velocity = new Vector2(_movementInputs.x * _movementSpeed, _playerRigidbody2D.linearVelocity.y);
+            _playerRigidbody2D.linearVelocity = AdjustedVelocityToSlope(velocity);
+        }
     }
     #endregion
 
     #region Slope Adjustment
 
-    // Adjusts the velocity of the player to match the slope of the ground they are standing on. This makes it so that the player can walk down the slope without launching off the steps, or launching into the air when walking upwards.
     private Vector2 AdjustedVelocityToSlope(Vector2 velocity)
     {
         RaycastHit2D hitInfo = Physics2D.Raycast(transform.position, Vector2.down, 1f, _walkableGroundLayerMask);
@@ -134,7 +142,6 @@ public class PlayerMovementController : MonoBehaviour
             Vector2 velocityDownwards = slopeRotation * velocity;
             Vector2 velocityUpwards = slopeRotation * new Vector2(velocity.x, -velocity.y);
 
-            // applies the downwards velocity if the player is moving down slopes. or applies the upwards velocity if the player is moving up slopes.
             if (velocityDownwards.y < 0)
                 return velocityDownwards;
             else if (velocityUpwards.y > 0)
@@ -145,7 +152,6 @@ public class PlayerMovementController : MonoBehaviour
     #endregion
 
     #region Jump implementation
-    // apply a vertical velocity to the player to make them jump
     private void Jump()
     {
         _playerRigidbody2D.linearVelocityY = Mathf.Sqrt(_jumpHeight * -2f * _gravityValue);
@@ -156,29 +162,45 @@ public class PlayerMovementController : MonoBehaviour
     #region Dash Implementation
     private void Dash()
     {
-        Debug.Log("Dashing");
         _dashTimer += Time.deltaTime;
-        if (_dashTimer <= _dashDuration && _movementInputs.x != 0)
-        {
-            _dashForce = _dashForceReference;
-            _playerRigidbody2D.linearVelocityY = 0f;
-        }
-        else
+        if (_dashTimer > _dashDuration)
         {
             _isDashing = false;
+            _canDash = false;
             _dashTimer = 0f;
-            _dashForce = 1f;
-        }            
+        }
     }
     #endregion
 
-    #region Null reference and gound check delay
+    #region Null references
     private bool IsInputActionReferenceNull()
     {
-        // Check if any control inputs are not assigned and return true if none are assigned, otherwise return false.
         return _movementInputActionReference == null &&
             _jumpInputActionReference == null &&
             _dashInputActionReference == null;
+    }
+    #endregion
+
+    #region Ground check delay and coyote time
+    private void CheckForValidGround()
+    {
+        if (Physics2D.OverlapCircle(_groundCheckObject.transform.position, 0.1f, _walkableGroundLayerMask))
+            _isGrounded = true;
+        else
+            _isGrounded = false;
+        // set a coyote time to allow the player to jump a bit after leaving the ground.
+        if (!_isGrounded)
+        {
+            _coyoteTimeTimer += Time.deltaTime;
+            if (_coyoteTimeTimer > _coyoteTime)
+                _isGroundedWithCoyoteTime = false;
+        }
+        else
+        {
+            _canDash = true;
+            _coyoteTimeTimer = 0f;
+            _isGroundedWithCoyoteTime = true;
+        }
     }
 
     // Adds a delay to check for the ground to perform a successful jump.
@@ -195,37 +217,16 @@ public class PlayerMovementController : MonoBehaviour
 
     #endregion
 
-    #region Ground check and coyote time
-    private void CheckForValidGround()
+    #region collision checks with walls while dashing
+    private void OnCollisionEnter2D(Collision2D collision)
     {
-        // check if the player is grounded.
-        if (Physics2D.OverlapCircle(_groundCheckObject.transform.position, 0.1f, _walkableGroundLayerMask))
-            _isGrounded = true;
-        else
-            _isGrounded = false;
-        // set a coyote time to allow the player to jump a but after leaving the ground.
-        if (!_isGrounded)
+        // We first shift 1 by the colliding objects layer. Then we check if _walkableGroundLayerMask is equal to that by doing a bitwise OR.
+        if (_walkableGroundLayerMask == (_walkableGroundLayerMask | (1 << collision.gameObject.layer)))
         {
-            _canDash = true;
-            _coyoteTimeTimer += Time.deltaTime;
-            if (_coyoteTimeTimer > _coyoteTime)
-                _isGroundedWithCoyoteTime = false;
-        }
-        else
-        {
+            _isDashing = false;
             _canDash = false;
-            _coyoteTimeTimer = 0f;
-            _isGroundedWithCoyoteTime = true;
+            _dashTimer = 0f;
         }
     }
-    #endregion
-
-    #region Debugging
-    private void OnDrawGizmosSelected()
-    {
-        Gizmos.color = Color.red;
-        Gizmos.DrawWireSphere(_groundCheckObject.transform.position, 0.1f);
-    }
-
     #endregion
 }
