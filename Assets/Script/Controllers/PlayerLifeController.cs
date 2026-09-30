@@ -10,7 +10,7 @@ public class PlayerLifeController : MonoBehaviour
 
     public void Die()
     {
-        CurrentLives -= 1;
+        CurrentLives--;
 
         if (CurrentLives == 0)
             _checkpointController.ResetLevel();
