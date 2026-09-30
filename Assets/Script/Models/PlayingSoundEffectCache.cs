@@ -28,8 +28,8 @@ public class PlayingSoundEffectCache : MonoBehaviour
     public void RemoveUnusedGameObjects() =>
         _internalDictionary = _internalDictionary
             // We filter out all entries that are empty or null
-            .Where(gameObjectNameSoundEffectListPair => gameObjectNameSoundEffectListPair.Value != null &&
-                                                        gameObjectNameSoundEffectListPair.Value.Count > 0)
+            .Where(gameObjectNameSoundEffectListPair => 
+                gameObjectNameSoundEffectListPair.Value != null && gameObjectNameSoundEffectListPair.Value.Count > 0)
             // We parse it back to a dictionary.
             .ToDictionary(gameObjectNameSoundEffectListPair => gameObjectNameSoundEffectListPair.Key,
                 gameObjectNameSoundEffectListPair => gameObjectNameSoundEffectListPair.Value);
@@ -37,21 +37,4 @@ public class PlayingSoundEffectCache : MonoBehaviour
     public bool IsGameObjectPlayingSoundEffect(GameObject key, string soundEffect) =>
         _internalDictionary.TryGetValue(key.name, out List<string> soundEffects) &&
         soundEffects.Contains(soundEffect);
-
-    public override string ToString()
-    {
-        StringBuilder stringBuilder = new("[ ");
-        foreach (KeyValuePair<string, List<string>> gameObjectNameSoundEffectListPair in _internalDictionary)
-        {
-            stringBuilder
-                .Append("{ ")
-                .Append(gameObjectNameSoundEffectListPair.Key)
-                .Append(", ")
-                .Append(CollectionHelper.ConvertCollectionToProperlyFormattedString(gameObjectNameSoundEffectListPair
-                    .Value))
-                .Append(" }, ");
-        }
-
-        return stringBuilder.Append(" ]").ToString();
-    }
 }
