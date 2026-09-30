@@ -1,6 +1,5 @@
 using Unity.VisualScripting;
 using UnityEngine;
-using Object = UnityEngine.Object;
 
 [RequireComponent(typeof(PlayingSoundEffectCache))]
 public class SoundEffectController : MonoBehaviour
