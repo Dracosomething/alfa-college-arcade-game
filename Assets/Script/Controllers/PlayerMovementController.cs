@@ -2,6 +2,8 @@ using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
+
+[RequireComponent(typeof(CapsuleCollider2D), typeof(Rigidbody2D))]
 public class PlayerMovementController : MonoBehaviour
 {
     #region Fields
@@ -32,10 +34,12 @@ public class PlayerMovementController : MonoBehaviour
 
     [Header("Dash Settings")]
     [SerializeField] private float _dashForce = 5f;
+    [SerializeField] private float _dashCooldown = 1f;
     private bool _canDash = false;
     private bool _isDashing = false;
     private float _dashDuration = 0.3f;
     private float _dashTimer = 0f;
+    private float _timeSinceLastDash = 0f;
     public bool dashEnabled = true;
 
     [Header("Gravity Settings")]
@@ -46,7 +50,6 @@ public class PlayerMovementController : MonoBehaviour
     [SerializeField] private LayerMask _walkableGroundLayerMask;
     private Rigidbody2D _playerRigidbody2D;
     #endregion
-
     #region Initialization
     private void Awake()
     {
@@ -60,7 +63,6 @@ public class PlayerMovementController : MonoBehaviour
             _originalGravityScale = _playerRigidbody2D.gravityScale;
     }
     #endregion
-
     #region Enable/Disable Input Actions
     private void OnEnable()
     {
@@ -78,10 +80,10 @@ public class PlayerMovementController : MonoBehaviour
         _dashInputActionReference.action.Disable();
     }
     #endregion
-
     #region Update Methods
     private void Update()
     {
+        // avoiding endless errors in case the input action references are not assigned in the inspector.
         if (!_movementInputActionReference.IsUnityNull())
             _movementInputs = _movementInputActionReference.action.ReadValue<Vector2>();
 
@@ -91,19 +93,31 @@ public class PlayerMovementController : MonoBehaviour
             Jump();
         GroundCheckDelay();
         #endregion
-        if (_dashInputActionReference.action.WasPressedThisFrame() && dashEnabled)
-            if (!_isGrounded && _canDash && _movementInputs.x != 0)
+        #region Dash in update
+        _timeSinceLastDash += Time.deltaTime;
+        if (_dashInputActionReference.action.WasPressedThisFrame() && dashEnabled && _timeSinceLastDash >= _dashCooldown)
+            if (!_isGrounded && _canDash && (_movementInputs.x < 0.5f || _movementInputs.x > -0.5f))
+            {
                 _isDashing = true;
+                _timeSinceLastDash = 0f;
+            }
+
         if (_dashInputActionReference.action.WasReleasedThisFrame() && dashEnabled)
         {
-            _isDashing = false;
-            _canDash = false;
-            _dashTimer = 0f;
+            if (_dashTimer > (_dashDuration * 0.5f))
+            {
+                _isDashing = false;
+                _canDash = false;
+                _dashTimer = 0f;
+            }
+            else
+            {
+                _dashTimer += _dashDuration * 0.5f;
+            }
         }
         if (_isDashing)
             Dash();
-
-        // break idc delete me
+        #endregion
         if (_movementInputs == Vector2.zero && _isGrounded && !_isGoundCheckDelayActive)
             _playerRigidbody2D.linearVelocity = Vector2.zero;
 
@@ -118,25 +132,24 @@ public class PlayerMovementController : MonoBehaviour
         Vector2 velocity;
         if (_isDashing)
         {
-            velocity = new Vector2(_movementInputs.x * _movementSpeed * _dashForce, 0f);
+            velocity = new Vector2(Mathf.Round(_movementInputs.x) * _movementSpeed * _dashForce, 0f);
             _playerRigidbody2D.linearVelocity = velocity;
         }
         else
         {
-            velocity = new Vector2(_movementInputs.x * _movementSpeed, _playerRigidbody2D.linearVelocity.y);
+            velocity = new Vector2(Mathf.Round(_movementInputs.x) * _movementSpeed, _playerRigidbody2D.linearVelocity.y);
             _playerRigidbody2D.linearVelocity = AdjustedVelocityToSlope(velocity);
         }
     }
     #endregion
-
     #region Slope Adjustment
 
     private Vector2 AdjustedVelocityToSlope(Vector2 velocity)
     {
-        RaycastHit2D hitInfo = Physics2D.Raycast(transform.position, Vector2.down, 1f, _walkableGroundLayerMask);
+        RaycastHit2D hitInfo = Physics2D.Raycast(transform.position, Vector2.down, 2f, _walkableGroundLayerMask);
         _slopeAngle = Vector2.Angle(hitInfo.normal, Vector2.up);
 
-        if (hitInfo.collider != null && _slopeAngle != 0 && _isGrounded)
+        if (!hitInfo.collider.IsUnityNull() && _slopeAngle != 0 && _isGrounded)
         {
             Quaternion slopeRotation = Quaternion.FromToRotation(Vector2.up, hitInfo.normal);
             Vector2 velocityDownwards = slopeRotation * velocity;
@@ -150,7 +163,6 @@ public class PlayerMovementController : MonoBehaviour
         return velocity;
     }
     #endregion
-
     #region Jump implementation
     private void Jump()
     {
@@ -158,7 +170,6 @@ public class PlayerMovementController : MonoBehaviour
         _isGoundCheckDelayActive = true;
     }
     #endregion
-
     #region Dash Implementation
     private void Dash()
     {
@@ -171,20 +182,18 @@ public class PlayerMovementController : MonoBehaviour
         }
     }
     #endregion
-
     #region Null references
     private bool IsInputActionReferenceNull()
     {
-        return _movementInputActionReference == null &&
-            _jumpInputActionReference == null &&
-            _dashInputActionReference == null;
+        return _movementInputActionReference.IsUnityNull() &&
+            _jumpInputActionReference.IsUnityNull() &&
+            _dashInputActionReference.IsUnityNull();
     }
     #endregion
-
     #region Ground check delay and coyote time
     private void CheckForValidGround()
     {
-        if (Physics2D.OverlapCircle(_groundCheckObject.transform.position, 0.1f, _walkableGroundLayerMask))
+        if (Physics2D.OverlapCircle(_groundCheckObject.transform.position, 0.15f, _walkableGroundLayerMask))
             _isGrounded = true;
         else
             _isGrounded = false;
@@ -216,7 +225,6 @@ public class PlayerMovementController : MonoBehaviour
     }
 
     #endregion
-
     #region collision checks with walls while dashing
     private void OnCollisionEnter2D(Collision2D collision)
     {

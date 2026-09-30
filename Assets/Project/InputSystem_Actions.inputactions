@@ -497,7 +497,7 @@
                 {
                     "name": "",
                     "id": "98155dbb-1bab-479a-9ea0-3be921402047",
-                    "path": "<Gamepad>/dpad/down",
+                    "path": "<Gamepad>/rightTrigger",
                     "interactions": "",
                     "processors": "",
                     "groups": ";Gamepad",
