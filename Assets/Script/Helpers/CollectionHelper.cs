@@ -5,11 +5,11 @@ public class CollectionHelper
 {
     public static string ConvertCollectionToProperlyFormattedString<T>(IEnumerable<T> collection)
     {
-        var stringBuilder = new StringBuilder();
+        var stringBuilder = new StringBuilder("[ ");
         
         foreach (var entry in collection)
             stringBuilder.Append(entry).Append(", ");
 
-        return stringBuilder.ToString();
+        return stringBuilder.Append(" ]").ToString();
     }
 }
