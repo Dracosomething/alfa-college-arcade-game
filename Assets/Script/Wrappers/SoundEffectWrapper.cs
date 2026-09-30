@@ -12,11 +12,11 @@ public class SoundEffectWrapper : MonoBehaviour
 
     private void Update()
     {
-        if (!AudioSource.isPlaying)
-        {
-            DestroyImmediate(AudioSource);
-            DestroyImmediate(this);
-        }
+        if (AudioSource.isPlaying)
+            return;
+        
+        DestroyImmediate(AudioSource);
+        DestroyImmediate(this);
     }
 
     private void OnDestroy() =>

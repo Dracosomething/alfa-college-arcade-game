@@ -9,9 +9,6 @@ public class SoundEffectController : MonoBehaviour
     private void Awake() =>
         _soundEffectCache = GetComponent<PlayingSoundEffectCache>();
 
-    private void Update() =>
-        _soundEffectCache.RemoveUnusedGameObjects();
-
     public void PlaySound(string soundEffectName, in GameObject soundEffectOwner)
     {
         // If the game object is already playing the same sound effect don't play it again
@@ -35,6 +32,9 @@ public class SoundEffectController : MonoBehaviour
 
     public bool IsPlayingSoundEffect(string soundEffectName, GameObject soundEffectOwner) =>
         HasAudioSourceForSoundEffect(soundEffectName, in soundEffectOwner);
+
+    private void Update() =>
+        _soundEffectCache.RemoveUnusedGameObjects();
 
     private bool HasAudioSourceForSoundEffect(string soundEffectName, in GameObject gameObject) =>
         _soundEffectCache.IsGameObjectPlayingSoundEffect(gameObject, soundEffectName);
