@@ -13,7 +13,10 @@ public class PlayerLifeController : MonoBehaviour
         CurrentLives--;
 
         if (CurrentLives == 0)
+        {
             _checkpointController.ResetLevel();
+            return;
+        }
 
         _checkpointController.GoToLastCheckpoint();
     }
