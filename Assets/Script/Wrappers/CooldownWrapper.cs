@@ -9,10 +9,8 @@ public class CooldownWrapper : MonoBehaviour
     private long _remainingCooldown;
     private CustomTimeSpan _timeSpan;
     
-    public void InitializeCooldownWrapper(CustomTimeSpan timeSpan)
-    {
+    public void InitializeCooldownWrapper(CustomTimeSpan timeSpan) =>
         _timeSpan = timeSpan;
-    }
 
     public bool IsCooldownActive() =>
         _remainingCooldown > FinishedCooldown;
