@@ -1,4 +1,3 @@
-using System;
 using TMPro;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -6,23 +5,26 @@ using UnityEngine.SceneManagement;
 
 public class ExitLevelController : MonoBehaviour
 {
+    private const float ExitDelayInSeconds = 2.0f;
+    
     [Header("Exit Script Settings")]
-    [SerializeField] private float _exitDelayInSeconds = 2.0f;
     [SerializeField] private InputActionReference _cancelActionReference;
     
-    // [Header("Required Assets")]
-
     private float _timeRemaining;
     private GameObject _guiIndicator;
     private TextMeshProUGUI _indicatorText;
 
     private void Awake()
     {
-        _indicatorText = GameObject.Find("ExitLevelText").GetComponent<TextMeshProUGUI>();
-        _guiIndicator = GameObject.Find("ExitLevelIndicator");
-        _guiIndicator.SetActive(false);
+        if (!(SceneHelper.TryFindGameObjectInScene(objectName: "ExitLevelText", out GameObject textObject) &&
+              textObject.TryGetComponent<TextMeshProUGUI>(out _indicatorText)))
+            throw new MissingComponentException("Component or GameObject is missing");
         
-        _timeRemaining = _exitDelayInSeconds;
+        if (!SceneHelper.TryFindGameObjectInScene(objectName: "ExitLevelIndicator", out _guiIndicator))
+            throw new MissingComponentException("GameObject is missing");
+        
+        _guiIndicator.SetActive(false);
+        _timeRemaining = ExitDelayInSeconds;
         _cancelActionReference.action.Enable();
     }
 
@@ -31,21 +33,21 @@ public class ExitLevelController : MonoBehaviour
         if (_cancelActionReference.action.ReadValue<float>().Equals(1))
         {
             _guiIndicator.SetActive(true);
+            
             _timeRemaining -= Time.deltaTime;
             _indicatorText.text = "Exiting level in: " + _timeRemaining.ToString("F1");
+            
             if (_timeRemaining <= 0)
                 ExitToMenu();
         }
-        else if(_timeRemaining < 2.0f)
+        
+        else if(_timeRemaining < ExitDelayInSeconds)
         {
             _guiIndicator.SetActive(false);
-            _timeRemaining = 2.0f;
+            _timeRemaining = ExitDelayInSeconds;
         }
     }
 
-    private void ExitToMenu()
-    {
+    private void ExitToMenu() => 
         SceneManager.LoadScene("TitleScreen");
-    }
-
 }
