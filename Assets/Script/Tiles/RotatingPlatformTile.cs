@@ -1,60 +1,67 @@
-using System.Collections;
 using UnityEngine;
 
 public class RotatingPlatformTile : MonoBehaviour
 {
-    private const float _targetAngle = 180f;
+    private const float TargetAngle = 180f;
+    private const float NoRotation = 0f;
+    private const float FullRotation = 360f;
+    
     [SerializeField] private bool _isRotatingClockwise;
     [SerializeField] private bool _isAutoRotating;
     [SerializeField] private float _rotationSpeed;
     private bool _isRotating;
 
-    private void OnCollisionEnter2D(Collision2D collision)
+    private void Update()
     {
-        if (!collision.gameObject.CompareTag("Player"))
-            return;
-	
-        if (!_isRotating)
-            StartCoroutine(Rotate());
+        Rotate();
     }
 
-    private IEnumerator Rotate()
+    private void OnCollisionEnter2D(Collision2D collision)
     {
-        if (_isRotating)
-            yield break;
+        if (!collision.gameObject.CompareTag(Constants.PlayerGameObjectName))
+            return;
 
-        if (_rotationSpeed <= 0f)
-            yield break;
-
+        StartRotating();
+    }
+    
+    private void StartRotating() =>
         _isRotating = true;
+    
+    private void StopRotating() =>
+        _isRotating = false;
 
-        float startZAngle = transform.eulerAngles.z;
-        float rotatedAmount = 0f;
-        float direction = _isRotatingClockwise ? -1f : 1f;
-
-        while (rotatedAmount < _targetAngle - 0.0001f)
+    private void Rotate()
+    {
+        if (_isRotating || _rotationSpeed <= NoRotation)
         {
-            float step = _rotationSpeed * Time.deltaTime;
-            float remainingAngle = _targetAngle - rotatedAmount;
-            float biggestPossibleStepWithoutGoingOver = Mathf.Min(step, remainingAngle);
-
-            while (_isAutoRotating)
-	    {
-                transform.Rotate(0f, 0f, direction * biggestPossibleStepWithoutGoingOver);
-                yield return null;
-            }
-
-            transform.Rotate(0f, 0f, direction * biggestPossibleStepWithoutGoingOver);
-            rotatedAmount += biggestPossibleStepWithoutGoingOver;
-
-            yield return null;
+            StopRotating();
+            return;
         }
 
-        float finalZAngle = startZAngle + direction * _targetAngle;
-        finalZAngle = (finalZAngle % 360f + 360f) % 360f;
+        float startZAngle = transform.eulerAngles.z;
+        float rotatedDegrees = NoRotation;
+        var direction = _isRotatingClockwise ? RotationDirection.Clockwise : RotationDirection.CounterClockwise;
+
+        while (rotatedDegrees < TargetAngle - Constants.FloatingPointErrorOffset || _isAutoRotating)
+        {
+            float rotationStep = _rotationSpeed * Time.deltaTime;
+            float remainingRotation = TargetAngle - rotatedDegrees;
+            // We want to make sure that we won't go over TargetAngle.
+            var nextStep = Mathf.Min(rotationStep, remainingRotation);
+            
+            transform.Rotate(xAngle: NoRotation, yAngle: NoRotation, zAngle: nextStep);
+
+            if (!_isAutoRotating)
+                rotatedDegrees += nextStep;
+        }
+        
+        // We do these calculations to have the platform snap back to it's original rotation.
+        float finalZAngle = startZAngle + ((int)direction * TargetAngle);
+        // The final modulus should make sure that negative numbers become positive.
+        finalZAngle = (finalZAngle % FullRotation + FullRotation) % FullRotation;
         Vector3 currentEulerAngles = transform.eulerAngles;
         transform.eulerAngles = new Vector3(currentEulerAngles.x, currentEulerAngles.y, finalZAngle);
 
-        _isRotating = false;
+        StopRotating();
     }
 }
