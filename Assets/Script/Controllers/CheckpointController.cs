@@ -6,7 +6,7 @@ public class CheckpointController : MonoBehaviour
     private Transform _currentCheckpoint;
     private Rigidbody2D _playerRigidbody;
 
-    private void Start()
+    private void Awake()
     {
         if (!TryGetComponent<Rigidbody2D>(out _playerRigidbody))
             throw new MissingComponentException("No Rigidbody2D found on player.");
