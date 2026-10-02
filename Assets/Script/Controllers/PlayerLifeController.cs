@@ -8,21 +8,24 @@ public class PlayerLifeController : MonoBehaviour
     [field: SerializeField] public int MaximumLives { get; private set; }
     public int CurrentLives { get; private set; }
 
-    public void Die()
-    {
-        CurrentLives--;
-
-        if (CurrentLives == 0)
-            _checkpointController.ResetLevel();
-
-        _checkpointController.GoToLastCheckpoint();
-    }
-
-    private void Start()
+    private void Awake()
     {
         if (!TryGetComponent<CheckpointController>(out _checkpointController))
             throw new MissingComponentException("No CheckpointController found on player.");
 
         CurrentLives = MaximumLives;
+    }
+
+    public void Die()
+    {
+        CurrentLives--;
+
+        if (CurrentLives <= 0)
+        {
+            _checkpointController.ResetLevel();
+            return;
+        }
+
+        _checkpointController.GoToLastCheckpoint();
     }
 }
