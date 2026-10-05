@@ -1,14 +1,15 @@
-using System.Collections;
-using System.Threading;
 using UnityEngine;
 
 public class HazardPlatformTile : MonoBehaviour
 {
     private void OnTriggerEnter2D(Collider2D trigger)
     {
-        if (!trigger.gameObject.CompareTag(Constants.PlayerGameObjectName))
+        GameObject collidedObject = trigger.gameObject;
+        
+        if (!(collidedObject.CompareTag(Constants.PlayerGameObjectName) && 
+              collidedObject.TryGetComponent<PlayerLifeController>(out var lifeController)))
             return;
         
-        // Deal damage here when branches merged
+        lifeController.Die();
     }
 }
