@@ -18,10 +18,10 @@ public class ExitLevelController : MonoBehaviour
     {
         if (!(SceneHelper.TryFindGameObjectInScene(objectName: "ExitLevelText", out GameObject textObject) &&
               textObject.TryGetComponent<TextMeshProUGUI>(out _indicatorText)))
-            throw new MissingComponentException("Component or GameObject is missing");
+            throw new MissingComponentException("Could not find component 'TextMeshProUGUI' in GameObject 'ExitLevelText'");
         
         if (!SceneHelper.TryFindGameObjectInScene(objectName: "ExitLevelIndicator", out _guiIndicator))
-            throw new MissingComponentException("GameObject is missing");
+            throw new MissingComponentException("Could not find GameObject 'ExitLevelIndicator'");
         
         _guiIndicator.SetActive(false);
         _timeRemaining = ExitDelayInSeconds;
@@ -35,7 +35,9 @@ public class ExitLevelController : MonoBehaviour
             _guiIndicator.SetActive(true);
             
             _timeRemaining -= Time.deltaTime;
-            _indicatorText.text = "Exiting level in: " + _timeRemaining.ToString("F1");
+            _indicatorText.text = "Exiting level in: " + _timeRemaining.ToString(format: "F1"); 
+            // F1 refers to format type for the remaining time to be written in.
+            // In specific, one decimal number.
             
             if (_timeRemaining <= 0)
                 ExitToMenu();
@@ -49,5 +51,5 @@ public class ExitLevelController : MonoBehaviour
     }
 
     private void ExitToMenu() => 
-        SceneManager.LoadScene("TitleScreen");
+        SceneManager.LoadScene(sceneName: "TitleScreen");
 }
