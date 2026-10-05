@@ -5,7 +5,7 @@ public class BouncingPlatformTile : MonoBehaviour
 {
     private const int BounceForceMultiplier = 10;
     
-    [SerializeField] private float _bounceForce;
+    [SerializeField] private float _bounceForce = 0;
     private Rigidbody2D _playerRigidbody;
     
     public void Awake()
