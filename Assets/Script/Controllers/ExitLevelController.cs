@@ -35,7 +35,8 @@ public class ExitLevelController : MonoBehaviour
             _guiIndicator.SetActive(true);
             
             _timeRemaining -= Time.deltaTime;
-            _indicatorText.text = UnchangingIndicatorText + _timeRemaining.ToString(Constants.SingleDecimalNumericStringFormat); 
+
+            _indicatorText.text = $"{UnchangingIndicatorText}{_timeRemaining.ToString(Constants.SingleDecimalNumericStringFormat)}";
 
             WhenTimeUpExitToMenu();
         }
@@ -43,14 +44,18 @@ public class ExitLevelController : MonoBehaviour
         else if(_timeRemaining < ExitDelayInSeconds)
         {
             _guiIndicator.SetActive(false);
+            
             _timeRemaining = ExitDelayInSeconds;
         }
     }
 
     private void WhenTimeUpExitToMenu()
     {
-        if (_timeRemaining <= 0)
+        if (TimeIsUp())
             SceneManager.LoadScene(sceneName: "TitleScreen");
     }
-        
+
+    // If '_timeRemaining' is 0 or less, which means time has run out, then this will return 'True.' Otherwise, it will return 'False.'
+    private bool TimeIsUp() =>
+        _timeRemaining <= 0; 
 }
