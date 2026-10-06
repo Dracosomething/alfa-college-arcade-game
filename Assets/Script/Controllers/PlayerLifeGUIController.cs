@@ -21,6 +21,6 @@ public class PlayerLifeGUIController : MonoBehaviour
 
     private void Update()
     {
-        _textMesh.text = Convert.ToString(_playerLifeController.CurrentLives);
+        _textMesh.text = Convert.ToString(_playerLifeController.CurrentLives) + "/" + Convert.ToString(_playerLifeController.MaximumLives);
     }
 }
