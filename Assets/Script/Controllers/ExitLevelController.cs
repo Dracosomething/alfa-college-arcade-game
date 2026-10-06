@@ -19,12 +19,12 @@ public class ExitLevelController : MonoBehaviour
 
     private void Awake()
     {
-        const string indicatorTextFieldName = "ExitLevelText";
-        const string indicatorVisualElementName = "ExitLevelIndicator";
+        const string IndicatorTextFieldName = "ExitLevelText";
+        const string IndicatorVisualElementName = "ExitLevelIndicator";
         
-        if (!(SceneHelper.TryFindGameObjectInScene(indicatorTextFieldName, out GameObject textObject) &&
-              SceneHelper.TryFindGameObjectInScene(indicatorVisualElementName, out _guiIndicator)))
-            throw new CouldNotFindGameObjectException(indicatorVisualElementName, indicatorTextFieldName);
+        if (!(SceneHelper.TryFindGameObjectInScene(IndicatorTextFieldName, out GameObject textObject) &&
+              SceneHelper.TryFindGameObjectInScene(IndicatorVisualElementName, out _guiIndicator)))
+            throw new CouldNotFindGameObjectException(IndicatorVisualElementName, IndicatorTextFieldName);
         
         if (!textObject.TryGetComponent<TextMeshProUGUI>(out _indicatorText))
             throw new MissingComponentException("Could not find component 'TextMeshProUGUI' on GameObject 'ExitLevelText'");
