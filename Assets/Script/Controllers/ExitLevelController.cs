@@ -53,13 +53,13 @@ public class ExitLevelController : MonoBehaviour
         }
     }
 
-    private void WhenTimeUpExitToMenu()
+    private void IfTimeUpExitToMenu()
     {
-        if (TimeIsUp())
+        if (IsTimeUp())
             SceneManager.LoadScene(MainMenuSceneName);
     }
 
     // If '_timeRemaining' is 0 or less, which means time has run out, then this will return 'True.' Otherwise, it will return 'False.'
-    private bool TimeIsUp() =>
+    private bool IsTimeUp() =>
         _timeRemaining <= 0; 
 }
