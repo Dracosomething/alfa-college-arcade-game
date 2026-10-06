@@ -5,5 +5,6 @@
     public static string PlayerGameObjectName = "Player";
     public static string TutorialLevelSceneName = "TutorialLevelScene";
     public static string PathToSoundAssets = "Sound/";
+    public static string TitleScreenSceneName = "TitleScreenScene";
     public static LevelLookupTable LevelLookupTable = new();
 }

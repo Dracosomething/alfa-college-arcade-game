@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 
 public class LevelLookupTable
@@ -24,7 +25,23 @@ public class LevelLookupTable
 
     public string NextLevel()
     {
-        _currentLevel++;
+        if (!IsCurrentLevelFinalLevel())
+            return Constants.TitleScreenSceneName;
+        
+        MoveCurrentLevelToNextLevel();
+        
         return _internalDictionary[_currentLevel];
     }
+
+    private bool IsCurrentLevelFinalLevel()
+    {
+        var levelEnumLength = Enum.GetValues(typeof(Enum)).Length;
+        // We can parse _currentLevel to an integer since enum's are integers behind the scene.
+        return (int)_currentLevel >= levelEnumLength;
+    }
+
+    private void MoveCurrentLevelToNextLevel() =>
+        // We use the '++' operator here to get the next level in linear order,
+        // this can be done since enum's are integers behind the scenes.
+        _currentLevel++;
 }
