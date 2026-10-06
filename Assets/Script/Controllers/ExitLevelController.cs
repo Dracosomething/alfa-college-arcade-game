@@ -27,7 +27,7 @@ public class ExitLevelController : MonoBehaviour
             throw new CouldNotFindGameObjectException(indicatorVisualElementName, indicatorTextFieldName);
         
         if (!textObject.TryGetComponent<TextMeshProUGUI>(out _indicatorText))
-            throw new MissingComponentException("Could not find component 'TextMeshProUGUI'");
+            throw new MissingComponentException("Could not find component 'TextMeshProUGUI' on GameObject 'ExitLevelText'");
         
         _guiIndicator.SetActive(false);
         _cancelActionReference.action.Enable();
