@@ -1,4 +1,5 @@
 using TMPro;
+using UnityEditor;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.SceneManagement;
@@ -7,6 +8,7 @@ public class ExitLevelController : MonoBehaviour
 {
     private const float ExitDelayInSeconds = 2.0f;
     private const string UnchangingIndicatorText = "Exiting level in: ";
+    private const string MainMenuSceneName = "TitleScreen";
     
     [Header("Exit Script Settings")]
     [SerializeField] private InputActionReference _cancelActionReference;
@@ -17,11 +19,14 @@ public class ExitLevelController : MonoBehaviour
 
     private void Awake()
     {
-        if (!(SceneHelper.TryFindGameObjectInScene(objectName: "ExitLevelText", out GameObject textObject) &&
-              textObject.TryGetComponent<TextMeshProUGUI>(out _indicatorText)))
-            throw new MissingComponentException("Could not find component 'TextMeshProUGUI' in GameObject 'ExitLevelText'");
+        const string indicatorTextFieldName = "ExitLevelText";
+        const string indicatorVisualElementName = "ExitLevelIndicator";
         
-        if (!SceneHelper.TryFindGameObjectInScene(objectName: "ExitLevelIndicator", out _guiIndicator))
+        if (!(SceneHelper.TryFindGameObjectInScene(indicatorVisualElementName, out GameObject textObject) &&
+              SceneHelper.TryFindGameObjectInScene(indicatorVisualElementName, out _guiIndicator)))
+            throw new CouldNotFindGameObjectException(indicatorVisualElementName, indicatorTextFieldName);
+        
+        if (!textObject.TryGetComponent<TextMeshProUGUI>(out _indicatorText))
             throw new MissingComponentException("Could not find GameObject 'ExitLevelIndicator'");
         
         _guiIndicator.SetActive(false);
@@ -40,7 +45,6 @@ public class ExitLevelController : MonoBehaviour
 
             WhenTimeUpExitToMenu();
         }
-        
         else if(_timeRemaining < ExitDelayInSeconds)
         {
             _guiIndicator.SetActive(false);
@@ -52,7 +56,7 @@ public class ExitLevelController : MonoBehaviour
     private void WhenTimeUpExitToMenu()
     {
         if (TimeIsUp())
-            SceneManager.LoadScene(sceneName: "TitleScreen");
+            SceneManager.LoadScene(MainMenuSceneName);
     }
 
     // If '_timeRemaining' is 0 or less, which means time has run out, then this will return 'True.' Otherwise, it will return 'False.'
