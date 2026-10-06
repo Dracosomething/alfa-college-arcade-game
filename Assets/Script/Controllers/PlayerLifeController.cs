@@ -4,8 +4,8 @@ using UnityEngine;
 public class PlayerLifeController : MonoBehaviour
 {
     private CheckpointController _checkpointController;
+    [SerializeField] private int _maximumLives;
 
-    [field: SerializeField] public int MaximumLives { get; private set; }
     public int CurrentLives { get; private set; }
 
     private void Awake()
@@ -13,7 +13,7 @@ public class PlayerLifeController : MonoBehaviour
         if (!TryGetComponent<CheckpointController>(out _checkpointController))
             throw new MissingComponentException("No CheckpointController found on player.");
 
-        CurrentLives = MaximumLives;
+        CurrentLives = _maximumLives;
     }
 
     public void Die()
