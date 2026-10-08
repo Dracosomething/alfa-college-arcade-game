@@ -25,7 +25,7 @@ public class LevelLookupTable
 
     public string NextLevel()
     {
-        if (!IsCurrentLevelFinalLevel())
+        if (IsCurrentLevelFinalLevel())
             return Constants.TitleScreenSceneName;
         
         MoveCurrentLevelToNextLevel();
