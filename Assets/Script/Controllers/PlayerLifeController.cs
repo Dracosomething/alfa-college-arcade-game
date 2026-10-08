@@ -20,7 +20,7 @@ public class PlayerLifeController : MonoBehaviour
     {
         CurrentLives--;
 
-        if (CurrentLives <= 0)
+        if (IsDead())
         {
             _checkpointController.ResetLevel();
             return;
@@ -28,4 +28,7 @@ public class PlayerLifeController : MonoBehaviour
 
         _checkpointController.GoToLastCheckpoint();
     }
+
+    private bool IsDead() =>
+        CurrentLives <= 0;
 }
