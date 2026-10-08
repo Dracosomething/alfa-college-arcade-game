@@ -5,4 +5,5 @@
     public static string PlayerGameObjectName = "Player";
     public static string TutorialLevelSceneName = "TutorialLevelScene";
     public static string PathToSoundAssets = "Sound/";
+    public static string SingleDecimalNumericStringFormat = "F1";
 }
