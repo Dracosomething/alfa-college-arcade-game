@@ -7,7 +7,7 @@ public class PlayerLifeGUIController : MonoBehaviour
     private PlayerLifeController _playerLifeController;
     private TextMeshProUGUI _textMesh;
     
-    private void Start()
+    private void Awake()
     {
         if (!SceneHelper.TryFindGameObjectWithTagInScene("Player", out var playerGameObject))
             throw new CouldNotFindGameObjectException("Player");
@@ -21,6 +21,6 @@ public class PlayerLifeGUIController : MonoBehaviour
 
     private void Update()
     {
-        _textMesh.text = Convert.ToString(_playerLifeController.CurrentLives) + "/" + Convert.ToString(_playerLifeController.MaximumLives);
+        _textMesh.text = $"{_playerLifeController.CurrentLives}/{_playerLifeController.MaximumLives}";
     }
 }

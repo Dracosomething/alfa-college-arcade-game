@@ -3,20 +3,23 @@ using System;
 
 public class BouncingPlatformTile : MonoBehaviour
 {
+    private const int BounceForceMultiplier = 10;
+    
+    [SerializeField] private float _bounceForce = 0;
     private Rigidbody2D _playerRigidbody;
-
-    public float BounceForce;
-
+    
     public void Awake()
     {
-	if (!SceneHelper.TryFindGameObjectWithTagInScene("Player", out var player))
-		throw new Exception("Object with tag \"Player\" not found.");
-        _playerRigidbody = player.GetComponent<Rigidbody2D>();
+	    if (!SceneHelper.TryFindGameObjectWithTagInScene(Constants.PlayerGameObjectName, out var player))
+		    throw new CouldNotFindGameObjectException("Object with tag \"Player\" not found.");
+
+        if (!player.TryGetComponent<Rigidbody2D>(out _playerRigidbody))
+            throw new MissingComponentException("Player is missing a Rigidbody2D component.");
     }
 
     public void OnTriggerEnter2D(Collider2D collision)
     {
-        if (collision.gameObject.CompareTag("Player"))
-            _playerRigidbody.AddForce(new Vector2(0, BounceForce * 10), ForceMode2D.Impulse);
+        if (collision.gameObject.CompareTag(Constants.PlayerGameObjectName))
+            _playerRigidbody.AddForce(new Vector2(Constants.NoMovement, _bounceForce * BounceForceMultiplier), ForceMode2D.Impulse);
     }
 }
