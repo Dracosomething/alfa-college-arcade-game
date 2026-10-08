@@ -43,7 +43,7 @@ public class ExitLevelController : MonoBehaviour
 
             _indicatorText.text = $"{UnchangingIndicatorText}{_timeRemaining.ToString(Constants.SingleDecimalNumericStringFormat)}";
 
-            WhenTimeUpExitToMenu();
+            IfTimeUpExitToMenu();
         }
         else if(_timeRemaining < ExitDelayInSeconds)
         {
