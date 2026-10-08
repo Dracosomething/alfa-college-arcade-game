@@ -13,10 +13,10 @@
 
     public RelativeParallaxPosition(float x, float parallaxEffectX, float y, float parallaxEffectY)
     {
-        this._x = x;
-        this._y = y;
-        this._parallaxEffectX = parallaxEffectX;
-        this._parallaxEffectY = parallaxEffectY;
+        _x = x;
+        _y = y;
+        _parallaxEffectX = parallaxEffectX;
+        _parallaxEffectY = parallaxEffectY;
     }
     
     private float CalculateRelativePositionOfGivenCoordinate(float coordinate, float parallaxEffectOfCoordinate) =>
