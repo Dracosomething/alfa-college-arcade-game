@@ -264,6 +264,7 @@ public class PlayerMovementController : MonoBehaviour
     #endregion
 
     #region collision checks with walls while dashing
+    // Avoiding dashing into walls by stopping the dash.
     private void OnCollisionEnter2D(Collision2D collision)
     {
         // We first shift 1 by the colliding objects layer. Then we check if _walkableGroundLayerMask is equal to that by doing a bitwise OR.
