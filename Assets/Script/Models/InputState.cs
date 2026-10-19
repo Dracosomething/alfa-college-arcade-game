@@ -1,5 +1,5 @@
 ﻿public enum InputState
 {
-    Disabled,
-    Enabled
+    UnPressed = 0,
+    Pressed = 1
 }

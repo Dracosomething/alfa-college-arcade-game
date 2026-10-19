@@ -73,7 +73,7 @@ public class OldPlayerController : MonoBehaviour
     private Rigidbody2D _playerRigidbody;
     private CapsuleCollider2D _playerCollider;
     // private PlayerAnimationManager _animationManager;
-    private InputState _inputState = InputState.Enabled;
+    private InputState _inputState = InputState.Pressed;
     public bool RealGrounded;               //Grounded bool without coyote time
     public Rigidbody2D MovingTileRigidbody;
     public Transform StartPosition;
@@ -100,7 +100,7 @@ public class OldPlayerController : MonoBehaviour
 
     private void Update()
     {
-        if (_inputState == InputState.Disabled)
+        if (_inputState == InputState.UnPressed)
         {
             _horizontalMovement = 0;
             _verticalMovement = 0;
@@ -168,7 +168,7 @@ public class OldPlayerController : MonoBehaviour
         const string HorizontalMovementInputAxis = "Horizontal";
         const string VerticalMovementInputAxis = "Vertical";
         
-        if (_inputState == InputState.Disabled) 
+        if (_inputState == InputState.UnPressed) 
             return;
         
         _horizontalMovement = Input.GetAxisRaw(HorizontalMovementInputAxis);
@@ -201,7 +201,7 @@ public class OldPlayerController : MonoBehaviour
     {
         const float MovementInputRecognizedThreshold = 0.01f;
         
-        if (_inputState == InputState.Enabled && Mathf.Abs(_horizontalMovement) > MovementInputRecognizedThreshold)
+        if (_inputState == InputState.Pressed && Mathf.Abs(_horizontalMovement) > MovementInputRecognizedThreshold)
         {
             var newFacingDirection = _horizontalMovement > 0 ? 
                 Direction.Right : 
