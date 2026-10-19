@@ -6,11 +6,12 @@ using UnityEngine.InputSystem;
 public class PlayerMovementController : MonoBehaviour
 {
     #region Fields
+    private const float _noInputs = 0f;
+
     [Header("Input Action References")]
     [SerializeField] private InputActionReference _movementInputActionReference;
     [SerializeField] private InputActionReference _jumpInputActionReference;
     [SerializeField] private InputActionReference _dashInputActionReference;
-    private const float _noInputs = 0f;
 
     [Header("Movement Settings")]
     [SerializeField] private float _movementSpeed = 5f;
@@ -64,8 +65,8 @@ public class PlayerMovementController : MonoBehaviour
 
         if (!TryGetComponent<Rigidbody2D>(out _playerRigidbody2D))
             throw new MissingComponentException("Rigidbody2D component is missing from the GameObject. Please add a Rigidbody2D component.");
-            // Store the original gravity scale of the player to advoid sliding off of slopes.
-            _originalGravityScale = _playerRigidbody2D.gravityScale;
+        // Store the original gravity scale of the player to advoid sliding off of slopes.
+        _originalGravityScale = _playerRigidbody2D.gravityScale;
     }
     #endregion
 
@@ -139,14 +140,14 @@ public class PlayerMovementController : MonoBehaviour
 
     private Vector2 GetVelocityUpOrDown(Vector2 velocity, Quaternion slopeRotation)
     {
-            Vector2 velocityDownwards = slopeRotation * velocity;
-            Vector2 velocityUpwards = slopeRotation * new Vector2(velocity.x, -velocity.y);
+        Vector2 velocityDownwards = slopeRotation * velocity;
+        Vector2 velocityUpwards = slopeRotation * new Vector2(velocity.x, -velocity.y);
 
-            if (velocityDownwards.y < _zeroUpVelocity)
-                return velocityDownwards;
-            else if (velocityUpwards.y > _zeroUpVelocity)
-                return velocityUpwards;
-            return velocity;
+        if (velocityDownwards.y < _zeroUpVelocity)
+            return velocityDownwards;
+        else if (velocityUpwards.y > _zeroUpVelocity)
+            return velocityUpwards;
+        return velocity;
     }
     #endregion
 
@@ -226,6 +227,7 @@ public class PlayerMovementController : MonoBehaviour
     #region Ground check delay and coyote time
     private void CheckForValidGround()
     {
+        const int _coyoteTimeTimerStartValue = 0;
         _isGrounded = false;
 
         if (Physics2D.OverlapCircle(_groundCheckObject.transform.position, _groundCheckRadius, _walkableGroundLayerMask))
@@ -240,8 +242,6 @@ public class PlayerMovementController : MonoBehaviour
                 _isGroundedWithCoyoteTime = false;
             return;
         }
-
-        const int _coyoteTimeTimerStartValue = 0;
         _canDash = true;
         _coyoteTimeTimer = _coyoteTimeTimerStartValue;
         _isGroundedWithCoyoteTime = true;
@@ -250,12 +250,13 @@ public class PlayerMovementController : MonoBehaviour
     // Adds a delay to check for the ground to perform a successful jump.
     private void GroundCheckDelay()
     {
+        const int _groundCheckDelayTimerStartValue = 0;
+
         if (_isGoundCheckDelayActive)
             _groundCheckDelayTimer += Time.deltaTime;
 
         if (_groundCheckDelayTimer >= _groundCheckDelayLenght)
         {
-            const int _groundCheckDelayTimerStartValue = 0;
             _isGoundCheckDelayActive = false;
             _groundCheckDelayTimer = _groundCheckDelayTimerStartValue;
         }
