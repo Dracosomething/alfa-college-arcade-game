@@ -28,9 +28,8 @@ public class WalkingEnemy : Enemy
 
     private void SwitchTargetPosition()
     {
-        if (_targetPosition == _endPosition)
-            _targetPosition = _startPosition;
-        else
-            _targetPosition = _endPosition;
+        _targetPosition = _targetPosition == _endPosition ? 
+            _startPosition : 
+            _endPosition;
     }
 }

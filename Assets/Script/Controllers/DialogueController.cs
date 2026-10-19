@@ -63,7 +63,7 @@ public class DialogueController : MonoBehaviour
     {
         ActivateUI();
         
-        _characterNameTextComponent.text = dialogueDataScriptableObject.characterName;
+        _characterNameTextComponent.text = dialogueDataScriptableObject.CharacterName;
         
         _oldPlayerController.SetInputEnabled(false);
         
@@ -109,14 +109,14 @@ public class DialogueController : MonoBehaviour
 
         _isNotWritingText = false;
         
-        DialogueNode currentDialogueNode = dialogueDataScriptableObject.dialogueNodes[_currentDialogueNodeIndex];
+        DialogueNode currentDialogueNode = dialogueDataScriptableObject.DialogueNodes[_currentDialogueNodeIndex];
 
         if (Input.GetButtonDown(DialogueInputName))
-            _dialogueTextTextComponent.text = currentDialogueNode.dialogueText;
+            _dialogueTextTextComponent.text = currentDialogueNode.DialogueText;
         else
-            _dialogueTextTextComponent.text += currentDialogueNode.dialogueText[_currentDialogueCharacterIndex];
+            _dialogueTextTextComponent.text += currentDialogueNode.DialogueText[_currentDialogueCharacterIndex];
 
-        if (_dialogueTextTextComponent.text == currentDialogueNode.dialogueText)
+        if (_dialogueTextTextComponent.text == currentDialogueNode.DialogueText)
             _isNotWritingText = true;
         else
             _currentDialogueCharacterIndex++;
@@ -130,7 +130,7 @@ public class DialogueController : MonoBehaviour
             _currentDialogueNodeIndex++;
         }
         
-        if (_currentDialogueNodeIndex == (dialogueDataScriptableObject.dialogueNodes.Count - 1) &&  // We need to remove 1 from count to get the last index of the list
+        if (_currentDialogueNodeIndex == (dialogueDataScriptableObject.DialogueNodes.Count - 1) &&  // We need to remove 1 from count to get the last index of the list
             Input.GetButtonDown(DialogueInputName))
             EndDialogue();
         
