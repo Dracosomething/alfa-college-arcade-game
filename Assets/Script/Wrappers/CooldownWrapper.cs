@@ -3,18 +3,17 @@ using UnityEngine;
 public class CooldownWrapper : MonoBehaviour
 {
     private const float IntervalRepeatingOffsetInSeconds = 0.1f;
-    private const float IntervalInSeconds = 1f; 
+    private const float IntervalInSeconds = 1f;
+    private const int FinishedCooldown = 0;
     
     private long _remainingCooldown;
     private CustomTimeSpan _timeSpan;
     
-    public void InitializeCooldownWrapper(CustomTimeSpan timeSpan)
-    {
+    public void InitializeCooldownWrapper(CustomTimeSpan timeSpan) =>
         _timeSpan = timeSpan;
-    }
-    
+
     public bool IsCooldownActive() =>
-        _remainingCooldown > 0;
+        _remainingCooldown > FinishedCooldown;
 
 
     public void StartCooldown()
@@ -44,6 +43,6 @@ public class CooldownWrapper : MonoBehaviour
     private void StopCooldown()
     {
         CancelInvoke(nameof(DecreaseCooldownEverySecond));
-        _remainingCooldown = 0;
+        _remainingCooldown = FinishedCooldown;
     }
 }
