@@ -17,8 +17,8 @@ public class AbilitySelectionController : MonoBehaviour
     
     private void Awake()
     {
-        if (!TryGetComponent<InputActionReference>(out _scrollInputActionReference))
-            throw new MissingComponentException("Missing AbilityActionController component on self.");
+        if (_scrollInputActionReference == null)
+            throw new SerializeFieldNotSetException("Field _scrollInputActionReference needs to be set in the editor.");
 
         if (Camera.main == null)
             throw new NoMainCameraException();

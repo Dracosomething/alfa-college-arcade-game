@@ -82,7 +82,7 @@
                     "name": "Sprint",
                     "type": "Button",
                     "id": "641cd816-40e6-41b4-8c3d-04687c349290",
-                    "expectedControlType": "Button",
+                    "expectedControlType": "",
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": false
@@ -91,6 +91,15 @@
                     "name": "ScrollTarget",
                     "type": "Button",
                     "id": "e81f74b7-f1dd-4d00-9eb5-d4c0e3a1a131",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "ActivateAbility",
+                    "type": "Button",
+                    "id": "33d60fad-0ceb-4f7c-bbb9-ec7ee62f8771",
                     "expectedControlType": "",
                     "processors": "",
                     "interactions": "",
@@ -496,12 +505,34 @@
                 },
                 {
                     "name": "",
-                    "id": "36b44163-9660-4065-86c6-5ea143b12c18",
+                    "id": "aaa8cd0b-e9b7-486f-92ce-ba099176c482",
                     "path": "<Gamepad>/rightShoulder",
                     "interactions": "",
                     "processors": "",
                     "groups": "",
                     "action": "ScrollTarget",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "acfa954b-e2f5-45d4-9d26-7ae4a1ee967b",
+                    "path": "<Keyboard>/q",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "ActivateAbility",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "b2093797-95df-45d8-bdad-0cc27d6e1022",
+                    "path": "<Gamepad>/buttonEast",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "ActivateAbility",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }
