@@ -5,17 +5,20 @@ public class PlayerInteractionController : MonoBehaviour
 {
     [SerializeField] private InputActionReference _interactionInputReference;
     [SerializeField] private float _interactionRadius;
-    [SerializeField] private GameObject _interactionObject;
+    [SerializeField] private GameObject _interactionCheckObject;
 
     private void Awake()
     {
         if (_interactionInputReference == null)
-            throw new MissingComponentException("Missing Interaction InputActionReference");
+            throw new SerializeFieldNotSetException("Missing Interaction InputActionReference");
+
+        if (_interactionCheckObject == null)
+            throw new SerializeFieldNotSetException("Missing InteractionCheck GameObject");
     }
 
     private void Update()
     {
-        GameObject interactable = Physics2D.OverlapCircle(_interactionObject.transform.position, _interactionRadius).gameObject;
+        GameObject interactable = Physics2D.OverlapCircle(_interactionCheckObject.transform.position, _interactionRadius).gameObject;
 
 	if (interactable == null)
 	    return;
