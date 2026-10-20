@@ -1,7 +1,0 @@
-- Interface genaamd IAbilityObject
-- IAbilityObject heeft een ability activate method
-- Method voor selectie
-- Method voor highlight
-- Method voor activate van blok
-- Ability selectie controller
-- Ability activatie controller
