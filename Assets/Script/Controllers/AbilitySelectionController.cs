@@ -7,7 +7,6 @@ using UnityEngine.SceneManagement;
 
 public class AbilitySelectionController : MonoBehaviour
 {
-    [SerializeField] private AbilityActivationController _activationController;
     [SerializeField] private InputActionReference _scrollInputActionReference;
     private Camera _mainCamera;
     private Transform _cameraTransform;
@@ -18,8 +17,7 @@ public class AbilitySelectionController : MonoBehaviour
     
     private void Awake()
     {
-        if (!(TryGetComponent<AbilityActivationController>(out _activationController) ||
-              TryGetComponent<InputActionReference>(out _scrollInputActionReference)))
+        if (!TryGetComponent<InputActionReference>(out _scrollInputActionReference))
             throw new MissingComponentException("Missing AbilityActionController component on self.");
 
         if (Camera.main == null)
@@ -38,6 +36,15 @@ public class AbilitySelectionController : MonoBehaviour
     private void Start() =>
         _abilityObjectsInView = GetAbilityObjectsInView().ToList();
 
+    public IAbilityObject? GetSelectedAbilityObject()
+    {
+        if (_selectedAbilityObject.IsUnityNull() ||
+            !_selectedAbilityObject.gameObject.TryGetComponent<IAbilityObject>(out var abilityObjectScript))
+            return null;
+
+        return abilityObjectScript;
+    }
+    
     private void Update()
     {
         if ((Vector2)_cameraTransform.position != _previousCameraPosition)
