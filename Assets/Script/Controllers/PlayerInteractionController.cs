@@ -5,6 +5,7 @@ public class PlayerInteractionController : MonoBehaviour
 {
     [SerializeField] private InputActionReference _interactionInputReference;
     [SerializeField] private float _interactionRadius;
+    [SerializeField] private GameObject _interactionObject;
 
     private void Awake()
     {
@@ -27,5 +28,7 @@ public class PlayerInteractionController : MonoBehaviour
 
     private void InteractWithObject(GameObject interactedObject)
     {
+        IInteractionObject interactedObjectInteraction = interactedObject.GetComponent<IInteractionObject>();
+	interactedObjectInteraction.Interact();
     }
 }
