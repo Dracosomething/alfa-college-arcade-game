@@ -18,20 +18,18 @@ public class PlayerInteractionController : MonoBehaviour
 
     private void Update()
     {
-        GameObject interactable = Physics2D.OverlapCircle(_interactionCheckObject.transform.position, _interactionRadius).gameObject;
+        GameObject interactableObject = Physics2D.OverlapCircle(_interactionCheckObject.transform.position, _interactionRadius).gameObject;
 
-        if (interactable == null)
+        if (interactableObject == null)
             return;
 
-        if (!_interactionInputReference.action.WasPressedThisFrame())
-            return;
-
-        InteractWithObject(interactable);
+        if (_interactionInputReference.action.WasPressedThisFrame())
+            InteractWithObject(interactableObject);
     }
 
     private void InteractWithObject(GameObject interactedObject)
     {
-        IInteractionObject interactedObjectInteraction = interactedObject.GetComponent<IInteractionObject>();
-        interactedObjectInteraction.Interact();
+        if (interactedObject.TryGetComponent<IInteractionObject>(out IInteractionObject interactedObjectInteraction))
+            interactedObjectInteraction.Interact();
     }
 }

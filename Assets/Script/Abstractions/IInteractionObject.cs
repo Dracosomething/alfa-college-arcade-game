@@ -1,3 +1,6 @@
+using UnityEngine;
+using System.Linq;
+
 public interface IInteractionObject
 {
     /// <summary>
