@@ -8,4 +8,6 @@
     public static string TitleScreenSceneName = "TitleScreenScene";
     public static string SingleDecimalNumericStringFormat = "F1";
     public static LevelLookupTable LevelLookupTable = new();
+    public static float ZeroGravity = 0f;
+    public static float DefaultGravity = -9.81f;
 }
