@@ -18,7 +18,7 @@ public class DialogueController : MonoBehaviour
     [SerializeField] private CharacterAnimationCollection _characterAnimations = new();
 
     private Animator _characterAnimator;
-    private OldPlayerController _oldPlayerController;
+    private PlayerMovementController _playerMovementController;
     private Text _dialogueTextTextComponent;
     private Text _characterNameTextComponent; 
     [SerializeField] private float _textWriteSpeedCap = 0.5f;
@@ -29,16 +29,16 @@ public class DialogueController : MonoBehaviour
     
     private void Awake()
     {
-        if (!SceneHelper.TryFindFirstObjectByTypeInScene<OldPlayerController>(out _oldPlayerController))
-            throw new CouldNotFindGameObjectException("Could not find a player controller in the scene.");
+        if (!SceneHelper.TryFindFirstObjectByTypeInScene<PlayerMovementController>(out _playerMovementController))
+            throw new CouldNotFindGameObjectException("Could not find a PlayerMovementController in the scene.");
 
         if (!TryGetComponent<Animator>(out _characterAnimator))
             _characterAnimator = this.AddComponent<Animator>();
 
         if (!((bool)_dialogueTextComponent && (bool)_characterNameComponent &&
             (bool)dialogueDataScriptableObject && _characterAnimations != null))
-            throw new MissingComponentException("Missing one of the following components. " +
-                                                "_dialogueTextComponent, _choicesComponent, _dialogueData");
+            throw new SerializeFieldNotSetException("One of the following fields has not been set. " +
+                                                    "_dialogueTextComponent, _choicesComponent, _dialogueData");
 
         if (!_dialogueTextComponent.TryGetComponent<Text>(out _dialogueTextTextComponent))
             throw new MissingComponentException("_dialogueTextComponent is missing a Text component.");
@@ -65,7 +65,7 @@ public class DialogueController : MonoBehaviour
         
         _characterNameTextComponent.text = dialogueDataScriptableObject.CharacterName;
         
-        _oldPlayerController.SetInputEnabled(false);
+        _playerMovementController.EnablePlayerMovementController(false);
         
         EnableCharacterTalkingAnimation();
 
@@ -79,7 +79,7 @@ public class DialogueController : MonoBehaviour
        _characterNameTextComponent.text = "";
        _dialogueTextTextComponent.text = "";
        
-       _oldPlayerController.SetInputEnabled(true);
+       _playerMovementController.EnablePlayerMovementController(true);
        
        DisableCharacterTalkingAnimation();
 
