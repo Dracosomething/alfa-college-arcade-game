@@ -88,9 +88,7 @@ public class PlayerMovementController : MonoBehaviour
     #region Update Methods
     private void Update()
     {
-        // avoiding endless errors in case the input action references are not assigned in the inspector.
-        if (!_movementInputActionReference.IsUnityNull())
-            _movementInputs = _movementInputActionReference.action.ReadValue<Vector2>();
+        _movementInputs = _movementInputActionReference.action.ReadValue<Vector2>();
 
         JumpUpdate();
 
@@ -131,16 +129,16 @@ public class PlayerMovementController : MonoBehaviour
         return velocity;
     }
 
-    private Vector2 GetVelocityUpOrDown(Vector2 vlocity, Quaternion slopeRotation)
+    private Vector2 GetVelocityUpOrDown(Vector2 velocity, Quaternion slopeRotation)
     {
-        Vector2 velocityDownwards = slopeRotation * vlocity;
-        Vector2 velocityUpwards = slopeRotation * new Vector2(vlocity.x, -vlocity.y);
+        Vector2 velocityDownwards = slopeRotation * velocity;
+        Vector2 velocityUpwards = slopeRotation * new Vector2(velocity.x, -velocity.y);
 
         if (velocityDownwards.y < ZeroUpVelocity)
             return velocityDownwards;
         else if (velocityUpwards.y > ZeroUpVelocity)
             return velocityUpwards;
-        return vlocity;
+        return velocity;
     }
     #endregion
 
@@ -173,13 +171,11 @@ public class PlayerMovementController : MonoBehaviour
 
         _timeSinceLastDash += Time.deltaTime;
         // checking if the input was pressed and if the player can dash and the cooldown is over, then check if then player can actually dash by checking if its grounded and movements aren't null.
-        if (_dashInputActionReference.action.WasPressedThisFrame() && _timeSinceLastDash >= _dashCooldown)
-        { 
-            if (!_isGrounded && _canDash && (_movementInputs.x < MovementInputThreshold || _movementInputs.x > -MovementInputThreshold))
-            {
-                _isDashButtonPressed = true;
-                _timeSinceLastDash = LastDashResetValue;
-            }
+        if (_dashInputActionReference.action.WasPressedThisFrame() && _timeSinceLastDash >= _dashCooldown &&
+            !_isGrounded && _canDash && (_movementInputs.x < MovementInputThreshold || _movementInputs.x > -MovementInputThreshold))
+        {
+            _isDashButtonPressed = true;
+            _timeSinceLastDash = LastDashResetValue;
         }
 
         if (_dashInputActionReference.action.WasReleasedThisFrame())
@@ -254,12 +250,11 @@ public class PlayerMovementController : MonoBehaviour
             _groundCheckDelayTimer = GroundCheckDelayTimerStartValue;
         }
     }
-
     #endregion
 
     #region collision checks with walls while dashing
     // Avoiding dashing into walls by stopping the dash.
-    private void OnCollisionEnter2D(Collision2D collision   )
+    private void OnCollisionEnter2D(Collision2D collision)
     {
         // We first shift 1 by the colliding objects layer. Then we check if _walkableGroundLayerMask is equal to that by doing a bitwise OR.
         if (_walkableGroundLayerMask == (_walkableGroundLayerMask | (1 << collision.gameObject.layer)))
