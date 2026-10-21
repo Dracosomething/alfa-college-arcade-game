@@ -15,7 +15,7 @@ public interface ICustomUnityScript
                                                  BindingFlags.NonPublic |
                                                  BindingFlags.Instance);
         
-        FieldInfo[] missingComponents = fields
+        string[] missingComponentNames = fields
             .Where(field => field.HasAttribute<ComponentAttribute>())
             .Where(field =>
             {
@@ -27,9 +27,10 @@ public interface ICustomUnityScript
                 
                 return !doesComponentExist;
             })
+            .Select(field => field.FieldType.Name)
             .ToArray();
 
-        if (!missingComponents.Any())
+        if (!missingComponentNames.Any())
             return; // There are no uninitialized components
         
         var exceptionMessageBuilder = new StringBuilder();
@@ -37,8 +38,8 @@ public interface ICustomUnityScript
         exceptionMessageBuilder.Append(classType.Name);
         exceptionMessageBuilder.Append(" is missing the following components: ");
     
-        foreach (FieldInfo missingComponent in missingComponents)
-            exceptionMessageBuilder.Append(missingComponent.Name).Append(", ");
+        foreach (string missingComponentName in missingComponentNames)
+            exceptionMessageBuilder.Append(missingComponentName).Append(", ");
 
         throw new MissingComponentException(exceptionMessageBuilder.ToString());
     }
