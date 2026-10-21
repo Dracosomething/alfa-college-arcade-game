@@ -62,7 +62,7 @@ public class PlayerMovementController : MonoBehaviour
 
         if (!TryGetComponent<Rigidbody2D>(out _playerRigidbody2D))
             throw new MissingComponentException("Rigidbody2D component is missing from the GameObject. Please add a Rigidbody2D component.");
-        // Store the original gravity scale of the player to advoid sliding off of slopes.
+        // Store the original gravity scale of the player to avoid sliding off of slopes.
         _originalGravityScale = _playerRigidbody2D.gravityScale;
     }
     #endregion
@@ -169,7 +169,7 @@ public class PlayerMovementController : MonoBehaviour
     private void DashUpdate()
     {
         const float MovementInputThreshold = 0.5f;
-        const int LastDashResetNumber = 0;
+        const int LastDashResetValue = 0;
 
         _timeSinceLastDash += Time.deltaTime;
         // checking if the input was pressed and if the player can dash and the cooldown is over, then check if then player can actually dash by checking if its grounded and movements aren't null.
@@ -178,7 +178,7 @@ public class PlayerMovementController : MonoBehaviour
             if (!_isGrounded && _canDash && (_movementInputs.x < MovementInputThreshold || _movementInputs.x > -MovementInputThreshold))
             {
                 _isDashButtonPressed = true;
-                _timeSinceLastDash = LastDashResetNumber;
+                _timeSinceLastDash = LastDashResetValue;
             }
         }
 
