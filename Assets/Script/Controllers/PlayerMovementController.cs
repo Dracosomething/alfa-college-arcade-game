@@ -92,10 +92,10 @@ public class PlayerMovementController : MonoBehaviour
 
         DashUpdate();
 
-        if (_movementInputs == Vector2.zero && _isGrounded && !_isGroundCheckDelayActive)
+        if (_movementInputs.Equals(Vector2.zero) && _isGrounded && !_isGroundCheckDelayActive)
             _playerRigidbody2D.linearVelocity = Vector2.zero;
 
-        if ((_slopeAngle != FlatSlopeAngle && _isGrounded) || _isDashButtonPressed)
+        if (!(_slopeAngle.Equals(FlatSlopeAngle) && _isGrounded) || _isDashButtonPressed)
             _playerRigidbody2D.gravityScale = Constants.ZeroGravity;
         else
             _playerRigidbody2D.gravityScale = _originalGravityScale;
@@ -261,7 +261,7 @@ public class PlayerMovementController : MonoBehaviour
     private void OnCollisionEnter2D(Collision2D collision)
     {
         // We first shift 1 by the colliding objects layer. Then we check if _walkableGroundLayerMask is equal to that by doing a bitwise OR.
-        if (_walkableGroundLayerMask == (_walkableGroundLayerMask | (1 << collision.gameObject.layer)))
+        if (_walkableGroundLayerMask.Equals(_walkableGroundLayerMask | (1 << collision.gameObject.layer)))
         {
             _isDashButtonPressed = false;
             _canDash = false;
@@ -278,13 +278,13 @@ public class PlayerMovementController : MonoBehaviour
             _movementInputActionReference.action.Enable();
             _jumpInputActionReference.action.Enable();
             _dashInputActionReference.action.Enable();
+
+            return;
         }
-        else
-        {
-            _movementInputActionReference.action.Disable();
-            _jumpInputActionReference.action.Disable();
-            _dashInputActionReference.action.Disable();
-        }
+
+        _movementInputActionReference.action.Disable();
+        _jumpInputActionReference.action.Disable();
+        _dashInputActionReference.action.Disable();
     }
     #endregion
 }
