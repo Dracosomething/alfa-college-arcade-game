@@ -11,6 +11,9 @@ public class PlayerMovementController : MonoBehaviour
     private const float DashDurationDividerInHalf = 0.5f;
     private const float FlatSlopeAngle = 0f; // The maximum slope angle the player can walk on.
     private const int ZeroUpVelocity = 0;
+    private const float _groundCheckRadius = 0.15f;
+    private const float _groundCheckDelayLength = 0.1f; // In seconds
+    private const float _dashDuration = 0.3f; // In seconds
 
     [Header("Input Action References")]
     [SerializeField] private InputActionReference _movementInputActionReference;
@@ -28,23 +31,18 @@ public class PlayerMovementController : MonoBehaviour
     [SerializeField] private float _dashForce = 5f;
     [SerializeField] private float _dashCooldown = 1f; // In seconds
 
-    private float _groundCheckRadius = 0.15f;
-    private float _groundCheckDelayLength = 0.1f; // In seconds
     private float _groundCheckDelayTimer = 0f; // In seconds
     private bool _isGroundCheckDelayActive = false;
     private bool _isGrounded = true;
 
-    private float _coyoteTime = 0.1f; // In seconds
+    private const float _coyoteTime = 0.1f; // In seconds
     private float _coyoteTimeTimer = 0f; // In seconds
     private bool _isGroundedWithCoyoteTime = false;
 
     private bool _canDash = false;
     private bool _isDashButtonPressed = false;
-    private float _dashDuration = 0.3f; // In seconds
     private float _dashTimer = 0f; // In seconds
     private float _timeSinceLastDash = 0f; // In seconds
-
-    private float _gravityValue = -9.81f;
     private float _originalGravityScale;
 
     [SerializeField] private LayerMask _walkableGroundLayerMask;
@@ -126,6 +124,7 @@ public class PlayerMovementController : MonoBehaviour
             Quaternion slopeRotation = Quaternion.FromToRotation(Vector2.up, hitInfo.normal);
             velocity = GetVelocityUpOrDown(velocity, slopeRotation);
         }
+
         return velocity;
     }
 
@@ -136,8 +135,10 @@ public class PlayerMovementController : MonoBehaviour
 
         if (velocityDownwards.y < ZeroUpVelocity)
             return velocityDownwards;
+
         else if (velocityUpwards.y > ZeroUpVelocity)
             return velocityUpwards;
+
         return velocity;
     }
     #endregion
@@ -158,7 +159,7 @@ public class PlayerMovementController : MonoBehaviour
     {
         const float JumpVelocityGravityFactor = -2f;
         // JumpVelocityGravityFactor determines the relationship between jump height and gravity. It maked the calculation of the jump velocity based on the desired jump height and gravity value.
-        _playerRigidbody2D.linearVelocityY = Mathf.Sqrt(_jumpHeight * JumpVelocityGravityFactor * _gravityValue);
+        _playerRigidbody2D.linearVelocityY = Mathf.Sqrt(_jumpHeight * JumpVelocityGravityFactor * Constants.DefaultGravity);
         _isGroundCheckDelayActive = true;
     }
     #endregion
@@ -197,6 +198,7 @@ public class PlayerMovementController : MonoBehaviour
     private void Dash()
     {
         _dashTimer += Time.deltaTime;
+
         if (_dashTimer > _dashDuration)
         {
             _isDashButtonPressed = false;
@@ -229,8 +231,10 @@ public class PlayerMovementController : MonoBehaviour
 
             if (_coyoteTimeTimer > _coyoteTime)
                 _isGroundedWithCoyoteTime = false;
+
             return;
         }
+
         _canDash = true;
         _coyoteTimeTimer = CoyoteTimeTimerStartValue;
         _isGroundedWithCoyoteTime = true;
