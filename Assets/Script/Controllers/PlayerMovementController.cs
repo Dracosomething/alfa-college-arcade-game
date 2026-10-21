@@ -19,43 +19,39 @@ public class PlayerMovementController : MonoBehaviour
 
     [Header("Movement Settings")]
     [SerializeField] private float _movementSpeed = 5f;
-    private Vector2 _movementInputs; // Store the movement input values to be used in FixedUpdate
-    private float _slopeAngle;
-    public bool MoveEnabled = true;
 
     [Header("Jump Settings")]
     [SerializeField] private float _jumpHeight = 10f;
     [SerializeField] private GameObject _groundCheckObject;
-    private float _groundCheckRadius = 0.15f;
-    private float _groundCheckDelayLenght = 0.1f; // In seconds
-    private float _groundCheckDelayTimer = 0f; // In seconds
-    private bool _isGoundCheckDelayActive = false;
-    private bool _isGrounded = true;
-    public bool JumpEnabled = true;
-
-    // Coyote time settings
-    private float _coyoteTime = 0.1f; // In seconds
-    private float _coyoteTimeTimer = 0f; // In seconds
-    private bool _isGroundedWithCoyoteTime = false;
 
     [Header("Dash Settings")]
     [SerializeField] private float _dashForce = 5f;
     [SerializeField] private float _dashCooldown = 1f; // In seconds
+
+    private float _groundCheckRadius = 0.15f;
+    private float _groundCheckDelayLength = 0.1f; // In seconds
+    private float _groundCheckDelayTimer = 0f; // In seconds
+    private bool _isGroundCheckDelayActive = false;
+    private bool _isGrounded = true;
+
+    private float _coyoteTime = 0.1f; // In seconds
+    private float _coyoteTimeTimer = 0f; // In seconds
+    private bool _isGroundedWithCoyoteTime = false;
 
     private bool _canDash = false;
     private bool _isDashButtonPressed = false;
     private float _dashDuration = 0.3f; // In seconds
     private float _dashTimer = 0f; // In seconds
     private float _timeSinceLastDash = 0f; // In seconds
-    public bool DashEnabled = true;
 
-    // Gravity Settings
     private float _gravityValue = -9.81f;
     private float _originalGravityScale;
 
-    // Miscellaneous Settings
     [SerializeField] private LayerMask _walkableGroundLayerMask;
     private Rigidbody2D _playerRigidbody2D;
+
+    private Vector2 _movementInputs; // Store the movement input values to be used in FixedUpdate
+    private float _slopeAngle;
     #endregion
 
     #region Initialization
@@ -100,7 +96,7 @@ public class PlayerMovementController : MonoBehaviour
 
         DashUpdate();
 
-        if (_movementInputs == Vector2.zero && _isGrounded && !_isGoundCheckDelayActive)
+        if (_movementInputs == Vector2.zero && _isGrounded && !_isGroundCheckDelayActive)
             _playerRigidbody2D.linearVelocity = Vector2.zero;
 
         if ((_slopeAngle != FlatSlopeAngle && _isGrounded) || _isDashButtonPressed)
@@ -153,7 +149,7 @@ public class PlayerMovementController : MonoBehaviour
     {
         CheckForValidGround();
 
-        if (_jumpInputActionReference.action.ReadValue<float>() > NoInputs && _isGroundedWithCoyoteTime && JumpEnabled)
+        if (_jumpInputActionReference.action.ReadValue<float>() > NoInputs && _isGroundedWithCoyoteTime)
             Jump();
 
         GroundCheckDelay();
@@ -165,28 +161,28 @@ public class PlayerMovementController : MonoBehaviour
         const float JumpVelocityGravityFactor = -2f;
         // JumpVelocityGravityFactor determines the relationship between jump height and gravity. It maked the calculation of the jump velocity based on the desired jump height and gravity value.
         _playerRigidbody2D.linearVelocityY = Mathf.Sqrt(_jumpHeight * JumpVelocityGravityFactor * _gravityValue);
-        _isGoundCheckDelayActive = true;
+        _isGroundCheckDelayActive = true;
     }
     #endregion
 
     #region Dash Implementation
     private void DashUpdate()
     {
-        const float movementInputThreshold = 0.5f;
-        const int lastDashResetNumber = 0;
+        const float MovementInputThreshold = 0.5f;
+        const int LastDashResetNumber = 0;
 
         _timeSinceLastDash += Time.deltaTime;
         // checking if the input was pressed and if the player can dash and the cooldown is over, then check if then player can actually dash by checking if its grounded and movements aren't null.
-        if (_dashInputActionReference.action.WasPressedThisFrame() && DashEnabled && _timeSinceLastDash >= _dashCooldown)
+        if (_dashInputActionReference.action.WasPressedThisFrame() && _timeSinceLastDash >= _dashCooldown)
         { 
-            if (!_isGrounded && _canDash && (_movementInputs.x < movementInputThreshold || _movementInputs.x > -movementInputThreshold))
+            if (!_isGrounded && _canDash && (_movementInputs.x < MovementInputThreshold || _movementInputs.x > -MovementInputThreshold))
             {
                 _isDashButtonPressed = true;
-                _timeSinceLastDash = lastDashResetNumber;
+                _timeSinceLastDash = LastDashResetNumber;
             }
         }
 
-        if (_dashInputActionReference.action.WasReleasedThisFrame() && DashEnabled)
+        if (_dashInputActionReference.action.WasReleasedThisFrame())
         {
             if (_dashTimer > (_dashDuration * DashDurationDividerInHalf))
             {
@@ -224,7 +220,7 @@ public class PlayerMovementController : MonoBehaviour
     #region Ground check delay and coyote time
     private void CheckForValidGround()
     {
-        const int coyoteTimeTimerStartValue = 0;
+        const int CoyoteTimeTimerStartValue = 0;
         _isGrounded = false;
 
         if (Physics2D.OverlapCircle(_groundCheckObject.transform.position, _groundCheckRadius, _walkableGroundLayerMask))
@@ -240,22 +236,22 @@ public class PlayerMovementController : MonoBehaviour
             return;
         }
         _canDash = true;
-        _coyoteTimeTimer = coyoteTimeTimerStartValue;
+        _coyoteTimeTimer = CoyoteTimeTimerStartValue;
         _isGroundedWithCoyoteTime = true;
     }
 
     // Adds a delay to check for the ground to perform a successful jump.
     private void GroundCheckDelay()
     {
-        const int goundCheckDelayTimerStartValue = 0;
+        const int GroundCheckDelayTimerStartValue = 0;
 
-        if (_isGoundCheckDelayActive)
+        if (_isGroundCheckDelayActive)
             _groundCheckDelayTimer += Time.deltaTime;
 
-        if (_groundCheckDelayTimer >= _groundCheckDelayLenght)
+        if (_groundCheckDelayTimer >= _groundCheckDelayLength)
         {
-            _isGoundCheckDelayActive = false;
-            _groundCheckDelayTimer = goundCheckDelayTimerStartValue;
+            _isGroundCheckDelayActive = false;
+            _groundCheckDelayTimer = GroundCheckDelayTimerStartValue;
         }
     }
 
@@ -271,6 +267,24 @@ public class PlayerMovementController : MonoBehaviour
             _isDashButtonPressed = false;
             _canDash = false;
             _dashTimer = DashStartTimerValue;
+        }
+    }
+    #endregion
+
+    #region enable, disable
+    public void EnablePlayerMovementController(bool enabled)
+    {
+        if (enabled)
+        { 
+            _movementInputActionReference.action.Enable();
+            _jumpInputActionReference.action.Enable();
+            _dashInputActionReference.action.Enable();
+        }
+        else
+        {
+            _movementInputActionReference.action.Disable();
+            _jumpInputActionReference.action.Disable();
+            _dashInputActionReference.action.Disable();
         }
     }
     #endregion
