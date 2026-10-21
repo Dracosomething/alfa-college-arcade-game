@@ -17,10 +17,10 @@ public class AbilitySelectionController : MonoBehaviour
     
     private void Awake()
     {
-        if (_scrollInputActionReference == null)
+        if (_scrollInputActionReference.IsUnityNull())
             throw new SerializeFieldNotSetException("Field _scrollInputActionReference needs to be set in the editor.");
 
-        if (Camera.main == null)
+        if (Camera.main.IsUnityNull())
             throw new NoMainCameraException();
 
         _mainCamera = Camera.main;
@@ -47,12 +47,12 @@ public class AbilitySelectionController : MonoBehaviour
     
     private void Update()
     {
-        if ((Vector2)_cameraTransform.position != _previousCameraPosition)
+        if (!((Vector2)_cameraTransform.position).Equals(_previousCameraPosition))
             OnCameraChangePosition();
         
         if (_scrollInputActionReference.action.WasPressedThisFrame())
         {
-            UnHighlighSelected();
+            UnHighlightSelected();
             
             ScrollThroughAbilityObjects();
             
@@ -73,7 +73,7 @@ public class AbilitySelectionController : MonoBehaviour
     {
         if (!_selectedAbilityObject.IsUnityNull() && !IsRendererVisible(_selectedAbilityObject))
         {
-            UnHighlighSelected();
+            UnHighlightSelected();
             _selectedAbilityObject = null;
         }
     }
@@ -82,7 +82,7 @@ public class AbilitySelectionController : MonoBehaviour
     {
         if (_selectedAbilityObject.IsUnityNull())
             _selectedAbilityObject = _abilityObjectsInView.First();
-        else if (_selectedAbilityObject == _abilityObjectsInView.Last())
+        else if (_selectedAbilityObject.Equals(_abilityObjectsInView.Last()))
             _selectedAbilityObject = null;
         else
         {
@@ -92,7 +92,7 @@ public class AbilitySelectionController : MonoBehaviour
         }
     }
 
-    private void UnHighlighSelected()
+    private void UnHighlightSelected()
     {
         if (_selectedAbilityObject.IsUnityNull())
             return;
@@ -114,7 +114,7 @@ public class AbilitySelectionController : MonoBehaviour
     
     private IEnumerable<SpriteRenderer> GetAbilityObjectsInScene(Scene currentScene) =>
         Resources.FindObjectsOfTypeAll<GameObject>() // We get all GameObjects currently loaded
-            .Where(gameObject => gameObject.scene == currentScene) // We filter out all GameObjects not in the current scene
+            .Where(gameObject => gameObject.scene.Equals(currentScene)) // We filter out all GameObjects not in the current scene
             .Where(gameObject => gameObject.TryGetComponent<SpriteRenderer>(out var _)) // We filter out all GameObjects with no SpriteRenderer
             .Where(IAbilityObject.IsAbilityObject) // We filter out all GameObjects that are not an AbilityObject
             .Select(gameObject => gameObject.GetComponent<SpriteRenderer>()); // We select the SpriteRenderer

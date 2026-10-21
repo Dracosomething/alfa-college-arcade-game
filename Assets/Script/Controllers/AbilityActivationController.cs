@@ -11,7 +11,7 @@ public class AbilityActivationController : MonoBehaviour
     
     private void Awake()
     {
-        if (_interactionInputActionReference == null)
+        if (_interactionInputActionReference.IsUnityNull())
             throw new SerializeFieldNotSetException("_interactionInputActionReference has not been set in de editor.");
         
         if (!(TryGetComponent<AbilitySelectionController>(out _selectionController) &&
