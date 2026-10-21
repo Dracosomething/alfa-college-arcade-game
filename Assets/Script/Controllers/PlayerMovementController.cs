@@ -11,9 +11,9 @@ public class PlayerMovementController : MonoBehaviour
     private const float DashDurationDividerInHalf = 0.5f;
     private const float FlatSlopeAngle = 0f; // The maximum slope angle the player can walk on.
     private const int ZeroUpVelocity = 0;
-    private const float _groundCheckRadius = 0.15f;
-    private const float _groundCheckDelayLength = 0.1f; // In seconds
-    private const float _dashDuration = 0.3f; // In seconds
+    private const float GroundCheckRadius = 0.15f;
+    private const float GroundCheckDelayLength = 0.1f; // In seconds
+    private const float DashDuration = 0.3f; // In seconds
 
     [Header("Input Action References")]
     [SerializeField] private InputActionReference _movementInputActionReference;
@@ -136,7 +136,7 @@ public class PlayerMovementController : MonoBehaviour
         if (velocityDownwards.y < ZeroUpVelocity)
             return velocityDownwards;
 
-        else if (velocityUpwards.y > ZeroUpVelocity)
+        if (velocityUpwards.y > ZeroUpVelocity)
             return velocityUpwards;
 
         return velocity;
@@ -181,14 +181,14 @@ public class PlayerMovementController : MonoBehaviour
 
         if (_dashInputActionReference.action.WasReleasedThisFrame())
         {
-            if (_dashTimer > (_dashDuration * DashDurationDividerInHalf))
+            if (_dashTimer > (DashDuration * DashDurationDividerInHalf))
             {
                 _isDashButtonPressed = false;
                 _canDash = false;
                 _dashTimer = DashStartTimerValue;
             }
             else
-                _dashTimer += _dashDuration * DashDurationDividerInHalf;
+                _dashTimer += DashDuration * DashDurationDividerInHalf;
         }
 
         if (_isDashButtonPressed)
@@ -199,7 +199,7 @@ public class PlayerMovementController : MonoBehaviour
     {
         _dashTimer += Time.deltaTime;
 
-        if (_dashTimer > _dashDuration)
+        if (_dashTimer > DashDuration)
         {
             _isDashButtonPressed = false;
             _canDash = false;
@@ -221,7 +221,7 @@ public class PlayerMovementController : MonoBehaviour
         const int CoyoteTimeTimerStartValue = 0;
         _isGrounded = false;
 
-        if (Physics2D.OverlapCircle(_groundCheckObject.transform.position, _groundCheckRadius, _walkableGroundLayerMask))
+        if (Physics2D.OverlapCircle(_groundCheckObject.transform.position, GroundCheckRadius, _walkableGroundLayerMask))
             _isGrounded = true;
 
         // set a coyote time to allow the player to jump a bit after leaving the ground.
@@ -248,7 +248,7 @@ public class PlayerMovementController : MonoBehaviour
         if (_isGroundCheckDelayActive)
             _groundCheckDelayTimer += Time.deltaTime;
 
-        if (_groundCheckDelayTimer >= _groundCheckDelayLength)
+        if (_groundCheckDelayTimer >= GroundCheckDelayLength)
         {
             _isGroundCheckDelayActive = false;
             _groundCheckDelayTimer = GroundCheckDelayTimerStartValue;
