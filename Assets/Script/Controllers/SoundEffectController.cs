@@ -1,13 +1,16 @@
 using Unity.VisualScripting;
 using UnityEngine;
 
-[RequireComponent(typeof(PlayingSoundEffectCache))]
-public class SoundEffectController : MonoBehaviour
+//[RequireComponent(typeof(PlayingSoundEffectCache))]
+public class SoundEffectController : MonoBehaviour, ICustomUnityScript
 {
-    private PlayingSoundEffectCache _soundEffectCache;
+    [Component] private PlayingSoundEffectCache _soundEffectCache;
 
-    private void Awake() =>
-        _soundEffectCache = GetComponent<PlayingSoundEffectCache>();
+    private void Awake()
+    {
+        if (!TryGetComponent<PlayingSoundEffectCache>(out _soundEffectCache))
+            ((ICustomUnityScript)this).ValidateComponents(this);
+    }
 
     public void PlaySound(string soundEffectName, in GameObject soundEffectOwner)
     {
