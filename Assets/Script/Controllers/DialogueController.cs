@@ -18,7 +18,7 @@ public class DialogueController : MonoBehaviour
     [SerializeField] private CharacterAnimationCollection _characterAnimations = new();
 
     private Animator _characterAnimator;
-    private OldPlayerController _oldPlayerController;
+    private PlayerMovementController _playerMovementController;
     private Text _dialogueTextTextComponent;
     private Text _characterNameTextComponent; 
     [SerializeField] private float _textWriteSpeedCap = 0.5f;
@@ -29,7 +29,7 @@ public class DialogueController : MonoBehaviour
     
     private void Awake()
     {
-        if (!SceneHelper.TryFindFirstObjectByTypeInScene<OldPlayerController>(out _oldPlayerController))
+        if (!SceneHelper.TryFindFirstObjectByTypeInScene<PlayerMovementController>(out _playerMovementController))
             throw new CouldNotFindGameObjectException("Could not find a player controller in the scene.");
 
         if (!TryGetComponent<Animator>(out _characterAnimator))
@@ -65,7 +65,7 @@ public class DialogueController : MonoBehaviour
         
         _characterNameTextComponent.text = dialogueDataScriptableObject.CharacterName;
         
-        _oldPlayerController.SetInputEnabled(false);
+        _playerMovementController.SetInputEnabled(false);
         
         EnableCharacterTalkingAnimation();
 
@@ -79,7 +79,7 @@ public class DialogueController : MonoBehaviour
        _characterNameTextComponent.text = "";
        _dialogueTextTextComponent.text = "";
        
-       _oldPlayerController.SetInputEnabled(true);
+       _playerMovementController.SetInputEnabled(true);
        
        DisableCharacterTalkingAnimation();
 
