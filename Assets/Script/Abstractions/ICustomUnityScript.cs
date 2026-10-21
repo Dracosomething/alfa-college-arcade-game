@@ -7,27 +7,29 @@ using UnityEngine;
 
 public interface ICustomUnityScript
 {
-    public void ValidateComponents(object self)
+    public void InitializeComponents(MonoBehaviour self)
     {
         Type classType = GetType();
 
         FieldInfo[] fields = classType.GetFields(BindingFlags.Public |
                                                  BindingFlags.NonPublic |
                                                  BindingFlags.Instance);
-
+        
         FieldInfo[] missingComponents = fields
             .Where(field => field.HasAttribute<ComponentAttribute>())
             .Where(field =>
             {
-                var fieldValue = field.GetValue(self); // We get the current value of the field
                 var fieldType = field.FieldType; // We get the datatype of the field
-                var defaultValue = fieldType.Default(); // We get the default value of the data type of the field
+
+                bool doesComponentExist = self.TryGetComponent(fieldType, out Component component);
                 
-                return fieldValue.IsUnityNull() && !fieldValue.Equals(defaultValue);
+                field.SetValue(self, component);
+                
+                return !doesComponentExist;
             })
             .ToArray();
 
-        if (missingComponents.Any())
+        if (!missingComponents.Any())
             return; // There are no uninitialized components
         
         var exceptionMessageBuilder = new StringBuilder();

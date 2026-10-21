@@ -9,7 +9,7 @@ public class SoundEffectController : MonoBehaviour, ICustomUnityScript
     private void Awake()
     {
         if (!TryGetComponent<PlayingSoundEffectCache>(out _soundEffectCache))
-            ((ICustomUnityScript)this).ValidateComponents(this);
+            ((ICustomUnityScript)this).InitializeComponents(this);
     }
 
     public void PlaySound(string soundEffectName, in GameObject soundEffectOwner)
