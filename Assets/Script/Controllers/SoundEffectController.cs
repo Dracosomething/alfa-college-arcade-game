@@ -2,7 +2,7 @@ using Unity.VisualScripting;
 using UnityEngine;
 
 [RequireComponent(typeof(PlayingSoundEffectCache))]
-public class SoundEffectController : MonoBehaviour
+public class SoundEffectController : MonoBehaviour, ICustomUnityScript
 {
     private PlayingSoundEffectCache _soundEffectCache;
     private System.Random _random;
