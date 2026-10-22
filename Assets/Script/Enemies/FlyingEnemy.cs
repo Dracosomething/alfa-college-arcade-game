@@ -1,6 +1,4 @@
-using System.Collections;
 using System.Linq;
-using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.AI;
 
@@ -8,25 +6,20 @@ public class FlyingEnemy : Enemy
 {
     [SerializeField] private float _wanderRadius = 1f;
     [SerializeField] private float _sightDistance = 1f;
-    [SerializeField] private CustomTimeSpan _newWanderPositionCooldownDuration = new(seconds: 1);
-    private CooldownWrapper _newWanderPositionCooldown;
-    private NavMeshAgent _agent;
+    [Component] private CooldownWrapper _newWanderPositionCooldown;
+    [Component] private NavMeshAgent _agent;
     private Vector2 _spawnPosition;
 
     protected override void Awake()
     {
         base.Awake();
         
-        if (!TryGetComponent<NavMeshAgent>(out _agent))
-            throw new MissingComponentException("FlyingEnemy is missing a NavMeshAgent component.");
+        ((ICustomUnityScript)this).InitializeComponents(this);
         
         _agent.updateRotation = false;
         _agent.updateUpAxis = false;
 
         _spawnPosition = (Vector2)transform.position;
-
-        _newWanderPositionCooldown = this.AddComponent<CooldownWrapper>();
-        _newWanderPositionCooldown.InitializeCooldownWrapper(_newWanderPositionCooldownDuration);
     }
 
     protected override void Move()

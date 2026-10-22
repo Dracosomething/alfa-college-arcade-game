@@ -65,7 +65,7 @@ public class DialogueController : MonoBehaviour
         
         _characterNameTextComponent.text = dialogueDataScriptableObject.CharacterName;
         
-        _playerMovementController.EnablePlayerMovementController(false);
+        _playerMovementController.DisablePlayerMovementController();
         
         EnableCharacterTalkingAnimation();
 
@@ -79,7 +79,7 @@ public class DialogueController : MonoBehaviour
        _characterNameTextComponent.text = "";
        _dialogueTextTextComponent.text = "";
        
-       _playerMovementController.EnablePlayerMovementController(true);
+       _playerMovementController.EnablePlayerMovementController();
        
        DisableCharacterTalkingAnimation();
 

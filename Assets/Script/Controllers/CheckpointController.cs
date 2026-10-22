@@ -1,16 +1,13 @@
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-public class CheckpointController : MonoBehaviour
+public class CheckpointController : MonoBehaviour, ICustomUnityScript
 {
     private Transform _currentCheckpoint;
-    private Rigidbody2D _playerRigidbody;
+    [Component] private Rigidbody2D _playerRigidbody;
 
-    private void Awake()
-    {
-        if (!TryGetComponent<Rigidbody2D>(out _playerRigidbody))
-            throw new MissingComponentException("No Rigidbody2D found on player.");
-    }
+    private void Awake() =>
+        ((ICustomUnityScript)this).InitializeComponents(this);
 
     public void SetCheckpoint(Transform position) =>
         _currentCheckpoint = position;

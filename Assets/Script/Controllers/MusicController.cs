@@ -8,7 +8,8 @@ public class MusicController : MonoBehaviour
 
     private void Awake()
     {
-        _audioSource = this.AddComponent<AudioSource>();
+        if (!TryGetComponent<AudioSource>(out _audioSource))
+            _audioSource = this.AddComponent<AudioSource>();
 
         _audioSource.spatialBlend = Constants._2DSound;
         _audioSource.clip = _musicData;

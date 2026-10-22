@@ -1,30 +1,21 @@
 using Unity.VisualScripting;
 using UnityEngine;
 
-public abstract class Enemy : MonoBehaviour
+public abstract class Enemy : MonoBehaviour, ICustomUnityScript
 {
-    [Header("Attack")]
-    [SerializeField] private CustomTimeSpan _attackCooldownDuration = new(minutes: 0, seconds: 0);
-    [SerializeField] protected int Damage = 1;
-
-    private long _remainingCooldownTimeInSeconds;
+    [Component] private SpriteRenderer _spriteRenderer;
+    [Component] private CooldownWrapper _attackCooldownWrapper;
     private Vector2 _previousPosition;
-    private SpriteRenderer _spriteRenderer;
-    private CooldownWrapper _attackCooldownWrapper;
-    protected Rigidbody2D RigidBody;
+    private long _remainingCooldownTimeInSeconds;
+    [Component] protected Rigidbody2D RigidBody;
     [SerializeField] protected int Health = 1;
     [SerializeField] protected float Speed = 1;
 
     protected virtual void Awake()
     {
-        if (!(TryGetComponent<Rigidbody2D>(out RigidBody) &&
-              TryGetComponent<SpriteRenderer>(out _spriteRenderer)))
-            throw new MissingComponentException("GameObject Enemy is missing one of the following components:" +
-                                                "RigidBody2D, SpriteRenderer");
+        ((ICustomUnityScript)this).InitializeComponents(this);
         
         _previousPosition = RigidBody.position;
-        _attackCooldownWrapper = this.AddComponent<CooldownWrapper>();
-        _attackCooldownWrapper.InitializeCooldownWrapper(_attackCooldownDuration);
     }
 
     protected virtual void Update()
@@ -65,7 +56,6 @@ public abstract class Enemy : MonoBehaviour
 
     private void DealDamageToPlayer(GameObject player)
     {
-        // Insert damage logic here when merged
         if (!player.TryGetComponent<PlayerLifeController>(out var lifeController))
             throw new MissingComponentException("Player is missing a LifeController component!");
             

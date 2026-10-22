@@ -4,13 +4,12 @@ using UnityEngine;
 [RequireComponent(typeof(PlayingSoundEffectCache))]
 public class SoundEffectController : MonoBehaviour, ICustomUnityScript
 {
-    private PlayingSoundEffectCache _soundEffectCache;
+    [Component] private PlayingSoundEffectCache _soundEffectCache;
     private System.Random _random;
     
     private void Awake()
     {
-        if (!TryGetComponent<PlayingSoundEffectCache>(out _soundEffectCache))
-            throw new MissingComponentException("Missing a PlayingSoundEffectCache component.");
+        ((ICustomUnityScript)this).InitializeComponents(this);
 
         _random = new System.Random();
     }
