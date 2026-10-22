@@ -19,9 +19,16 @@ public interface ICustomUnityScript
         string[] missingComponentNames = GetFieldsWithAttribute<ComponentAttribute>()
             .Where(field => // We filter out all fields where the component is missing.
             {
-                var fieldType = field.FieldType; // We get the datatype of the field
+                ComponentAttribute componentAttribute = field.GetCustomAttribute<ComponentAttribute>();
+                Type fieldType = field.FieldType; // We get the datatype of the field
 
                 bool doesComponentExist = self.TryGetComponent(fieldType, out Component component);
+
+                if (!doesComponentExist && componentAttribute.InitializeIfMissing)
+                {
+                    doesComponentExist = true;
+                    component = self.gameObject.AddComponent(fieldType);
+                }
                 
                 field.SetValue(self, component); // We initialize the field (will be null if not found)
                 
