@@ -17,7 +17,7 @@ public class DialogueController : MonoBehaviour, ICustomUnityScript
     [Header("Character Animations")] 
     [SerializeField] private CharacterAnimationCollection _characterAnimations = new();
 
-    private Animator _characterAnimator;
+    [Component(InitializeIfMissing = true)]private Animator _characterAnimator;
     private PlayerMovementController _playerMovementController;
     private Text _dialogueTextTextComponent;
     private Text _characterNameTextComponent; 
@@ -29,13 +29,10 @@ public class DialogueController : MonoBehaviour, ICustomUnityScript
     
     private void Awake()
     {
-        ((ICustomUnityScript)this).ValidateSerializeFieldsSet(this);
+        ((ICustomUnityScript)this).InitializeAndValidateFields(this);
         
         if (!SceneHelper.TryFindFirstObjectByTypeInScene<PlayerMovementController>(out _playerMovementController))
             throw new CouldNotFindGameObjectException("Could not find a PlayerMovementController in the scene.");
-
-        if (!TryGetComponent<Animator>(out _characterAnimator))
-            _characterAnimator = this.AddComponent<Animator>();
 
         if (!_dialogueTextComponent.TryGetComponent<Text>(out _dialogueTextTextComponent))
             throw new MissingComponentException("_dialogueTextComponent is missing a Text component.");
