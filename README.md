@@ -10,3 +10,4 @@ This game was made so that new students can learn a bit about the course "Softwa
 <h2 id="development">Development Instructions</h2>
 For developers do your work on your own branches and make a new one for each feature.
 Follow the conventions in conventions.md.
+When writing MonoBehaviour scripts that need components, implement the ICustomUnityScript interface, and mark all components with the Component tag.

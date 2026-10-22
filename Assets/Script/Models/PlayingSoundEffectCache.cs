@@ -8,20 +8,20 @@ public class PlayingSoundEffectCache : MonoBehaviour
     // the value is a list where the elements are the sound effect names
     private Dictionary<string, List<string>> _internalDictionary = new();
 
-    public void AddSoundEffect(GameObject key, string soundEffectName)
+    public void AddSoundEffect(string soundEffectOwnerName, string soundEffectName)
     {
         // We call TryAdd so that we don't overwrite the current value of key
-        _internalDictionary.TryAdd(key.name, new List<string>());
+        _internalDictionary.TryAdd(soundEffectOwnerName, new List<string>());
         
-        _internalDictionary[key.name].Add(soundEffectName);
+        _internalDictionary[soundEffectOwnerName].Add(soundEffectName);
     }
 
-    public void RemoveSoundEffect(string key, string soundEffectName)
+    public void RemoveSoundEffect(string soundEffectOwnerName, string soundEffectName)
     {
-        if (!_internalDictionary.ContainsKey(key))
+        if (!_internalDictionary.ContainsKey(soundEffectOwnerName))
             return;
 
-        _internalDictionary[key].Remove(soundEffectName);
+        _internalDictionary[soundEffectOwnerName].Remove(soundEffectName);
     }
 
     public void RemoveUnusedGameObjects() =>
@@ -33,7 +33,7 @@ public class PlayingSoundEffectCache : MonoBehaviour
             .ToDictionary(gameObjectNameSoundEffectListPair => gameObjectNameSoundEffectListPair.Key,
                 gameObjectNameSoundEffectListPair => gameObjectNameSoundEffectListPair.Value);
 
-    public bool IsGameObjectPlayingSoundEffect(GameObject key, string soundEffect) =>
-        _internalDictionary.TryGetValue(key.name, out List<string> soundEffects) &&
+    public bool IsGameObjectPlayingSoundEffect(string soundEffectOwnerName, string soundEffect) =>
+        _internalDictionary.TryGetValue(soundEffectOwnerName, out List<string> soundEffects) &&
         soundEffects.Contains(soundEffect);
 }
