@@ -12,6 +12,8 @@ public class WalkingEnemy : Enemy
     {
         base.Awake();
         
+        ((ICustomUnityScript)this).ValidateSerializeFieldsSet(this);
+        
         _startPosition = transform.position;
         _targetPosition = GetTargetPosition();
     }

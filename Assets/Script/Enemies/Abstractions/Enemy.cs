@@ -13,7 +13,7 @@ public abstract class Enemy : MonoBehaviour, ICustomUnityScript
 
     protected virtual void Awake()
     {
-        ((ICustomUnityScript)this).InitializeComponents(this);
+        ((ICustomUnityScript)this).InitializeAndValidateFields(this);
         
         _previousPosition = RigidBody.position;
     }

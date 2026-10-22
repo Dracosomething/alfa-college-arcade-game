@@ -5,7 +5,7 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.SceneManagement;
 
-public class AbilitySelectionController : MonoBehaviour
+public class AbilitySelectionController : MonoBehaviour, ICustomUnityScript
 {
     [SerializeField] private InputActionReference _scrollInputActionReference;
     private Camera _mainCamera;
@@ -17,8 +17,7 @@ public class AbilitySelectionController : MonoBehaviour
     
     private void Awake()
     {
-        if (_scrollInputActionReference.IsUnityNull())
-            throw new SerializeFieldNotSetException("Field _scrollInputActionReference needs to be set in the editor.");
+        ((ICustomUnityScript)this).ValidateSerializeFieldsSet(this);
 
         if (Camera.main.IsUnityNull())
             throw new NoMainCameraException();

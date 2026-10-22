@@ -15,7 +15,7 @@ public class FlyingEnemy : Enemy
     {
         base.Awake();
         
-        ((ICustomUnityScript)this).InitializeComponents(this);
+        ((ICustomUnityScript)this).InitializeAndValidateFields(this);
         
         _agent.updateRotation = false;
         _agent.updateUpAxis = false;

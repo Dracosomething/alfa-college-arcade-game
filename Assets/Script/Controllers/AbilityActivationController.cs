@@ -11,10 +11,7 @@ public class AbilityActivationController : MonoBehaviour, ICustomUnityScript
     
     private void Awake()
     {
-        if (_interactionInputActionReference.IsUnityNull())
-            throw new SerializeFieldNotSetException("_interactionInputActionReference has not been set in de editor.");
-        
-        ((ICustomUnityScript)this).InitializeComponents(this);
+        ((ICustomUnityScript)this).InitializeAndValidateFields(this);
     }
 
     private void Update()

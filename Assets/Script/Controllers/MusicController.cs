@@ -1,13 +1,15 @@
 using Unity.VisualScripting;
 using UnityEngine;
 
-public class MusicController : MonoBehaviour
+public class MusicController : MonoBehaviour, ICustomUnityScript
 {
     private AudioSource _audioSource;
     [SerializeField] private AudioClip _musicData;
 
     private void Awake()
     {
+        ((ICustomUnityScript)this).ValidateSerializeFieldsSet(this);
+        
         if (!TryGetComponent<AudioSource>(out _audioSource))
             _audioSource = this.AddComponent<AudioSource>();
 

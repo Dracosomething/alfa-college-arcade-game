@@ -1,4 +1,3 @@
-using System;
 using UnityEngine;
 
 public class PlayerLifeController : MonoBehaviour, ICustomUnityScript
@@ -10,7 +9,7 @@ public class PlayerLifeController : MonoBehaviour, ICustomUnityScript
 
     private void Awake()
     {
-        ((ICustomUnityScript)this).InitializeComponents(this);
+        ((ICustomUnityScript)this).InitializeAndValidateFields(this);
 
         CurrentLives = MaximumLives;
     }

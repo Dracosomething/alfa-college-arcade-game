@@ -3,8 +3,8 @@ using UnityEngine.SceneManagement;
 
 public class CheckpointController : MonoBehaviour, ICustomUnityScript
 {
-    private Transform _currentCheckpoint;
     [Component] private Rigidbody2D _playerRigidbody;
+    private Transform _currentCheckpoint;
 
     private void Awake() =>
         ((ICustomUnityScript)this).InitializeComponents(this);

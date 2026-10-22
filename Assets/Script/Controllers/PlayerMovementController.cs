@@ -55,10 +55,7 @@ public class PlayerMovementController : MonoBehaviour, ICustomUnityScript
     #region Initialization
     private void Awake()
     {
-        if (IsInputActionReferenceNull())
-            throw new MissingReferenceException("Input Action References are not assigned in the inspector. Please assign them in the inspector.");
-
-        ((ICustomUnityScript)this).InitializeComponents(this);
+        ((ICustomUnityScript)this).InitializeAndValidateFields(this);
         
         // Store the original gravity scale of the player to avoid sliding off of slopes.
         _originalGravityScale = _playerRigidbody2D.gravityScale;
@@ -222,13 +219,6 @@ public class PlayerMovementController : MonoBehaviour, ICustomUnityScript
             _dashTimer = DashStartTimerValue;
         }
     }
-    #endregion
-
-    #region Null references
-    private bool IsInputActionReferenceNull() =>
-        _movementInputActionReference.IsUnityNull() &&
-        _jumpInputActionReference.IsUnityNull() &&
-        _dashInputActionReference.IsUnityNull();
     #endregion
 
     #region Ground check delay and coyote time

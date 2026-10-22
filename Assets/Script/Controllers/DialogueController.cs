@@ -3,7 +3,7 @@ using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class DialogueController : MonoBehaviour
+public class DialogueController : MonoBehaviour, ICustomUnityScript
 {
     private const string DialogueInputName = "Input"; // Change this constant when a proper input is decided
     
@@ -29,16 +29,13 @@ public class DialogueController : MonoBehaviour
     
     private void Awake()
     {
+        ((ICustomUnityScript)this).ValidateSerializeFieldsSet(this);
+        
         if (!SceneHelper.TryFindFirstObjectByTypeInScene<PlayerMovementController>(out _playerMovementController))
             throw new CouldNotFindGameObjectException("Could not find a PlayerMovementController in the scene.");
 
         if (!TryGetComponent<Animator>(out _characterAnimator))
             _characterAnimator = this.AddComponent<Animator>();
-
-        if (!((bool)_dialogueTextComponent && (bool)_characterNameComponent &&
-            (bool)dialogueDataScriptableObject && _characterAnimations != null))
-            throw new SerializeFieldNotSetException("One of the following fields has not been set. " +
-                                                    "_dialogueTextComponent, _choicesComponent, _dialogueData");
 
         if (!_dialogueTextComponent.TryGetComponent<Text>(out _dialogueTextTextComponent))
             throw new MissingComponentException("_dialogueTextComponent is missing a Text component.");
