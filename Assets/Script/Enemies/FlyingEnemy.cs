@@ -2,6 +2,7 @@ using System.Linq;
 using UnityEngine;
 using UnityEngine.AI;
 
+[RequireComponent(typeof(CooldownWrapper), typeof(NavMeshAgent))]
 public class FlyingEnemy : Enemy
 {
     [SerializeField] private float _wanderRadius = 1f;

@@ -1,6 +1,6 @@
-using Unity.VisualScripting;
 using UnityEngine;
 
+[RequireComponent(typeof(SpriteRenderer), typeof(CooldownWrapper), typeof(Rigidbody2D))]
 public abstract class Enemy : MonoBehaviour, ICustomUnityScript
 {
     [Component] private SpriteRenderer _spriteRenderer;

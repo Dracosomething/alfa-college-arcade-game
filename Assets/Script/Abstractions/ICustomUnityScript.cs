@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Text;
@@ -7,17 +8,15 @@ using UnityEngine;
 
 public interface ICustomUnityScript
 {
+    public void InitializeAndValidateFields(MonoBehaviour self)
+    {
+        InitializeComponents(self);
+        ValidateSerializeFieldsSet(self);
+    }
+    
     public void InitializeComponents(MonoBehaviour self)
     {
-        Type classType = GetType();
-
-        // We get all non-static fields no matter the access modifier.
-        FieldInfo[] fields = classType.GetFields(BindingFlags.Public |
-                                                 BindingFlags.NonPublic |
-                                                 BindingFlags.Instance);
-        
-        string[] missingComponentNames = fields
-            .Where(field => field.HasAttribute<ComponentAttribute>()) // We filter out all fields without the ComponentAttribute attribute
+        string[] missingComponentNames = GetFieldsWithAttribute<ComponentAttribute>()
             .Where(field => // We filter out all fields where the component is missing.
             {
                 var fieldType = field.FieldType; // We get the datatype of the field
@@ -33,16 +32,64 @@ public interface ICustomUnityScript
 
         if (!missingComponentNames.Any())
             return; // There are no uninitialized components
+
+        throw new MissingComponentException(ConstructExceptionMessage(
+            self.name, 
+            messageBody: " is missing the following components: ", 
+            missingComponentNames));
+    }
+
+    public void ValidateSerializeFieldsSet(MonoBehaviour self)
+    {
+        string[] nonSerializedFields = GetFieldsWithAttribute<SerializeField>()
+            .Where(field => field.GetValue(self).IsUnityNull()) // We filter out all fields that are null
+            .Select(field => field.Name) // We select the name of the field
+            .ToArray();
         
-        // We construct the exception message.
+        if (!nonSerializedFields.Any())
+            return; // all serialize fields have a value
+
+        throw new SerializeFieldNotSetException(ConstructExceptionMessage(
+            self.name, 
+            messageBody: " has the following serialize fields not initialized: ", 
+            nonSerializedFields));
+    }
+    
+    private IEnumerable<FieldInfo> GetFieldsWithAttribute<TAttribute>()
+        where TAttribute : Attribute
+    {
+        Type classType = GetType();
+
+        IEnumerable<FieldInfo> fields = GetFieldsRecursively(classType);
+        
+        return fields
+            .Where(field => field.HasAttribute<TAttribute>()); // We filter out the fields that don't have the requested attribute
+    }
+
+    private IEnumerable<FieldInfo> GetFieldsRecursively(Type classType)
+    {
+        // We get all non-static fields no matter the access modifier.
+        List<FieldInfo> fields = classType.GetFields(BindingFlags.Public |
+                                                 BindingFlags.NonPublic |
+                                                 BindingFlags.Instance).ToList();
+        
+        // If the class has a base type that is not MonoBehaviour we recurse a level.
+        if (classType.BaseType != null && classType.BaseType != typeof(MonoBehaviour))
+            fields.AddRange(GetFieldsRecursively(classType.BaseType));
+
+        return fields;
+    }
+    
+    private string ConstructExceptionMessage(string selfName, string messageBody, string[] missingFieldNames)
+    {
         var exceptionMessageBuilder = new StringBuilder();
 
-        exceptionMessageBuilder.Append(self.name);
-        exceptionMessageBuilder.Append(" is missing the following components: ");
+        exceptionMessageBuilder.Append(selfName);
+        exceptionMessageBuilder.Append(messageBody);
     
-        foreach (string missingComponentName in missingComponentNames)
+        foreach (string missingComponentName in missingFieldNames)
             exceptionMessageBuilder.Append(missingComponentName).Append(", ");
 
-        throw new MissingComponentException(exceptionMessageBuilder.ToString());
+        return exceptionMessageBuilder.ToString();
     }
 }
