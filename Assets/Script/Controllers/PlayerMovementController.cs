@@ -95,7 +95,7 @@ public class PlayerMovementController : MonoBehaviour
         if (_movementInputs.Equals(Vector2.zero) && _isGrounded && !_isGroundCheckDelayActive)
             _playerRigidbody2D.linearVelocity = Vector2.zero;
 
-        if (!(_slopeAngle.Equals(FlatSlopeAngle) && _isGrounded) || _isDashButtonPressed)
+        if ((_slopeAngle != FlatSlopeAngle && _isGrounded) || _isDashButtonPressed)
             _playerRigidbody2D.gravityScale = Constants.ZeroGravity;
         else
             _playerRigidbody2D.gravityScale = _originalGravityScale;
