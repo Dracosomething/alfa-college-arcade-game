@@ -6,7 +6,7 @@ using System.Text;
 using Unity.VisualScripting;
 using UnityEngine;
 
-public interface ICustomUnityScript
+public interface IDynamicExceptionProvider
 {
     public void InitializeAndValidateFields(MonoBehaviour self)
     {

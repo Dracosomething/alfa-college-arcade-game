@@ -1,7 +1,7 @@
 using System;
 using UnityEngine;
 
-public class CooldownWrapper : MonoBehaviour, ICustomUnityScript
+public class CooldownWrapper : MonoBehaviour, IDynamicExceptionProvider
 {
     private const int FinishedCooldownInSeconds = 0;
     
@@ -9,7 +9,7 @@ public class CooldownWrapper : MonoBehaviour, ICustomUnityScript
     private float _remainingCooldownInSeconds;
 
     private void Awake() =>
-        ((ICustomUnityScript)this).ValidateSerializeFieldsSet(this);
+        ((IDynamicExceptionProvider)this).ValidateSerializeFieldsSet(this);
 
     public bool IsCooldownActive() =>
         _remainingCooldownInSeconds > FinishedCooldownInSeconds;

@@ -1,7 +1,7 @@
 using UnityEngine;
 
 [RequireComponent(typeof(AudioSource), typeof(PlayingSoundEffectCache))]
-public class SoundEffectWrapper : MonoBehaviour, ICustomUnityScript
+public class SoundEffectWrapper : MonoBehaviour, IDynamicExceptionProvider
 {
     [Component] private PlayingSoundEffectCache _soundEffectCache;
     [Component] public AudioSource AudioSource;
@@ -9,7 +9,7 @@ public class SoundEffectWrapper : MonoBehaviour, ICustomUnityScript
     public string SoundEffectName;
 
     private void Awake() =>
-        ((ICustomUnityScript)this).InitializeComponents(this);
+        ((IDynamicExceptionProvider)this).InitializeComponents(this);
 
     private void Update()
     {

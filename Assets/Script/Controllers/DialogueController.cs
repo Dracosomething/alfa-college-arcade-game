@@ -3,7 +3,7 @@ using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class DialogueController : MonoBehaviour, ICustomUnityScript
+public class DialogueController : MonoBehaviour, IDynamicExceptionProvider
 {
     private const string DialogueInputName = "Input"; // Change this constant when a proper input is decided
     
@@ -29,7 +29,7 @@ public class DialogueController : MonoBehaviour, ICustomUnityScript
     
     private void Awake()
     {
-        ((ICustomUnityScript)this).InitializeAndValidateFields(this);
+        ((IDynamicExceptionProvider)this).InitializeAndValidateFields(this);
         
         if (!SceneHelper.TryFindFirstObjectByTypeInScene<PlayerMovementController>(out _playerMovementController))
             throw new CouldNotFindGameObjectException("Could not find a PlayerMovementController in the scene.");

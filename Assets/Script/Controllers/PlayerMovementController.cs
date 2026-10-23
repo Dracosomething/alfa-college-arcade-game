@@ -3,7 +3,7 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 
 [RequireComponent(typeof(CapsuleCollider2D), typeof(Rigidbody2D))]
-public class PlayerMovementController : MonoBehaviour, ICustomUnityScript
+public class PlayerMovementController : MonoBehaviour, IDynamicExceptionProvider
 {
     #region Fields
     private const float NoInputs = 0f;
@@ -55,7 +55,7 @@ public class PlayerMovementController : MonoBehaviour, ICustomUnityScript
     #region Initialization
     private void Awake()
     {
-        ((ICustomUnityScript)this).InitializeAndValidateFields(this);
+        ((IDynamicExceptionProvider)this).InitializeAndValidateFields(this);
         
         // Store the original gravity scale of the player to avoid sliding off of slopes.
         _originalGravityScale = _playerRigidbody2D.gravityScale;

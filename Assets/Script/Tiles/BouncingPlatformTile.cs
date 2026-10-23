@@ -1,7 +1,7 @@
 using UnityEngine;
 using System;
 
-public class BouncingPlatformTile : MonoBehaviour, ICustomUnityScript
+public class BouncingPlatformTile : MonoBehaviour, IDynamicExceptionProvider
 {
     private const int BounceForceMultiplier = 10;
     
@@ -10,7 +10,7 @@ public class BouncingPlatformTile : MonoBehaviour, ICustomUnityScript
     
     public void Awake()
     {
-        ((ICustomUnityScript)this).ValidateSerializeFieldsSet(this);
+        ((IDynamicExceptionProvider)this).ValidateSerializeFieldsSet(this);
         
 	    if (!SceneHelper.TryFindGameObjectWithTagInScene(Constants.PlayerGameObjectName, out var player))
 		    throw new CouldNotFindGameObjectException("Object with tag \"Player\" not found.");

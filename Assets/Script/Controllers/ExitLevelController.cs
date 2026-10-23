@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.SceneManagement;
 
-public class ExitLevelController : MonoBehaviour, ICustomUnityScript
+public class ExitLevelController : MonoBehaviour, IDynamicExceptionProvider
 {
     private const float ExitDelayInSeconds = 2.0f;
     private const string UnchangingIndicatorText = "Exiting level in: ";
@@ -22,7 +22,7 @@ public class ExitLevelController : MonoBehaviour, ICustomUnityScript
         const string IndicatorTextFieldName = "ExitLevelText";
         const string IndicatorVisualElementName = "ExitLevelIndicator";
         
-        ((ICustomUnityScript)this).ValidateSerializeFieldsSet(this);
+        ((IDynamicExceptionProvider)this).ValidateSerializeFieldsSet(this);
         
         if (!(SceneHelper.TryFindGameObjectInScene(IndicatorTextFieldName, out GameObject textObject) &&
               SceneHelper.TryFindGameObjectInScene(IndicatorVisualElementName, out _guiIndicator)))
