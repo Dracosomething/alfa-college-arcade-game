@@ -30,6 +30,7 @@ public class PlayerMovementController : MonoBehaviour
     [Header("Dash Settings")]
     [SerializeField] private float _dashForce = 5f;
     [SerializeField] private float _dashCooldown = 1f; // In seconds
+    [SerializeField] private LayerMask _walkableGroundLayerMask;
 
     private float _groundCheckDelayTimer = 0f; // In seconds
     private bool _isGroundCheckDelayActive = false;
@@ -45,7 +46,6 @@ public class PlayerMovementController : MonoBehaviour
     private float _timeSinceLastDash = 0f; // In seconds
     private float _originalGravityScale;
 
-    [SerializeField] private LayerMask _walkableGroundLayerMask;
     private Rigidbody2D _playerRigidbody2D;
 
     private Vector2 _movementInputs; // Store the movement input values to be used in FixedUpdate
@@ -270,13 +270,13 @@ public class PlayerMovementController : MonoBehaviour
     private bool HasCollisionWithObject()
     {
         const int ContactPointsArraySize = 1;
+        const int FirstContactPoints = 0;
 
         ContactPoint2D[] contactPoints = new ContactPoint2D[ContactPointsArraySize];
         _playerRigidbody2D.GetContacts(contactPoints);
 
-        foreach (ContactPoint2D contact in contactPoints)
-            if (contact.collider != null)
-                return true;
+        if (contactPoints[FirstContactPoints].collider != null)
+            return true;
 
         return false;
     }

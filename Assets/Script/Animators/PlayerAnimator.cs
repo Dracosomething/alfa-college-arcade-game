@@ -4,11 +4,9 @@ using UnityEngine;
 [RequireComponent(typeof(Animator))]
 public class PlayerAnimator : MonoBehaviour
 {
-    #region fields
     private PlayerAnimationStates _currentState;
     private Direction _currentDirection;
     private Animator _playerAnimator;
-    #endregion
 
     private void Awake() =>
         // No need to get do a try catch here since the Animator is a required component.
@@ -23,11 +21,11 @@ public class PlayerAnimator : MonoBehaviour
 
     private Direction GetMovingDirection(Vector2 movementInputs)
     {
-        const float noInput = 0f;
+        const float NoInput = 0f;
 
-        if (movementInputs.x > noInput)
+        if (movementInputs.x > NoInput)
             return Direction.Right;
-        else if (movementInputs.x < noInput)
+        else if (movementInputs.x < NoInput)
             return Direction.Left;
 
         return _currentDirection;
@@ -35,21 +33,21 @@ public class PlayerAnimator : MonoBehaviour
 
     private PlayerAnimationStates GetAnimationState(Vector2 movementInputs, Vector2 velocity, bool isGrounded)
     {
-        const float dashThreshold = 5f;
-        const float jumpThreshold = 0.1f;
-        const float noInput = 0f;
+        const float DashThreshold = 5f;
+        const float JumpThreshold = 0.1f;
+        const float NoInput = 0f;
 
         // Check for dashing first because that has priority over jumping, walking and idle.
-        if ((velocity.x > dashThreshold || velocity.x < -dashThreshold) && velocity.y == noInput)
+        if ((velocity.x > DashThreshold || velocity.x < -DashThreshold) && velocity.y == NoInput)
             return PlayerAnimationStates.IsDashing;
 
         // Checking for jumping because that has priority over walking and idle.
-        if (velocity.y > jumpThreshold && !isGrounded)
+        if (velocity.y > JumpThreshold && !isGrounded)
             return PlayerAnimationStates.IsJumping;
-        else if (velocity.y < -jumpThreshold && !isGrounded)
+        else if (velocity.y < -JumpThreshold && !isGrounded)
             return PlayerAnimationStates.IsFalling;
 
-        if (movementInputs.x != noInput) // Either if x is positive or negative.
+        if (movementInputs.x != NoInput) // Either if x is positive or negative.
             return PlayerAnimationStates.IsWalking;
 
         // Return default animation state.
@@ -69,13 +67,13 @@ public class PlayerAnimator : MonoBehaviour
 
     private void SetDirection(Direction direction)
     {
-        const string directionParameter = "IsFacingRight";
+        const string DirectionParameter = "IsFacingRight";
 
         if (_currentDirection == direction)
             return;
 
         _currentDirection = direction;
-        _playerAnimator.SetBool(Animator.StringToHash(directionParameter), _currentDirection == Direction.Right);
+        _playerAnimator.SetBool(Animator.StringToHash(DirectionParameter), _currentDirection == Direction.Right);
     }
 
     private void ResetStates()
