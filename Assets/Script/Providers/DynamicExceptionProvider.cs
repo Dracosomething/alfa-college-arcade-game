@@ -3,10 +3,17 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Text;
-using System.Threading.Tasks;
 using Unity.VisualScripting;
 using UnityEngine;
 
+/// <summary>
+/// This class does 2 things right after all GameObjects are loaded but before Awake is called.
+///
+/// First it checks if every SerializeField with the RequiredSerializeField attribute has a value, if not we throw an exception.
+/// Second it initializes all fields marked with the Component attribute and throws an exception if the required Component can't be found.
+///
+/// This class also throws all exceptions that have been found across the project.
+/// </summary>
 public class DynamicExceptionProvider
 {
     [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
@@ -34,6 +41,7 @@ public class DynamicExceptionProvider
         if (!exceptionsToThrowWithContextObject.Any())
             return;
         
+        // Makes sure all exceptions from exceptionsToThrowWithContextObject are thrown with the corresponding context.
         AggregateException aggregateException = new(exceptionsToThrowWithContextObject.Keys);
         aggregateException.Handle(exception =>
         {
@@ -47,8 +55,19 @@ public class DynamicExceptionProvider
         Dictionary<Exception, GameObject> exceptions)
     {
         string[] nonSerializedFields = GetNamesOfFieldsMatchingCondition(
-            fields: GetFieldsWithAttribute<SerializeField>(scriptClass), 
-            condition: field => field.HasAttribute<RequiredSerializeFieldAttribute>() && field.GetValue(scriptComponent).IsUnityNull(),
+            fields: GetFieldsWithAttribute<RequiredSerializeFieldAttribute>(scriptClass), 
+            condition: field =>
+            {
+                // We check if the field has the SerializeField attribute so that we can give a different exception for this field,
+                // since everything with the RequiredSerializeField attribute must also have the SerializeField attribute.
+                if (!field.HasAttribute<SerializeField>())
+                {
+                    exceptions.Add(new MissingSerializeFieldAttributeException($"{field.Name} in {scriptClass.Name} is missing a SerializeField attribute"), gameObject);
+                    return false;
+                }
+
+                return field.GetValue(scriptComponent).IsUnityNull();
+            },
             nameSelector: field => field.Name);
                 
         if (!nonSerializedFields.Any())
