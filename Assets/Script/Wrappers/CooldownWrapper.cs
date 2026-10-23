@@ -2,31 +2,26 @@ using UnityEngine;
 
 public class CooldownWrapper : MonoBehaviour
 {
-    private const float IntervalRepeatingOffsetInSeconds = 0.1f;
-    private const float IntervalInSeconds = 1f;
-    private const int FinishedCooldown = 0;
+    private const int FinishedCooldownInSeconds = 0;
     
-    private long _remainingCooldown;
-    private CustomTimeSpan _timeSpan;
-    
-    public void InitializeCooldownWrapper(CustomTimeSpan timeSpan) =>
-        _timeSpan = timeSpan;
+    [SerializeField] private CustomTimeSpan _cooldownDuration = new(minutes: 0, seconds: 0);
+    private float _remainingCooldownInSeconds;
 
     public bool IsCooldownActive() =>
-        _remainingCooldown > FinishedCooldown;
-
+        _remainingCooldownInSeconds > FinishedCooldownInSeconds;
 
     public void StartCooldown()
     {
         if (IsCooldownActive())
             return;
         
-        _remainingCooldown = _timeSpan.TimeInSeconds;
-
-        StartDecreasingCooldown();
+        _remainingCooldownInSeconds = _cooldownDuration.TimeInSeconds;
     }
-    
-    private void DecreaseCooldownEverySecond()
+
+    private void Update() =>
+        DecreaseCooldown();
+
+    private void DecreaseCooldown()
     {
         if (!IsCooldownActive())
         {
@@ -34,15 +29,9 @@ public class CooldownWrapper : MonoBehaviour
             return;
         }
 
-        _remainingCooldown--;
+        _remainingCooldownInSeconds -= Time.deltaTime;
     }
-
-    private void StartDecreasingCooldown() =>
-        InvokeRepeating(nameof(DecreaseCooldownEverySecond), IntervalRepeatingOffsetInSeconds, IntervalInSeconds);
     
-    private void StopCooldown()
-    {
-        CancelInvoke(nameof(DecreaseCooldownEverySecond));
-        _remainingCooldown = FinishedCooldown;
-    }
+    private void StopCooldown() =>
+        _remainingCooldownInSeconds = FinishedCooldownInSeconds;
 }

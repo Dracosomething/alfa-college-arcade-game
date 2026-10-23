@@ -7,7 +7,7 @@ using UnityEngine.SceneManagement;
 
 public class AbilitySelectionController : MonoBehaviour
 {
-    [SerializeField] private InputActionReference _scrollInputActionReference;
+    [RequiredSerializeField] [SerializeField] private InputActionReference _scrollInputActionReference;
     private Camera _mainCamera;
     private Transform _cameraTransform;
     private List<SpriteRenderer> _abilityObjectsInScene;
@@ -17,9 +17,6 @@ public class AbilitySelectionController : MonoBehaviour
     
     private void Awake()
     {
-        if (_scrollInputActionReference.IsUnityNull())
-            throw new SerializeFieldNotSetException("Field _scrollInputActionReference needs to be set in the editor.");
-
         if (Camera.main.IsUnityNull())
             throw new NoMainCameraException();
 

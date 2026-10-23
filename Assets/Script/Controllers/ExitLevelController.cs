@@ -1,5 +1,4 @@
 using TMPro;
-using UnityEditor;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.SceneManagement;
@@ -11,7 +10,7 @@ public class ExitLevelController : MonoBehaviour
     private const string MainMenuSceneName = "TitleScreen";
     
     [Header("Exit Script Settings")]
-    [SerializeField] private InputActionReference _cancelActionReference;
+    [RequiredSerializeField] [SerializeField] private InputActionReference _cancelActionReference;
 
     private float _timeRemaining = ExitDelayInSeconds;
     private GameObject _guiIndicator;

@@ -3,17 +3,10 @@ using UnityEngine;
 [RequireComponent(typeof(AudioSource), typeof(PlayingSoundEffectCache))]
 public class SoundEffectWrapper : MonoBehaviour
 {
-    private PlayingSoundEffectCache _soundEffectCache;
-    public AudioSource AudioSource;
+    [Component] private PlayingSoundEffectCache _soundEffectCache;
+    [Component] public AudioSource AudioSource;
     public string SoundEffectOwnerName;
     public string SoundEffectName;
-
-    private void Awake()
-    {
-        if (!(TryGetComponent<PlayingSoundEffectCache>(out _soundEffectCache) &&
-              TryGetComponent<AudioSource>(out AudioSource)))
-            throw new MissingComponentException("Missing PlayingSoundEffectCache or AudioSource components!");
-    }
 
     private void Update()
     {

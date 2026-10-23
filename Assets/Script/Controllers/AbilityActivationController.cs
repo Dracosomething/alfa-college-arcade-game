@@ -5,19 +5,9 @@ using UnityEngine.InputSystem;
 [RequireComponent(typeof(AbilityActivationController), typeof(SoundEffectController))]
 public class AbilityActivationController : MonoBehaviour
 {
-    [SerializeField] private InputActionReference _interactionInputActionReference;
-    private AbilitySelectionController _selectionController;
-    private SoundEffectController _soundEffectController;
-    
-    private void Awake()
-    {
-        if (_interactionInputActionReference.IsUnityNull())
-            throw new SerializeFieldNotSetException("_interactionInputActionReference has not been set in de editor.");
-        
-        if (!(TryGetComponent<AbilitySelectionController>(out _selectionController) &&
-              TryGetComponent<SoundEffectController>(out _soundEffectController)))
-            throw new MissingComponentException("Missing an AbilityActivationController or SoundEffectController components!");
-    }
+    [RequiredSerializeField] [SerializeField] private InputActionReference _interactionInputActionReference;
+    [Component] private AbilitySelectionController _selectionController;
+    [Component] private SoundEffectController _soundEffectController;
 
     private void Update()
     {

@@ -16,16 +16,16 @@ public class PlayerMovementController : MonoBehaviour
     private const float DashDuration = 0.3f; // In seconds
 
     [Header("Input Action References")]
-    [SerializeField] private InputActionReference _movementInputActionReference;
-    [SerializeField] private InputActionReference _jumpInputActionReference;
-    [SerializeField] private InputActionReference _dashInputActionReference;
+    [RequiredSerializeField] [SerializeField] private InputActionReference _movementInputActionReference;
+    [RequiredSerializeField] [SerializeField] private InputActionReference _jumpInputActionReference;
+    [RequiredSerializeField] [SerializeField] private InputActionReference _dashInputActionReference;
 
     [Header("Movement Settings")]
     [SerializeField] private float _movementSpeed = 5f;
 
     [Header("Jump Settings")]
     [SerializeField] private float _jumpHeight = 10f;
-    [SerializeField] private GameObject _groundCheckObject;
+    [RequiredSerializeField] [SerializeField] private GameObject _groundCheckObject;
 
     [Header("Dash Settings")]
     [SerializeField] private float _dashForce = 5f;
@@ -45,8 +45,8 @@ public class PlayerMovementController : MonoBehaviour
     private float _timeSinceLastDash = 0f; // In seconds
     private float _originalGravityScale;
 
-    [SerializeField] private LayerMask _walkableGroundLayerMask;
-    private Rigidbody2D _playerRigidbody2D;
+    [RequiredSerializeField] [SerializeField] private LayerMask _walkableGroundLayerMask;
+    [Component] private Rigidbody2D _playerRigidbody2D;
 
     private Vector2 _movementInputs; // Store the movement input values to be used in FixedUpdate
     private float _slopeAngle;
@@ -55,16 +55,27 @@ public class PlayerMovementController : MonoBehaviour
     #region Initialization
     private void Awake()
     {
-        if (IsInputActionReferenceNull())
-            throw new MissingReferenceException("Input Action References are not assigned in the inspector. Please assign them in the inspector.");
-
-        if (!TryGetComponent<Rigidbody2D>(out _playerRigidbody2D))
-            throw new MissingComponentException("Rigidbody2D component is missing from the GameObject. Please add a Rigidbody2D component.");
         // Store the original gravity scale of the player to avoid sliding off of slopes.
         _originalGravityScale = _playerRigidbody2D.gravityScale;
     }
     #endregion
 
+    #region enable, disable
+    public void EnablePlayerMovementController()
+    {
+        _movementInputActionReference.action.Enable();
+        _jumpInputActionReference.action.Enable();
+        _dashInputActionReference.action.Enable();
+    }
+
+    public void DisablePlayerMovementController()
+    {
+        _movementInputActionReference.action.Disable();
+        _jumpInputActionReference.action.Disable();
+        _dashInputActionReference.action.Disable();
+    }
+    #endregion
+    
     #region Enable/Disable Input Actions
     private void OnEnable()
     {
@@ -119,7 +130,7 @@ public class PlayerMovementController : MonoBehaviour
         RaycastHit2D hitInfo = Physics2D.Raycast(transform.position, Vector2.down, rayLength, _walkableGroundLayerMask);
         _slopeAngle = Vector2.Angle(hitInfo.normal, Vector2.up);
 
-        if (!hitInfo.collider.IsUnityNull() && _slopeAngle != FlatSlopeAngle && _isGrounded)
+        if (!hitInfo.collider.IsUnityNull() && !_slopeAngle.Equals(FlatSlopeAngle) && _isGrounded)
         {
             Quaternion slopeRotation = Quaternion.FromToRotation(Vector2.up, hitInfo.normal);
             velocity = GetVelocityUpOrDown(velocity, slopeRotation);
@@ -208,13 +219,6 @@ public class PlayerMovementController : MonoBehaviour
     }
     #endregion
 
-    #region Null references
-    private bool IsInputActionReferenceNull() =>
-        _movementInputActionReference.IsUnityNull() &&
-        _jumpInputActionReference.IsUnityNull() &&
-        _dashInputActionReference.IsUnityNull();
-    #endregion
-
     #region Ground check delay and coyote time
     private void CheckForValidGround()
     {
@@ -260,31 +264,12 @@ public class PlayerMovementController : MonoBehaviour
     // Avoiding dashing into walls by stopping the dash.
     private void OnCollisionEnter2D(Collision2D collision)
     {
-        // We first shift 1 by the colliding objects layer. Then we check if _walkableGroundLayerMask is equal to that by doing a bitwise OR.
-        if (_walkableGroundLayerMask.Equals(_walkableGroundLayerMask | (1 << collision.gameObject.layer)))
+        if (_walkableGroundLayerMask.IsLayer(collision.gameObject.layer))
         {
             _isDashButtonPressed = false;
             _canDash = false;
             _dashTimer = DashStartTimerValue;
         }
-    }
-    #endregion
-
-    #region enable, disable
-    public void EnablePlayerMovementController(bool enabled)
-    {
-        if (enabled)
-        { 
-            _movementInputActionReference.action.Enable();
-            _jumpInputActionReference.action.Enable();
-            _dashInputActionReference.action.Enable();
-
-            return;
-        }
-
-        _movementInputActionReference.action.Disable();
-        _jumpInputActionReference.action.Disable();
-        _dashInputActionReference.action.Disable();
     }
     #endregion
 }

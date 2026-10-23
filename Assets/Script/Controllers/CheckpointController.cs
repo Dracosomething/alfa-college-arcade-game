@@ -3,14 +3,8 @@ using UnityEngine.SceneManagement;
 
 public class CheckpointController : MonoBehaviour
 {
+    [Component] private Rigidbody2D _playerRigidbody;
     private Transform _currentCheckpoint;
-    private Rigidbody2D _playerRigidbody;
-
-    private void Awake()
-    {
-        if (!TryGetComponent<Rigidbody2D>(out _playerRigidbody))
-            throw new MissingComponentException("No Rigidbody2D found on player.");
-    }
 
     public void SetCheckpoint(Transform position) =>
         _currentCheckpoint = position;
