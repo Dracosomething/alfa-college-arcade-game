@@ -50,7 +50,6 @@ public class PlayerMovementController : MonoBehaviour
 
     private Vector2 _movementInputs; // Store the movement input values to be used in FixedUpdate
     private float _slopeAngle;
-
     private PlayerAnimator _playerAnimator;
     #endregion
 
@@ -270,16 +269,14 @@ public class PlayerMovementController : MonoBehaviour
     // Avoiding dashing into walls by stopping the dash.
     private bool HasCollisionWithObject()
     {
-        ContactPoint2D[] contactPoints = new ContactPoint2D[10];
+        const int ContactPointsArraySize = 1;
+
+        ContactPoint2D[] contactPoints = new ContactPoint2D[ContactPointsArraySize];
         _playerRigidbody2D.GetContacts(contactPoints);
 
         foreach (ContactPoint2D contact in contactPoints)
-        {
             if (contact.collider != null)
-            {
                 return true;
-            }
-        }
 
         return false;
     }

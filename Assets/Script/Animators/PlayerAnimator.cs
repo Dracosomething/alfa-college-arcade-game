@@ -7,43 +7,49 @@ public class PlayerAnimator : MonoBehaviour
     #region fields
     private PlayerAnimationStates _currentState;
     private Direction _currentDirection;
-    private Animator _playerAnimater;
+    private Animator _playerAnimator;
     #endregion
 
     private void Awake() =>
         // No need to get do a try catch here since the Animator is a required component.
-        _playerAnimater = GetComponent<Animator>();
+        _playerAnimator = GetComponent<Animator>();
 
-    public void GetValues(Vector2 movemenInputs,  Vector2 velocity, bool isGrounded)
+    public void GetValues(Vector2 movementInputs,  Vector2 velocity, bool isGrounded)
     {
-        SetDirection(GetMovingDirection(movemenInputs));
+        SetDirection(GetMovingDirection(movementInputs));
 
-        SetAnimationState(GetAnimationState(movemenInputs, velocity, isGrounded));
+        SetAnimationState(GetAnimationState(movementInputs, velocity, isGrounded));
     }
 
-    private Direction GetMovingDirection(Vector2 movemenInputs)
+    private Direction GetMovingDirection(Vector2 movementInputs)
     {
-        if (movemenInputs.x > 0)
+        const float noInput = 0f;
+
+        if (movementInputs.x > noInput)
             return Direction.Right;
-        else if (movemenInputs.x < 0)
+        else if (movementInputs.x < noInput)
             return Direction.Left;
-        else
-            return _currentDirection;
+
+        return _currentDirection;
     }
 
-    private PlayerAnimationStates GetAnimationState(Vector2 movemenInputs, Vector2 velocity, bool isGrounded)
+    private PlayerAnimationStates GetAnimationState(Vector2 movementInputs, Vector2 velocity, bool isGrounded)
     {
+        const float dashThreshold = 5f;
+        const float jumpThreshold = 0.1f;
+        const float noInput = 0f;
+
         // Check for dashing first because that has priority over jumping, walking and idle.
-        if ((velocity.x > 5f || velocity.x < -5f) && velocity.y == 0f)
+        if ((velocity.x > dashThreshold || velocity.x < -dashThreshold) && velocity.y == noInput)
             return PlayerAnimationStates.IsDashing;
 
         // Checking for jumping because that has priority over walking and idle.
-        if (velocity.y > 0.1f && !isGrounded)
+        if (velocity.y > jumpThreshold && !isGrounded)
             return PlayerAnimationStates.IsJumping;
-        else if (velocity.y < -0.1f && !isGrounded)
+        else if (velocity.y < -jumpThreshold && !isGrounded)
             return PlayerAnimationStates.IsFalling;
 
-        if (movemenInputs.x != 0) // Either if x is positive or negative.
+        if (movementInputs.x != noInput) // Either if x is positive or negative.
             return PlayerAnimationStates.IsWalking;
 
         // Return default animation state.
@@ -58,7 +64,7 @@ public class PlayerAnimator : MonoBehaviour
         ResetStates();
 
         _currentState = state;
-        _playerAnimater.SetBool(_currentState.ToString(), true);
+        _playerAnimator.SetBool(_currentState.ToString(), true);
     }
 
     private void SetDirection(Direction direction)
@@ -67,14 +73,14 @@ public class PlayerAnimator : MonoBehaviour
             return;
 
         _currentDirection = direction;
-        _playerAnimater.SetBool(Animator.StringToHash("IsFacingRight"), _currentDirection == Direction.Right);
+        _playerAnimator.SetBool(Animator.StringToHash("IsFacingRight"), _currentDirection == Direction.Right);
     }
 
     private void ResetStates()
     {
         foreach (PlayerAnimationStates state in Enum.GetValues(typeof(PlayerAnimationStates)))
         {
-            _playerAnimater.SetBool(Animator.StringToHash(state.ToString()), false);
+            _playerAnimator.SetBool(Animator.StringToHash(state.ToString()), false);
         }
     }
 }
