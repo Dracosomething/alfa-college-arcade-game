@@ -3,7 +3,7 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 
 [RequireComponent(typeof(CapsuleCollider2D), typeof(Rigidbody2D))]
-public class PlayerMovementController : MonoBehaviour, IDynamicExceptionProvider
+public class PlayerMovementController : MonoBehaviour
 {
     #region Fields
     private const float NoInputs = 0f;
@@ -16,16 +16,16 @@ public class PlayerMovementController : MonoBehaviour, IDynamicExceptionProvider
     private const float DashDuration = 0.3f; // In seconds
 
     [Header("Input Action References")]
-    [SerializeField] private InputActionReference _movementInputActionReference;
-    [SerializeField] private InputActionReference _jumpInputActionReference;
-    [SerializeField] private InputActionReference _dashInputActionReference;
+    [RequiredSerializeField] [SerializeField] private InputActionReference _movementInputActionReference;
+    [RequiredSerializeField] [SerializeField] private InputActionReference _jumpInputActionReference;
+    [RequiredSerializeField] [SerializeField] private InputActionReference _dashInputActionReference;
 
     [Header("Movement Settings")]
     [SerializeField] private float _movementSpeed = 5f;
 
     [Header("Jump Settings")]
     [SerializeField] private float _jumpHeight = 10f;
-    [SerializeField] private GameObject _groundCheckObject;
+    [RequiredSerializeField] [SerializeField] private GameObject _groundCheckObject;
 
     [Header("Dash Settings")]
     [SerializeField] private float _dashForce = 5f;
@@ -45,7 +45,7 @@ public class PlayerMovementController : MonoBehaviour, IDynamicExceptionProvider
     private float _timeSinceLastDash = 0f; // In seconds
     private float _originalGravityScale;
 
-    [SerializeField] private LayerMask _walkableGroundLayerMask;
+    [RequiredSerializeField] [SerializeField] private LayerMask _walkableGroundLayerMask;
     [Component] private Rigidbody2D _playerRigidbody2D;
 
     private Vector2 _movementInputs; // Store the movement input values to be used in FixedUpdate
@@ -55,8 +55,6 @@ public class PlayerMovementController : MonoBehaviour, IDynamicExceptionProvider
     #region Initialization
     private void Awake()
     {
-        ((IDynamicExceptionProvider)this).InitializeAndValidateFields(this);
-        
         // Store the original gravity scale of the player to avoid sliding off of slopes.
         _originalGravityScale = _playerRigidbody2D.gravityScale;
     }

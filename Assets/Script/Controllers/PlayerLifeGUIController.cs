@@ -1,8 +1,7 @@
-using System;
 using UnityEngine;
 using TMPro;
 
-public class PlayerLifeGUIController : MonoBehaviour, IDynamicExceptionProvider
+public class PlayerLifeGUIController : MonoBehaviour
 {
     private PlayerLifeController _playerLifeController;
     [Component] private TextMeshProUGUI _textMesh;
@@ -14,8 +13,6 @@ public class PlayerLifeGUIController : MonoBehaviour, IDynamicExceptionProvider
 
         if (!playerGameObject.TryGetComponent<PlayerLifeController>(out _playerLifeController))
             throw new MissingComponentException("PlayerLifeController not found on player.");
-
-        ((IDynamicExceptionProvider)this).InitializeComponents(this);
     }
 
     private void Update() =>

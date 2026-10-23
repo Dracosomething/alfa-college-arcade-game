@@ -1,17 +1,16 @@
 using TMPro;
-using UnityEditor;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.SceneManagement;
 
-public class ExitLevelController : MonoBehaviour, IDynamicExceptionProvider
+public class ExitLevelController : MonoBehaviour
 {
     private const float ExitDelayInSeconds = 2.0f;
     private const string UnchangingIndicatorText = "Exiting level in: ";
     private const string MainMenuSceneName = "TitleScreen";
     
     [Header("Exit Script Settings")]
-    [SerializeField] private InputActionReference _cancelActionReference;
+    [RequiredSerializeField] [SerializeField] private InputActionReference _cancelActionReference;
 
     private float _timeRemaining = ExitDelayInSeconds;
     private GameObject _guiIndicator;
@@ -21,8 +20,6 @@ public class ExitLevelController : MonoBehaviour, IDynamicExceptionProvider
     {
         const string IndicatorTextFieldName = "ExitLevelText";
         const string IndicatorVisualElementName = "ExitLevelIndicator";
-        
-        ((IDynamicExceptionProvider)this).ValidateSerializeFieldsSet(this);
         
         if (!(SceneHelper.TryFindGameObjectInScene(IndicatorTextFieldName, out GameObject textObject) &&
               SceneHelper.TryFindGameObjectInScene(IndicatorVisualElementName, out _guiIndicator)))

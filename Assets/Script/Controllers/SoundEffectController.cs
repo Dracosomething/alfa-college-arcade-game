@@ -2,15 +2,13 @@ using Unity.VisualScripting;
 using UnityEngine;
 
 [RequireComponent(typeof(PlayingSoundEffectCache))]
-public class SoundEffectController : MonoBehaviour, IDynamicExceptionProvider
+public class SoundEffectController : MonoBehaviour
 {
     [Component] private PlayingSoundEffectCache _soundEffectCache;
     private System.Random _random;
     
     private void Awake()
     {
-        ((IDynamicExceptionProvider)this).InitializeComponents(this);
-
         _random = new System.Random();
     }
 

@@ -1,15 +1,12 @@
 using UnityEngine;
 
 [RequireComponent(typeof(AudioSource), typeof(PlayingSoundEffectCache))]
-public class SoundEffectWrapper : MonoBehaviour, IDynamicExceptionProvider
+public class SoundEffectWrapper : MonoBehaviour
 {
     [Component] private PlayingSoundEffectCache _soundEffectCache;
     [Component] public AudioSource AudioSource;
     public string SoundEffectOwnerName;
     public string SoundEffectName;
-
-    private void Awake() =>
-        ((IDynamicExceptionProvider)this).InitializeComponents(this);
 
     private void Update()
     {

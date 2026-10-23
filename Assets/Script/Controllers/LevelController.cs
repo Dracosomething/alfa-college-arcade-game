@@ -1,12 +1,9 @@
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-public class LevelController : MonoBehaviour, IDynamicExceptionProvider
+public class LevelController : MonoBehaviour
 {
-    [SerializeField] private string _levelToLoadName;
-
-    private void Awake() =>
-        ((IDynamicExceptionProvider)this).ValidateSerializeFieldsSet(this);
+    [RequiredSerializeField] [SerializeField] private string _levelToLoadName;
     
     public void LoadLevel() =>
         SceneManager.LoadScene(_levelToLoadName);

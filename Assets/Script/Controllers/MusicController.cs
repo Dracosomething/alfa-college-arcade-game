@@ -1,14 +1,12 @@
 using UnityEngine;
 
-public class MusicController : MonoBehaviour, IDynamicExceptionProvider
+public class MusicController : MonoBehaviour
 {
     [Component(InitializeIfMissing = true)]private AudioSource _audioSource;
-    [SerializeField] private AudioClip _musicData;
+    [RequiredSerializeField] [SerializeField] private AudioClip _musicData;
 
     private void Awake()
     {
-        ((IDynamicExceptionProvider)this).InitializeAndValidateFields(this);
-
         _audioSource.spatialBlend = Constants._2DSound;
         _audioSource.clip = _musicData;
         _audioSource.playOnAwake = true;

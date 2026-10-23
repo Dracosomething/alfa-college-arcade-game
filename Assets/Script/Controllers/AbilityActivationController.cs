@@ -3,16 +3,11 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 
 [RequireComponent(typeof(AbilityActivationController), typeof(SoundEffectController))]
-public class AbilityActivationController : MonoBehaviour, IDynamicExceptionProvider
+public class AbilityActivationController : MonoBehaviour
 {
     [SerializeField] private InputActionReference _interactionInputActionReference;
     [Component] private AbilitySelectionController _selectionController;
     [Component] private SoundEffectController _soundEffectController;
-    
-    private void Awake()
-    {
-        ((IDynamicExceptionProvider)this).InitializeAndValidateFields(this);
-    }
 
     private void Update()
     {

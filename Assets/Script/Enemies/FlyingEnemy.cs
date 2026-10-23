@@ -15,8 +15,6 @@ public class FlyingEnemy : Enemy
     {
         base.Awake();
         
-        ((IDynamicExceptionProvider)this).InitializeAndValidateFields(this);
-        
         _agent.updateRotation = false;
         _agent.updateUpAxis = false;
 

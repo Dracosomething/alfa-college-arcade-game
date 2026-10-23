@@ -1,13 +1,10 @@
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-public class CheckpointController : MonoBehaviour, IDynamicExceptionProvider
+public class CheckpointController : MonoBehaviour
 {
     [Component] private Rigidbody2D _playerRigidbody;
     private Transform _currentCheckpoint;
-
-    private void Awake() =>
-        ((IDynamicExceptionProvider)this).InitializeComponents(this);
 
     public void SetCheckpoint(Transform position) =>
         _currentCheckpoint = position;

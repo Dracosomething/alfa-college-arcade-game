@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class PlayerLifeController : MonoBehaviour, IDynamicExceptionProvider
+public class PlayerLifeController : MonoBehaviour
 {
     [Component] private CheckpointController _checkpointController;
 
@@ -9,8 +9,6 @@ public class PlayerLifeController : MonoBehaviour, IDynamicExceptionProvider
 
     private void Awake()
     {
-        ((IDynamicExceptionProvider)this).InitializeAndValidateFields(this);
-
         CurrentLives = MaximumLives;
     }
 

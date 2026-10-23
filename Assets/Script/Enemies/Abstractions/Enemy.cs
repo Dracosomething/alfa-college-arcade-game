@@ -1,7 +1,7 @@
 using UnityEngine;
 
 [RequireComponent(typeof(SpriteRenderer), typeof(CooldownWrapper), typeof(Rigidbody2D))]
-public abstract class Enemy : MonoBehaviour, IDynamicExceptionProvider
+public abstract class Enemy : MonoBehaviour
 {
     [Component] private SpriteRenderer _spriteRenderer;
     [Component] private CooldownWrapper _attackCooldownWrapper;
@@ -13,8 +13,6 @@ public abstract class Enemy : MonoBehaviour, IDynamicExceptionProvider
 
     protected virtual void Awake()
     {
-        ((IDynamicExceptionProvider)this).InitializeAndValidateFields(this);
-        
         _previousPosition = RigidBody.position;
     }
 

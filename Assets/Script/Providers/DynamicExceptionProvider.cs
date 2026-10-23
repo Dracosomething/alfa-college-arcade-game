@@ -1,0 +1,128 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Reflection;
+using System.Text;
+using System.Threading.Tasks;
+using Unity.VisualScripting;
+using UnityEngine;
+
+public class DynamicExceptionProvider
+{
+    [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
+    public static void InitializeProjectComponents()
+    {
+        Dictionary<Exception, GameObject> exceptionsToThrowWithContextObject = new();
+
+        MonoBehaviour[] loadedScripts = Resources.FindObjectsOfTypeAll<GameObject>()
+            .SelectMany(
+                gameObject => gameObject.GetComponents<MonoBehaviour>(),
+                (gameObject, scriptComponent) => scriptComponent)
+            .Where(scriptComponent => !scriptComponent.IsUnityNull())
+            .ToArray();
+
+        foreach (MonoBehaviour scriptComponent in loadedScripts)
+        {
+            Type scriptClass = scriptComponent.GetType();
+            GameObject scriptGameObject = scriptComponent.gameObject;
+
+            ValidateSerializeFieldsInitialized(scriptClass, scriptComponent, scriptGameObject, exceptionsToThrowWithContextObject);
+            InitializeComponentsAndThrowIfMissingComponents(scriptClass, scriptComponent, scriptGameObject,
+                exceptionsToThrowWithContextObject);
+        }
+
+        if (!exceptionsToThrowWithContextObject.Any())
+            return;
+        
+        AggregateException aggregateException = new(exceptionsToThrowWithContextObject.Keys);
+        aggregateException.Handle(exception =>
+        {
+            Debug.LogException(exception, exceptionsToThrowWithContextObject[exception]);
+
+            return true;
+        });
+}
+
+    private static void ValidateSerializeFieldsInitialized(Type scriptClass, MonoBehaviour scriptComponent, GameObject gameObject,
+        Dictionary<Exception, GameObject> exceptions)
+    {
+        string[] nonSerializedFields = GetNamesOfFieldsMatchingCondition(
+            fields: GetFieldsWithAttribute<SerializeField>(scriptClass), 
+            condition: field => field.HasAttribute<RequiredSerializeFieldAttribute>() && field.GetValue(scriptComponent).IsUnityNull(),
+            nameSelector: field => field.Name);
+                
+        if (!nonSerializedFields.Any())
+            return;
+
+        exceptions.Add(BuildException<SerializeFieldNotSetException>(
+            gameObject,
+            messageBody: $"({scriptClass.Name}) has the following serialize fields not initialized: ", 
+            nonSerializedFields), gameObject);
+    }
+
+    private static void InitializeComponentsAndThrowIfMissingComponents(Type scriptClass, MonoBehaviour scriptComponent, GameObject gameObject,
+        Dictionary<Exception, GameObject> exceptions)
+    {
+        string[] missingComponents = GetNamesOfFieldsMatchingCondition(
+            fields: GetFieldsWithAttribute<ComponentAttribute>(scriptClass), 
+            condition: field =>
+            {
+                ComponentAttribute componentAttribute = field.GetCustomAttribute<ComponentAttribute>();
+                Type fieldType = field.FieldType; // We get the datatype of the field
+
+                bool doesComponentExist = scriptComponent.TryGetComponent(fieldType, out Component component);
+
+                if (!doesComponentExist && componentAttribute.InitializeIfMissing)
+                {
+                    doesComponentExist = true;
+                    component = scriptComponent.gameObject.AddComponent(fieldType);
+                }
+
+                field.SetValue(scriptComponent, component); // We initialize the field (will be null if not found)
+
+                return !doesComponentExist;
+            },
+            nameSelector: field => field.FieldType.Name);
+        
+        if (!missingComponents.Any())
+            return;
+        
+        exceptions.Add(BuildException<MissingComponentException>(
+            gameObject,
+            messageBody: " is missing the following components: ",
+            missingComponents), gameObject);
+    }
+
+    private static IEnumerable<FieldInfo> GetFieldsWithAttribute<TAttribute>(Type classType)
+        where TAttribute : Attribute
+    {
+        IEnumerable<FieldInfo> fields = classType.GetFields(BindingFlags.Public |
+                                                            BindingFlags.NonPublic |
+                                                            BindingFlags.Instance);
+        
+        return fields
+            .Where(field => field.HasAttribute<TAttribute>()); // We filter out the fields that don't have the requested attribute
+    }
+
+    private static string[] GetNamesOfFieldsMatchingCondition(IEnumerable<FieldInfo> fields,
+        Func<FieldInfo, bool> condition, Func<FieldInfo, string> nameSelector) =>
+        fields
+            .Where(condition)
+            .Select(nameSelector)
+            .ToArray();
+    
+    private static TException BuildException<TException>(GameObject gameObject, string messageBody,
+        string[] missingFields) where TException : notnull, Exception
+    {
+        var exceptionMessageBuilder = new StringBuilder();
+
+        exceptionMessageBuilder.Append(gameObject.name);
+        exceptionMessageBuilder.Append(messageBody);
+    
+        foreach (string missingComponentName in missingFields)
+            exceptionMessageBuilder.Append(missingComponentName).Append(", ");
+
+        // Complicated way to create an instance of TException.
+        return (TException) Activator.CreateInstance(typeof(TException), exceptionMessageBuilder.ToString());
+    }
+}

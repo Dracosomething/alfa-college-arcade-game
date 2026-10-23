@@ -1,23 +1,22 @@
 using System;
-using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class DialogueController : MonoBehaviour, IDynamicExceptionProvider
+public class DialogueController : MonoBehaviour
 {
     private const string DialogueInputName = "Input"; // Change this constant when a proper input is decided
     
     [Header("UI Panels")]
-    [SerializeField] private GameObject _dialogueTextComponent;
-    [SerializeField] private GameObject _characterNameComponent;
+    [RequiredSerializeField] [SerializeField] private GameObject _dialogueTextComponent;
+    [RequiredSerializeField] [SerializeField] private GameObject _characterNameComponent;
     
     [Header("Dialogue Selection")]
-    [SerializeField] private DialogueDataScriptableObject dialogueDataScriptableObject;
+    [RequiredSerializeField] [SerializeField] private DialogueDataScriptableObject dialogueDataScriptableObject;
 
     [Header("Character Animations")] 
-    [SerializeField] private CharacterAnimationCollection _characterAnimations = new();
+    [RequiredSerializeField] [SerializeField] private CharacterAnimationCollection _characterAnimations = new();
 
-    [Component(InitializeIfMissing = true)]private Animator _characterAnimator;
+    [Component(InitializeIfMissing = true)] private Animator _characterAnimator;
     private PlayerMovementController _playerMovementController;
     private Text _dialogueTextTextComponent;
     private Text _characterNameTextComponent; 
@@ -29,8 +28,6 @@ public class DialogueController : MonoBehaviour, IDynamicExceptionProvider
     
     private void Awake()
     {
-        ((IDynamicExceptionProvider)this).InitializeAndValidateFields(this);
-        
         if (!SceneHelper.TryFindFirstObjectByTypeInScene<PlayerMovementController>(out _playerMovementController))
             throw new CouldNotFindGameObjectException("Could not find a PlayerMovementController in the scene.");
 

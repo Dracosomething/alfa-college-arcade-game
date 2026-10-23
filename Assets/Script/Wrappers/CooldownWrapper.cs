@@ -1,15 +1,11 @@
-using System;
 using UnityEngine;
 
-public class CooldownWrapper : MonoBehaviour, IDynamicExceptionProvider
+public class CooldownWrapper : MonoBehaviour
 {
     private const int FinishedCooldownInSeconds = 0;
     
     [SerializeField] private CustomTimeSpan _cooldownDuration = new(minutes: 0, seconds: 0);
     private float _remainingCooldownInSeconds;
-
-    private void Awake() =>
-        ((IDynamicExceptionProvider)this).ValidateSerializeFieldsSet(this);
 
     public bool IsCooldownActive() =>
         _remainingCooldownInSeconds > FinishedCooldownInSeconds;

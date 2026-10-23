@@ -3,7 +3,7 @@ using UnityEngine;
 
 public class WalkingEnemy : Enemy
 {
-    [SerializeField] private Vector2 _endPosition;
+    [RequiredSerializeField] [SerializeField] private Vector2 _endPosition;
     private Vector2 _startPosition;
     private Vector2 _targetPosition;
     private TargetPosition _targetPositionOption = TargetPosition.EndPosition;
@@ -11,8 +11,6 @@ public class WalkingEnemy : Enemy
     protected override void Awake()
     {
         base.Awake();
-        
-        ((IDynamicExceptionProvider)this).ValidateSerializeFieldsSet(this);
         
         _startPosition = transform.position;
         _targetPosition = GetTargetPosition();
