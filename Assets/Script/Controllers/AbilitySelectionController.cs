@@ -7,7 +7,7 @@ using UnityEngine.SceneManagement;
 
 public class AbilitySelectionController : MonoBehaviour
 {
-    [SerializeField] private InputActionReference _scrollInputActionReference;
+    [RequiredSerializeField] [SerializeField] private InputActionReference _scrollInputActionReference;
     private Camera _mainCamera;
     private Transform _cameraTransform;
     private List<SpriteRenderer> _abilityObjectsInScene;
