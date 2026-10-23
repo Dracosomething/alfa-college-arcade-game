@@ -96,12 +96,22 @@ public class DynamicExceptionProvider
     private static IEnumerable<FieldInfo> GetFieldsWithAttribute<TAttribute>(Type classType)
         where TAttribute : Attribute
     {
-        IEnumerable<FieldInfo> fields = classType.GetFields(BindingFlags.Public |
-                                                            BindingFlags.NonPublic |
-                                                            BindingFlags.Instance);
+        IEnumerable<FieldInfo> fields = GetFieldsRecursively(classType);
         
         return fields
             .Where(field => field.HasAttribute<TAttribute>()); // We filter out the fields that don't have the requested attribute
+    }
+
+    private static IEnumerable<FieldInfo> GetFieldsRecursively(Type classType)
+    {
+        List<FieldInfo> fields = classType.GetFields(BindingFlags.Public |
+                                                     BindingFlags.NonPublic |
+                                                     BindingFlags.Instance).ToList();
+        
+        if (!classType.BaseType.IsUnityNull() && classType.BaseType != typeof(MonoBehaviour))
+            fields.AddRange(GetFieldsRecursively(classType.BaseType));
+
+        return fields;
     }
 
     private static string[] GetNamesOfFieldsMatchingCondition(IEnumerable<FieldInfo> fields,
