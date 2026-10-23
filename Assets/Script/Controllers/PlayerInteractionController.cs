@@ -6,6 +6,7 @@ public class PlayerInteractionController : MonoBehaviour
     [SerializeField] private InputActionReference _interactionInputReference;
     [SerializeField] private float _interactionRadius;
     [SerializeField] private GameObject _interactionCheckObject;
+    [SerializeField] private LayerMask _interactableObjectLayer;
 
     private void Awake()
     {
@@ -18,13 +19,15 @@ public class PlayerInteractionController : MonoBehaviour
 
     private void Update()
     {
-        GameObject interactableObject = Physics2D.OverlapCircle(_interactionCheckObject.transform.position, _interactionRadius).gameObject;
-
-        if (interactableObject == null)
+        if (!_interactionInputReference.action.WasPressedThisFrame())
             return;
 
-        if (_interactionInputReference.action.WasPressedThisFrame())
-            InteractWithObject(interactableObject);
+        Collider2D interactableObjectCollider = Physics2D.OverlapCircle(_interactionCheckObject.transform.position, _interactionRadius, _interactableObjectLayer);
+
+        if (interactableObjectCollider == null)
+            return;
+
+        InteractWithObject(interactableObjectCollider.gameObject);
     }
 
     private void InteractWithObject(GameObject interactedObject)
