@@ -69,18 +69,18 @@ public class PlayerAnimator : MonoBehaviour
 
     private void SetDirection(Direction direction)
     {
+        const string directionParameter = "IsFacingRight";
+
         if (_currentDirection == direction)
             return;
 
         _currentDirection = direction;
-        _playerAnimator.SetBool(Animator.StringToHash("IsFacingRight"), _currentDirection == Direction.Right);
+        _playerAnimator.SetBool(Animator.StringToHash(directionParameter), _currentDirection == Direction.Right);
     }
 
     private void ResetStates()
     {
         foreach (PlayerAnimationStates state in Enum.GetValues(typeof(PlayerAnimationStates)))
-        {
             _playerAnimator.SetBool(Animator.StringToHash(state.ToString()), false);
-        }
     }
 }
