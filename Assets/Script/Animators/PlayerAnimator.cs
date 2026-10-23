@@ -14,28 +14,51 @@ public class PlayerAnimator : MonoBehaviour
         // No need to get do a try catch here since the Animator is a required component.
         _playerAnimater = GetComponent<Animator>();
 
-    public void SetAnimation(PlayerAnimationStates state, Direction direction, Vector2 velocity = default)
+    public void GetValues(Vector2 movemenInputs,  Vector2 velocity, bool isGrounded)
     {
-        SetAnimationState(state, velocity);
-        CheckMovingDirection(velocity);
+        SetDirection(GetMovingDirection(movemenInputs));
+
+        SetAnimationState(GetAnimationState(movemenInputs, velocity, isGrounded));
     }
 
-    private void SetAnimationState(PlayerAnimationStates state, Vector2 velocity = default)
+    private Direction GetMovingDirection(Vector2 movemenInputs)
     {
-        ResetStates();
+        if (movemenInputs.x > 0)
+            return Direction.Right;
+        else if (movemenInputs.x < 0)
+            return Direction.Left;
+        else
+            return _currentDirection;
+    }
 
+    private PlayerAnimationStates GetAnimationState(Vector2 movemenInputs, Vector2 velocity, bool isGrounded)
+    {
+        // Check for dashing first because that has priority over jumping, walking and idle.
+        if ((velocity.x > 5f || velocity.x < -5f) && velocity.y == 0f)
+            return PlayerAnimationStates.IsDashing;
+
+        // Checking for jumping because that has priority over walking and idle.
+        if (velocity.y > 0.1f && !isGrounded)
+            return PlayerAnimationStates.IsJumping;
+        else if (velocity.y < -0.1f && !isGrounded)
+            return PlayerAnimationStates.IsFalling;
+
+        if (movemenInputs.x != 0) // Either if x is positive or negative.
+            return PlayerAnimationStates.IsWalking;
+
+        // Return default animation state.
+        return PlayerAnimationStates.IsIdle;
+    }
+
+    private void SetAnimationState(PlayerAnimationStates state)
+    {
         if (_currentState == state)
             return;
 
+        ResetStates();
+
         _currentState = state;
         _playerAnimater.SetBool(_currentState.ToString(), true);
-    }
-    private void CheckMovingDirection(Vector2 velocity)
-    {
-        if (velocity.x > 0)
-            SetDirection(Direction.Right);
-        else if (velocity.x < 0)
-            SetDirection(Direction.Left);
     }
 
     private void SetDirection(Direction direction)
