@@ -14,7 +14,7 @@ using UnityEngine;
 ///
 /// This class also throws all exceptions that have been found across the project.
 /// </summary>
-public class DynamicExceptionProvider
+public class CustomAttributeHandler
 {
     [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
     public static void InitializeProjectComponents()
