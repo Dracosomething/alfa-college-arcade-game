@@ -5,7 +5,7 @@ using UnityEngine.InputSystem;
 [RequireComponent(typeof(AbilityActivationController), typeof(SoundEffectController))]
 public class AbilityActivationController : MonoBehaviour
 {
-    [RequiredSerializeField] [SerializeField] private InputActionReference _interactionInputActionReference;
+    [RequiredSerializeField] [SerializeField] private InputActionReference _activationInputActionReference;
     [Component] private AbilitySelectionController _selectionController;
     [Component] private SoundEffectController _soundEffectController;
 
@@ -13,7 +13,7 @@ public class AbilityActivationController : MonoBehaviour
     {
         const string FailureAudioEffectName = "Concrete 1"; // Change this value when we have a proper sound effect for this.
         
-        if (_interactionInputActionReference.action.WasPressedThisFrame() && !ActivateAbilityOfSelectedObject())
+        if (_activationInputActionReference.action.WasPressedThisFrame() && !ActivateAbilityOfSelectedObject())
             _soundEffectController.PlaySound(FailureAudioEffectName, soundEffectOwnerName: name, allowMultipleOfSoundEffect: true);
     }
 

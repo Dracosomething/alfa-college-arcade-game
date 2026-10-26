@@ -11,7 +11,7 @@ public class DialogueController : MonoBehaviour
     [RequiredSerializeField] [SerializeField] private GameObject _characterNameComponent;
     
     [Header("Dialogue Selection")]
-    [RequiredSerializeField] [SerializeField] private DialogueDataScriptableObject dialogueDataScriptableObject;
+    [RequiredSerializeField] [SerializeField] private DialogueDataScriptableObject _dialogueDataScriptableObject;
 
     [Header("Character Animations")] 
     [RequiredSerializeField] [SerializeField] private CharacterAnimationCollection _characterAnimations = new();
@@ -54,7 +54,7 @@ public class DialogueController : MonoBehaviour
     {
         ActivateUI();
         
-        _characterNameTextComponent.text = dialogueDataScriptableObject.CharacterName;
+        _characterNameTextComponent.text = _dialogueDataScriptableObject.CharacterName;
         
         _playerMovementController.DisablePlayerMovementController();
         
@@ -100,7 +100,7 @@ public class DialogueController : MonoBehaviour
 
         _isNotWritingText = false;
         
-        DialogueNode currentDialogueNode = dialogueDataScriptableObject.DialogueNodes[_currentDialogueNodeIndex];
+        DialogueNode currentDialogueNode = _dialogueDataScriptableObject.DialogueNodes[_currentDialogueNodeIndex];
 
         if (Input.GetButtonDown(DialogueInputName))
             _dialogueTextTextComponent.text = currentDialogueNode.DialogueText;
@@ -121,7 +121,7 @@ public class DialogueController : MonoBehaviour
             _currentDialogueNodeIndex++;
         }
         
-        if (_currentDialogueNodeIndex == (dialogueDataScriptableObject.DialogueNodes.Count - 1) &&  // We need to remove 1 from count to get the last index of the list
+        if (_currentDialogueNodeIndex == (_dialogueDataScriptableObject.DialogueNodes.Count - 1) &&  // We need to remove 1 from count to get the last index of the list
             Input.GetButtonDown(DialogueInputName))
             EndDialogue();
         
