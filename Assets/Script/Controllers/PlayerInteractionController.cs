@@ -23,17 +23,17 @@ public class PlayerInteractionController : MonoBehaviour
         if (!_interactionInputReference.action.WasPressedThisFrame())
             return;
 
-        Collider2D interactableObjectCollider = Physics2D.OverlapCircle(_interactionCheckObject.transform.position, _interactionRadius, _interactableObjectLayer);
+        Collider2D objectCollider = Physics2D.OverlapCircle(_interactionCheckObject.transform.position, _interactionRadius, _interactableObjectLayer);
 
-        if (interactableObjectCollider.IsUnityNull())
+        if (objectCollider.IsUnityNull())
             return;
 
-        InteractWithObject(interactableObjectCollider.gameObject);
+        InteractWithObject(objectCollider.gameObject);
     }
 
-    private void InteractWithObject(GameObject interactedObject)
+    private void InteractWithObject(GameObject interactedGameObject)
     {
-        if (interactedObject.TryGetComponent<IInteractionObject>(out IInteractionObject interactedObjectInteraction))
-            interactedObjectInteraction.Interact();
+        if (interactedGameObject.TryGetComponent<IInteractionObject>(out IInteractionObject interactedObject))
+            interactedObject.Interact();
     }
 }
