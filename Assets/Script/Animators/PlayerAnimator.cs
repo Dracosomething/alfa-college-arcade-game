@@ -38,7 +38,7 @@ public class PlayerAnimator : MonoBehaviour
         const float NoInput = 0f;
 
         // Check for dashing first because that has priority over jumping, walking and idle.
-        if ((velocity.x > DashThreshold || velocity.x < -DashThreshold) && velocity.y == NoInput)
+        if ((velocity.x > DashThreshold || velocity.x < -DashThreshold) && velocity.y.Equals(NoInput))
             return PlayerAnimationStates.IsDashing;
 
         // Checking for jumping because that has priority over walking and idle.
@@ -56,7 +56,7 @@ public class PlayerAnimator : MonoBehaviour
 
     private void SetAnimationState(PlayerAnimationStates state)
     {
-        if (_currentState == state)
+        if (_currentState.Equals(state))
             return;
 
         ResetStates();
@@ -69,7 +69,7 @@ public class PlayerAnimator : MonoBehaviour
     {
         const string DirectionParameter = "IsFacingRight";
 
-        if (_currentDirection == direction)
+        if (_currentDirection.Equals(direction))
             return;
 
         _currentDirection = direction;

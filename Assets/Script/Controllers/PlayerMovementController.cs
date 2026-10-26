@@ -270,12 +270,12 @@ public class PlayerMovementController : MonoBehaviour
     private bool HasCollisionWithObject()
     {
         const int ContactPointsArraySize = 1;
-        const int FirstContactPoints = 0;
+        const int FirstContactPoint = 0;
 
         ContactPoint2D[] contactPoints = new ContactPoint2D[ContactPointsArraySize];
         _playerRigidbody2D.GetContacts(contactPoints);
 
-        if (contactPoints[FirstContactPoints].collider != null)
+        if (!contactPoints[FirstContactPoint].collider.Equals(null))
             return true;
 
         return false;
