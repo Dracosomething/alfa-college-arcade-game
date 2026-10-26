@@ -10,4 +10,5 @@ This game was made so that new students can learn a bit about the course "Softwa
 <h2 id="development">Development Instructions</h2>
 For developers do your work on your own branches and make a new one for each feature.
 Follow the conventions in conventions.md.
-When writing MonoBehaviour scripts that need components, implement the ICustomUnityScript interface, and mark all components with the Component tag.
+Any field that will look for a component on the gameobject must be marked with the Component attribute, this will handle the checking if it exists and the initialization by itself.
+Any field marked with SerializeField that can be set to null must also be given the RequiredSerializeField attribute, this will automatically check if the field is initialized and throw an exception if not.
