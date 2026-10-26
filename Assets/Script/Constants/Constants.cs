@@ -10,4 +10,5 @@
     public static LevelLookupTable LevelLookupTable = new();
     public static float ZeroGravity = 0f;
     public static float DefaultGravity = -9.81f;
+    public static float NoInput = 0f;
 }

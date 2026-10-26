@@ -6,7 +6,6 @@ using UnityEngine.InputSystem;
 public class PlayerMovementController : MonoBehaviour
 {
     #region Fields
-    private const float NoInputs = 0f;
     private const int DashStartTimerValue = 0;
     private const float DashDurationDividerInHalf = 0.5f;
     private const float FlatSlopeAngle = 0f; // The maximum slope angle the player can walk on.
@@ -116,7 +115,7 @@ public class PlayerMovementController : MonoBehaviour
             velocity = AdjustedVelocityToSlope(new Vector2(Mathf.Round(_movementInputs.x) * _movementSpeed, _playerRigidbody2D.linearVelocity.y));
 
         _playerRigidbody2D.linearVelocity = velocity;
-        _playerAnimator.GetValues(_movementInputs, velocity, _isGrounded);
+        _playerAnimator.GetMovementAndGroundValues(_movementInputs, velocity, _isGrounded);
     }
     #endregion
 
@@ -156,7 +155,7 @@ public class PlayerMovementController : MonoBehaviour
     {
         CheckForValidGround();
 
-        if (_jumpInputActionReference.action.ReadValue<float>() > NoInputs && _isGroundedWithCoyoteTime)
+        if (_jumpInputActionReference.action.ReadValue<float>() > Constants.NoInput && _isGroundedWithCoyoteTime)
             Jump();
 
         GroundCheckDelay();
@@ -275,10 +274,7 @@ public class PlayerMovementController : MonoBehaviour
         ContactPoint2D[] contactPoints = new ContactPoint2D[ContactPointsArraySize];
         _playerRigidbody2D.GetContacts(contactPoints);
 
-        if (!contactPoints[FirstContactPoint].collider.Equals(null))
-            return true;
-
-        return false;
+        return !contactPoints[FirstContactPoint].collider.Equals(null);
     }
     #endregion
 

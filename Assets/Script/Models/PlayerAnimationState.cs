@@ -1,4 +1,4 @@
-public enum PlayerAnimationStates
+public enum PlayerAnimationState
 {
     IsWalking,
     IsSitting,
