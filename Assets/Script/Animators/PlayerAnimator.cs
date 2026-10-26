@@ -81,8 +81,6 @@ public class PlayerAnimator : MonoBehaviour
             SetPlayerAnimatorBool(state.ToString(), false);
     }
 
-    private void SetPlayerAnimatorBool(string parameter, bool value)
-    {
+    private void SetPlayerAnimatorBool(string parameter, bool value) =>
         _playerAnimator.SetBool(Animator.StringToHash(parameter), value);
-    }
 }
