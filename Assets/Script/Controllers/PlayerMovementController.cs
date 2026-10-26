@@ -53,11 +53,9 @@ public class PlayerMovementController : MonoBehaviour
     #endregion
 
     #region Initialization
-    private void Awake()
-    {
+    private void Awake() =>
         // Store the original gravity scale of the player to avoid sliding off of slopes.
         _originalGravityScale = _playerRigidbody2D.gravityScale;
-    }
     #endregion
 
     #region enable, disable

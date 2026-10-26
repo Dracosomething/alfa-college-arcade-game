@@ -5,12 +5,7 @@ using UnityEngine;
 public class SoundEffectController : MonoBehaviour
 {
     [Component] private PlayingSoundEffectCache _soundEffectCache;
-    private System.Random _random;
-    
-    private void Awake()
-    {
-        _random = new System.Random();
-    }
+    private readonly System.Random _random = new();
 
     public void PlaySound(string soundEffectName, string soundEffectOwnerName, bool allowMultipleOfSoundEffect = false)
     {

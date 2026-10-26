@@ -7,10 +7,8 @@ public class PlayerLifeController : MonoBehaviour
     [field: SerializeField] public int MaximumLives { get; private set; }
     public int CurrentLives { get; private set; }
 
-    private void Awake()
-    {
+    private void Awake() =>
         CurrentLives = MaximumLives;
-    }
 
     public void Die()
     {

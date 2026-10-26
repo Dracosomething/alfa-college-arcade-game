@@ -11,10 +11,8 @@ public abstract class Enemy : MonoBehaviour
     [SerializeField] protected int Health = 1;
     [SerializeField] protected float Speed = 1;
 
-    protected virtual void Awake()
-    {
+    protected virtual void Awake() =>
         _previousPosition = RigidBody.position;
-    }
 
     protected virtual void Update()
     {
