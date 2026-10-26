@@ -274,7 +274,7 @@ public class PlayerMovementController : MonoBehaviour
         ContactPoint2D[] contactPoints = new ContactPoint2D[ContactPointsArraySize];
         _playerRigidbody2D.GetContacts(contactPoints);
 
-        return !contactPoints[FirstContactPoint].collider.Equals(null);
+        return !contactPoints[FirstContactPoint].collider.IsUnityNull();
     }
     #endregion
 
