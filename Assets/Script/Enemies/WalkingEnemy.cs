@@ -3,7 +3,7 @@ using UnityEngine;
 
 public class WalkingEnemy : Enemy
 {
-    [RequiredSerializeField] [SerializeField] private int _endXPositionOffset;
+    [RequiredSerializeField] [SerializeField] private int _endPositionXOffset;
     private Vector2 _startPosition;
     private Vector2 _targetPosition;
     private Vector2 _endPosition;
@@ -14,7 +14,7 @@ public class WalkingEnemy : Enemy
         base.Awake();
         
         _startPosition = transform.position;
-        _endPosition = new Vector2(_startPosition.x + _endXPositionOffset, _startPosition.y);
+        _endPosition = new Vector2(_startPosition.x + _endPositionXOffset, _startPosition.y);
         _targetPosition = GetTargetPosition();
     }
 
