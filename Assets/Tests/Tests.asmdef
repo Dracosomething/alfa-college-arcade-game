@@ -4,10 +4,11 @@
     "references": [
         "UnityEngine.TestRunner",
         "UnityEditor.TestRunner",
-        "Main"
+        "Scripts",
+        "Unity.InputSystem",
+        "Unity.InputSystem.TestFramework"
     ],
     "includePlatforms": [
-        "Editor"
     ],
     "excludePlatforms": [],
     "allowUnsafeCode": false,

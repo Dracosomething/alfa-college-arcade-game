@@ -1,26 +1,76 @@
-using UnityEngine.Assertions;
+using System.Collections;
+using NUnit.Framework;
+using UnityEditor.SceneManagement;
+using UnityEngine;
+using UnityEngine.InputSystem;
 using UnityEngine.TestTools;
 
-public class PlayerMovementControllerTests
+public class PlayerMovementControllerTests : InputTestFixture
 {
-    /// <summary>
-    /// We check if the player exists
-    /// </summary>
-    [UnityTest]
-    public void PlayerExists() =>
-        Assert.IsTrue(SceneHelper.TryFindGameObjectInScene(Constants.PlayerGameObjectName, out var _));
+    private GameObject player;
 
-    [UnityTest]
-    public void PlayerHasMovementController()
+    [OneTimeSetUp]
+    public void OneTimeSetUp()
     {
-        _ = SceneHelper.TryFindGameObjectInScene(Constants.PlayerGameObjectName, out var player);
-        
-        Assert.IsTrue( player.TryGetComponent<PlayerMovementController>(out _));
+        player = GameObject.Find("Player");
     }
     
     [UnityTest]
-    public void CharacterMovementKeyboard()
+    public IEnumerator MovementLeftJoystickTest()
     {
+        var controller = InputSystem.AddDevice<Gamepad>();
+        var playerRigidBody = player.GetComponent<Rigidbody2D>();
+        var currentVelocity = playerRigidBody.linearVelocityX;
+
+        Move(controller.leftStick, new Vector2(-1, 0));
+
+        Debug.Log(playerRigidBody.linearVelocityX);
+        Assert.IsTrue(playerRigidBody.linearVelocityX < currentVelocity);
+    }
+
+    [Test]
+    public void MovementLeftKeyboardTest()
+    {
+        var keyboard = InputSystem.AddDevice<Keyboard>();
+        var playerRigidBody = player.GetComponent<Rigidbody2D>();
+        var currentVelocity = playerRigidBody.linearVelocityX;
         
+        PressAndRelease(keyboard.aKey);
+
+        Debug.Log(playerRigidBody.linearVelocityX);
+        Assert.IsTrue(playerRigidBody.linearVelocityX < currentVelocity);
+    }
+    
+    
+    [Test]
+    public void MovementRightJoystickTest()
+    {
+        var controller = InputSystem.AddDevice<Gamepad>();
+        var playerRigidBody = player.GetComponent<Rigidbody2D>();
+        var currentVelocity = playerRigidBody.linearVelocityX;
+        
+        Move(controller.leftStick, new Vector2(1, 0));
+
+        Debug.Log(playerRigidBody.linearVelocityX);
+        Assert.IsTrue(playerRigidBody.linearVelocityX < currentVelocity);
+    }
+
+    [Test]
+    public void MovementRightKeyboardTest()
+    {
+        var keyboard = InputSystem.AddDevice<Keyboard>();
+        var playerRigidBody = player.GetComponent<Rigidbody2D>();
+        var currentVelocity = playerRigidBody.linearVelocityX;
+        
+        PressAndRelease(keyboard.dKey);
+
+        Debug.Log(playerRigidBody.linearVelocityX);
+        Assert.IsTrue(playerRigidBody.linearVelocityX < currentVelocity);
+    }
+
+    [OneTimeTearDown]
+    public void OneTimeTearDown()
+    {
+        //EditorSceneManager.NewScene(NewSceneSetup.DefaultGameObjects, NewSceneMode.Single);
     }
 }
