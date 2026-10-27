@@ -1,11 +1,10 @@
-using System;
 using UnityEngine;
 using TMPro;
 
 public class PlayerLifeGUIController : MonoBehaviour
 {
     private PlayerLifeController _playerLifeController;
-    private TextMeshProUGUI _textMesh;
+    [Component] private TextMeshProUGUI _textMesh;
     
     private void Awake()
     {
@@ -14,13 +13,8 @@ public class PlayerLifeGUIController : MonoBehaviour
 
         if (!playerGameObject.TryGetComponent<PlayerLifeController>(out _playerLifeController))
             throw new MissingComponentException("PlayerLifeController not found on player.");
-
-        if (!TryGetComponent<TextMeshProUGUI>(out _textMesh))
-            throw new MissingComponentException("TextMeshPro not found on object.");
     }
 
-    private void Update()
-    {
+    private void Update() =>
         _textMesh.text = $"{_playerLifeController.CurrentLives}/{_playerLifeController.MaximumLives}";
-    }
 }
