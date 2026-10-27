@@ -1,6 +1,7 @@
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
+[RequireComponent(typeof(Rigidbody2D))]
 public class CheckpointController : MonoBehaviour
 {
     [Component] private Rigidbody2D _playerRigidbody;
