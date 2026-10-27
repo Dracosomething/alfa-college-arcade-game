@@ -1,15 +1,12 @@
-using Unity.VisualScripting;
 using UnityEngine;
 
 public class MusicController : MonoBehaviour
 {
-    private AudioSource _audioSource;
-    [SerializeField] private AudioClip _musicData;
+    [Component(InitializeIfMissing = true)]private AudioSource _audioSource;
+    [RequiredSerializeField] [SerializeField] private AudioClip _musicData;
 
     private void Awake()
     {
-        _audioSource = this.AddComponent<AudioSource>();
-
         _audioSource.spatialBlend = Constants._2DSound;
         _audioSource.clip = _musicData;
         _audioSource.playOnAwake = true;
