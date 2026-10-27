@@ -10,7 +10,6 @@ GameObject:
   m_Component:
   - component: {fileID: 282038823920030741}
   - component: {fileID: 3483492225435222049}
-  - component: {fileID: 5861905700404618735}
   - component: {fileID: 531903945434609793}
   m_Layer: 0
   m_Name: Checkpoint
@@ -80,26 +79,6 @@ BoxCollider2D:
   m_AutoTiling: 0
   m_Size: {x: 1.5, y: 0.5}
   m_EdgeRadius: 0
---- !u!114 &5861905700404618735
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8599052565137063070}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a1d81efe9ff0cfb4982dfb5a4dfbe39c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  checkpointSprites:
-  - {fileID: -996800295247179763, guid: ab48ad33e67bc9f4d87ee30d56ca7506, type: 3}
-  - {fileID: -1631450733929358813, guid: 8f7a08b9bd36133409695f4fdafafa96, type: 3}
-  - {fileID: -497502970490898606, guid: bdbb711d03a31d240b922030206ecd17, type: 3}
-  interactionRadius: 1
-  standStillTime: 1
-  movementThreshold: 0.1
-  playerSittingOffset: {x: 0, y: 0.4, z: 0}
 --- !u!212 &531903945434609793
 SpriteRenderer:
   m_ObjectHideFlags: 0

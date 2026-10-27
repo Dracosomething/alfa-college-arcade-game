@@ -6,7 +6,6 @@ using UnityEngine.InputSystem;
 public class PlayerMovementController : MonoBehaviour
 {
     #region Fields
-    private const float NoInputs = 0f;
     private const int DashStartTimerValue = 0;
     private const float DashDurationDividerInHalf = 0.5f;
     private const float FlatSlopeAngle = 0f; // The maximum slope angle the player can walk on.
@@ -30,6 +29,7 @@ public class PlayerMovementController : MonoBehaviour
     [Header("Dash Settings")]
     [SerializeField] private float _dashForce = 5f;
     [SerializeField] private float _dashCooldown = 1f; // In seconds
+    [SerializeField] private LayerMask _walkableGroundLayerMask;
 
     private float _groundCheckDelayTimer = 0f; // In seconds
     private bool _isGroundCheckDelayActive = false;
@@ -45,11 +45,11 @@ public class PlayerMovementController : MonoBehaviour
     private float _timeSinceLastDash = 0f; // In seconds
     private float _originalGravityScale;
 
-    [SerializeField] private LayerMask _walkableGroundLayerMask;
     private Rigidbody2D _playerRigidbody2D;
 
     private Vector2 _movementInputs; // Store the movement input values to be used in FixedUpdate
     private float _slopeAngle;
+    private PlayerAnimator _playerAnimator;
     #endregion
 
     #region Initialization
@@ -60,6 +60,9 @@ public class PlayerMovementController : MonoBehaviour
 
         if (!TryGetComponent<Rigidbody2D>(out _playerRigidbody2D))
             throw new MissingComponentException("Rigidbody2D component is missing from the GameObject. Please add a Rigidbody2D component.");
+
+        if (!TryGetComponent<PlayerAnimator>(out _playerAnimator))
+            throw new MissingComponentException("PlayerAnimator script component is missing from the GameObject. Please add a PlayerAnimator script component.");
         // Store the original gravity scale of the player to avoid sliding off of slopes.
         _originalGravityScale = _playerRigidbody2D.gravityScale;
     }
@@ -95,7 +98,7 @@ public class PlayerMovementController : MonoBehaviour
         if (_movementInputs.Equals(Vector2.zero) && _isGrounded && !_isGroundCheckDelayActive)
             _playerRigidbody2D.linearVelocity = Vector2.zero;
 
-        if (!(_slopeAngle.Equals(FlatSlopeAngle) && _isGrounded) || _isDashButtonPressed)
+        if ((!_slopeAngle.Equals(FlatSlopeAngle) && _isGrounded) || _isDashButtonPressed)
             _playerRigidbody2D.gravityScale = Constants.ZeroGravity;
         else
             _playerRigidbody2D.gravityScale = _originalGravityScale;
@@ -103,12 +106,16 @@ public class PlayerMovementController : MonoBehaviour
 
     private void FixedUpdate()
     {
+        Vector2 velocity;
         if (_isDashButtonPressed)
             // using mathf.round to avoid moving on the slightest input from, for example, a controller stick.
-            _playerRigidbody2D.linearVelocity = new Vector2(Mathf.Round(_movementInputs.x) * _movementSpeed * _dashForce, ZeroUpVelocity);
+            velocity = new Vector2(Mathf.Round(_movementInputs.x) * _movementSpeed * _dashForce, ZeroUpVelocity);
         else
             // using mathf.round to avoid moving on the slightest input from, for example, a controller stick.
-            _playerRigidbody2D.linearVelocity = AdjustedVelocityToSlope(new Vector2(Mathf.Round(_movementInputs.x) * _movementSpeed, _playerRigidbody2D.linearVelocity.y));
+            velocity = AdjustedVelocityToSlope(new Vector2(Mathf.Round(_movementInputs.x) * _movementSpeed, _playerRigidbody2D.linearVelocity.y));
+
+        _playerRigidbody2D.linearVelocity = velocity;
+        _playerAnimator.GetMovementAndGroundValues(_movementInputs, velocity, _isGrounded);
     }
     #endregion
 
@@ -148,7 +155,7 @@ public class PlayerMovementController : MonoBehaviour
     {
         CheckForValidGround();
 
-        if (_jumpInputActionReference.action.ReadValue<float>() > NoInputs && _isGroundedWithCoyoteTime)
+        if (_jumpInputActionReference.action.ReadValue<float>() > Constants.NoInput && _isGroundedWithCoyoteTime)
             Jump();
 
         GroundCheckDelay();
@@ -173,8 +180,11 @@ public class PlayerMovementController : MonoBehaviour
         _timeSinceLastDash += Time.deltaTime;
         // checking if the input was pressed and if the player can dash and the cooldown is over, then check if then player can actually dash by checking if its grounded and movements aren't null.
         if (_dashInputActionReference.action.WasPressedThisFrame() && _timeSinceLastDash >= _dashCooldown &&
-            !_isGrounded && _canDash && (_movementInputs.x < MovementInputThreshold || _movementInputs.x > -MovementInputThreshold))
+            !_isGrounded && _canDash && (_movementInputs.x > MovementInputThreshold || _movementInputs.x < -MovementInputThreshold))
         {
+            if (HasCollisionWithObject())
+                return;
+
             _isDashButtonPressed = true;
             _timeSinceLastDash = LastDashResetValue;
         }
@@ -187,8 +197,6 @@ public class PlayerMovementController : MonoBehaviour
                 _canDash = false;
                 _dashTimer = DashStartTimerValue;
             }
-            else
-                _dashTimer += DashDuration * DashDurationDividerInHalf;
         }
 
         if (_isDashButtonPressed)
@@ -258,15 +266,15 @@ public class PlayerMovementController : MonoBehaviour
 
     #region collision checks with walls while dashing
     // Avoiding dashing into walls by stopping the dash.
-    private void OnCollisionEnter2D(Collision2D collision)
+    private bool HasCollisionWithObject()
     {
-        // We first shift 1 by the colliding objects layer. Then we check if _walkableGroundLayerMask is equal to that by doing a bitwise OR.
-        if (_walkableGroundLayerMask.Equals(_walkableGroundLayerMask | (1 << collision.gameObject.layer)))
-        {
-            _isDashButtonPressed = false;
-            _canDash = false;
-            _dashTimer = DashStartTimerValue;
-        }
+        const int ContactPointsArraySize = 1;
+        const int FirstContactPoint = 0;
+
+        ContactPoint2D[] contactPoints = new ContactPoint2D[ContactPointsArraySize];
+        _playerRigidbody2D.GetContacts(contactPoints);
+
+        return !contactPoints[FirstContactPoint].collider.IsUnityNull();
     }
     #endregion
 
