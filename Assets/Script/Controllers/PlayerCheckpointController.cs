@@ -2,7 +2,7 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 
 [RequireComponent(typeof(Rigidbody2D))]
-public class CheckpointController : MonoBehaviour
+public class PlayerCheckpointController : MonoBehaviour
 {
     [Component] private Rigidbody2D _playerRigidbody;
     private Transform _currentCheckpoint;

@@ -2,9 +2,9 @@ using UnityEngine;
 
 public class PlayerLifeController : MonoBehaviour
 {
-    [Component] private CheckpointController _checkpointController;
+    [Component] private PlayerCheckpointController _playerCheckpointController;
 
-    [field: SerializeField] public int MaximumLives { get; private set; }
+    [field: SerializeField] public int MaximumLives { get; private set; } = 3;
     public int CurrentLives { get; private set; }
 
     private void Awake() =>
@@ -16,11 +16,11 @@ public class PlayerLifeController : MonoBehaviour
 
         if (IsDead())
         {
-            _checkpointController.ResetLevel();
+            _playerCheckpointController.ResetLevel();
             return;
         }
 
-        _checkpointController.GoToLastCheckpoint();
+        _playerCheckpointController.GoToLastCheckpoint();
     }
 
     private bool IsDead() =>
