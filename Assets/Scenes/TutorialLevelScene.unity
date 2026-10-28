@@ -63678,6 +63678,10 @@ PrefabInstance:
       propertyPath: m_MaskInteraction
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 7972565283692893005, guid: df135888d42a0aa4b906378c8e23ddb0, type: 3}
+      propertyPath: _startCheckpoint
+      value: 
+      objectReference: {fileID: 958517192}
     - target: {fileID: 8180571952851925878, guid: df135888d42a0aa4b906378c8e23ddb0, type: 3}
       propertyPath: m_Name
       value: Player
@@ -116149,7 +116153,7 @@ Tilemap:
       - {fileID: -1240626031211899577, guid: 76b4ee3e7af644b45b3abd62fddfb81f, type: 3}
       - {fileID: -1240626031211899577, guid: 76b4ee3e7af644b45b3abd62fddfb81f, type: 3}
       - {fileID: -1240626031211899577, guid: 76b4ee3e7af644b45b3abd62fddfb81f, type: 3}
-      m_AnimationSpeed: 3
+      m_AnimationSpeed: 3.0000002
       m_AnimationTimeOffset: 0
       m_Flags: 0
   - first: {x: 62, y: 19, z: 0}
