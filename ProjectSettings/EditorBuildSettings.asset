@@ -15,8 +15,8 @@ EditorBuildSettings:
     path: Assets/Scenes/BackEndLevelScene.unity
     guid: e1f671daa443a994fb1ccee65b966a34
   - enabled: 1
-    path: Assets/Tests/TestScene.unity
-    guid: a811eba58d07d89acabcc169501214c3
+    path: Assets/UnitTests/CooldownTestScene.unity
+    guid: 97859f3f44d2bf129b608b498c9b003d
   m_configObjects:
     com.unity.input.settings.actions: {fileID: -944628639613478452, guid: 2bcd2660ca9b64942af0de543d8d7100, type: 3}
   m_UseUCBPForAssetBundles: 0
