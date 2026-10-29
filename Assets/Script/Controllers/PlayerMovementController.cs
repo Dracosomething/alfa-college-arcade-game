@@ -50,6 +50,7 @@ public class PlayerMovementController : MonoBehaviour
     private Vector2 _movementInputs; // Store the movement input values to be used in FixedUpdate
     private float _slopeAngle;
     [Component] private PlayerAnimator _playerAnimator;
+    [Component] private CheckpointController _controller;
     #endregion
 
     #region Initialization
@@ -95,6 +96,8 @@ public class PlayerMovementController : MonoBehaviour
     #region Update Methods
     private void Update()
     {
+        _controller.ResetLevel();
+        
         _movementInputs = _movementInputActionReference.action.ReadValue<Vector2>();
 
         JumpUpdate();

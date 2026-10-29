@@ -1,10 +1,15 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
+using System.Reflection.Emit;
 using System.Text;
+using System.Threading;
 using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.SceneManagement;
+using Debug = UnityEngine.Debug;
 
 /// <summary>
 /// This class does 2 things right after all GameObjects are loaded but before Awake is called.
@@ -14,10 +19,21 @@ using UnityEngine;
 ///
 /// This class also throws all exceptions that have been found across the project.
 /// </summary>
-public class CustomAttributeHandler
+public static class CustomAttributeHandler
 {
     [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
-    public static void InitializeProjectComponents()
+    public static void InitializeEventHandler()
+    {
+        /*
+         * Get all types with an attribute
+         * Validate that they lack an awake method
+         * Validate that RequiredSerializeFields also have SerializeField
+         */
+        
+        SceneManager.sceneLoaded += (scene, mode) => HandleCustomAttributes();
+    }
+    
+    private static void HandleCustomAttributes()
     {
         Dictionary<Exception, GameObject> exceptionsToThrowWithContextObject = new();
 
@@ -32,7 +48,7 @@ public class CustomAttributeHandler
         {
             Type scriptClass = scriptComponent.GetType();
             GameObject scriptGameObject = scriptComponent.gameObject;
-
+            
             ValidateSerializeFieldsInitialized(scriptClass, scriptComponent, scriptGameObject, exceptionsToThrowWithContextObject);
             InitializeComponentsAndThrowIfMissingComponents(scriptClass, scriptComponent, scriptGameObject,
                 exceptionsToThrowWithContextObject);
@@ -49,7 +65,9 @@ public class CustomAttributeHandler
 
             return true;
         });
-}
+
+        throw aggregateException;
+    }
 
     private static void ValidateSerializeFieldsInitialized(Type scriptClass, MonoBehaviour scriptComponent, GameObject gameObject,
         Dictionary<Exception, GameObject> exceptions)
@@ -154,4 +172,17 @@ public class CustomAttributeHandler
         // Complicated way to create an instance of TException.
         return (TException) Activator.CreateInstance(typeof(TException), exceptionMessageBuilder.ToString());
     }
+
+    private static IEnumerable<Type> GetTypesWithCustomAttributes() =>
+        AppDomain.CurrentDomain.GetAssemblies()
+            .SelectMany(
+                assembly => assembly.GetTypes(),
+                (_, type) => type)
+            .Where(type => type.IsAssignableFrom(typeof(MonoBehaviour)))
+            .SelectMany(
+                type => type.GetFields(),
+                (type, field) => new { type, field })
+            .Where(typeAndField => typeAndField.field.HasAttribute<ComponentAttribute>() || 
+                                   typeAndField.field.HasAttribute<RequiredSerializeFieldAttribute>())
+            .Select(typeAndField => typeAndField.type);
 }
