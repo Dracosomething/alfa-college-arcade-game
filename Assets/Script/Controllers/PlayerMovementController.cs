@@ -11,8 +11,8 @@ public class PlayerMovementController : MonoBehaviour
     private const float FlatSlopeAngle = 0f; // The maximum slope angle the player can walk on.
     private const int ZeroUpVelocity = 0;
     private const float GroundCheckRadius = 0.15f;
-    private const float GroundCheckDelayLength = 0.1f; // In seconds
-    private const float DashDuration = 0.3f; // In seconds
+    private const float GroundCheckDelayLength = 0.1f; // In seconds  
+    private const int LastDashResetValue = 0;
 
     [Header("Input Action References")]
     [RequiredSerializeField] [SerializeField] private InputActionReference _movementInputActionReference;
@@ -28,8 +28,10 @@ public class PlayerMovementController : MonoBehaviour
 
     [Header("Dash Settings")]
     [SerializeField] private float _dashForce = 5f;
-    [SerializeField] private float _dashCooldown = 1f; // In seconds
     [RequiredSerializeField] [SerializeField] private LayerMask _walkableGroundLayerMask;
+    [RequiredSerializeField][SerializeField] private DashBarAnimation _dashBarAnimation;
+    [field: SerializeField] public float DashCooldown { get; private set; } = 1f; // In seconds
+    public float DashDuration { get; private set; } = 0.3f; // In seconds
 
     private float _groundCheckDelayTimer = 0f; // In seconds
     private bool _isGroundCheckDelayActive = false;
@@ -45,11 +47,10 @@ public class PlayerMovementController : MonoBehaviour
     private float _timeSinceLastDash = 0f; // In seconds
     private float _originalGravityScale;
 
-    [Component] private Rigidbody2D _playerRigidbody2D;
-
     private Vector2 _movementInputs; // Store the movement input values to be used in FixedUpdate
     private float _slopeAngle;
     [Component] private PlayerAnimator _playerAnimator;
+    [Component] private Rigidbody2D _playerRigidbody2D;
     #endregion
 
     #region Initialization
@@ -74,7 +75,7 @@ public class PlayerMovementController : MonoBehaviour
     }
     #endregion
     
-    #region Enable/Disable Input Actions
+    #region OnEnable / OnDisable
     private void OnEnable()
     {
         // Enable the inputs of the player when the player is enabled.
@@ -181,18 +182,21 @@ public class PlayerMovementController : MonoBehaviour
     private void DashUpdate()
     {
         const float MovementInputThreshold = 0.5f;
-        const int LastDashResetValue = 0;
 
-        _timeSinceLastDash += Time.deltaTime;
+        if (!_isDashButtonPressed)
+        {
+            _timeSinceLastDash += Time.deltaTime;
+            _dashBarAnimation.IncreaseDashBar(_timeSinceLastDash);
+        }
+
         // checking if the input was pressed and if the player can dash and the cooldown is over, then check if then player can actually dash by checking if its grounded and movements aren't null.
-        if (_dashInputActionReference.action.WasPressedThisFrame() && _timeSinceLastDash >= _dashCooldown &&
+        if (_dashInputActionReference.action.WasPressedThisFrame() && _timeSinceLastDash >= DashCooldown &&
             !_isGrounded && _canDash && (_movementInputs.x > MovementInputThreshold || _movementInputs.x < -MovementInputThreshold))
         {
             if (HasCollisionWithObject())
                 return;
 
             _isDashButtonPressed = true;
-            _timeSinceLastDash = LastDashResetValue;
         }
 
         if (_dashInputActionReference.action.WasReleasedThisFrame())
@@ -202,6 +206,7 @@ public class PlayerMovementController : MonoBehaviour
                 _isDashButtonPressed = false;
                 _canDash = false;
                 _dashTimer = DashStartTimerValue;
+                _timeSinceLastDash = LastDashResetValue;
             }
         }
 
@@ -212,12 +217,14 @@ public class PlayerMovementController : MonoBehaviour
     private void Dash()
     {
         _dashTimer += Time.deltaTime;
+        _dashBarAnimation.DecreaseDashBar(_dashTimer);
 
         if (_dashTimer > DashDuration)
         {
             _isDashButtonPressed = false;
             _canDash = false;
             _dashTimer = DashStartTimerValue;
+            _timeSinceLastDash = LastDashResetValue;
         }
     }
     #endregion
