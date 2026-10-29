@@ -182,6 +182,7 @@ public class PlayerMovementController : MonoBehaviour
     private void DashUpdate()
     {
         const float MovementInputThreshold = 0.5f;
+
         if (!_isDashButtonPressed)
         {
             _timeSinceLastDash += Time.deltaTime;

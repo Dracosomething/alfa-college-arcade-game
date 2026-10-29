@@ -4,6 +4,7 @@ using UnityEngine;
 [RequireComponent(typeof(SpriteRenderer))]
 public class DashBarAnimation : MonoBehaviour
 {
+    const float MinimumClampedValue = 0f;
     [Component] private SpriteRenderer _dashBarImage;
     private float _dashBarLocalSizeXAxis;
     private float _dashBarCooldownTimeInSeconds;
@@ -25,7 +26,7 @@ public class DashBarAnimation : MonoBehaviour
     public void IncreaseDashBar(float timeElapsedInSeconds)
     {
         float timeElapsedToLocalScaleRatio = _dashBarLocalSizeXAxis / _dashBarCooldownTimeInSeconds * timeElapsedInSeconds;
-        float clampedTimeElapsed = Mathf.Clamp(timeElapsedToLocalScaleRatio, 0, _dashBarLocalSizeXAxis);
+        float clampedTimeElapsed = Mathf.Clamp(timeElapsedToLocalScaleRatio, MinimumClampedValue, _dashBarLocalSizeXAxis);
 
         transform.localScale = new Vector3(clampedTimeElapsed, transform.localScale.y, transform.localScale.z);
     }
@@ -33,7 +34,7 @@ public class DashBarAnimation : MonoBehaviour
     public void DecreaseDashBar(float timeElapsedInSeconds)
     {
         float timeElapsedToLocalScaleRatio = _dashBarLocalSizeXAxis - (_dashBarLocalSizeXAxis / _dashBarDurationTimeInSeconds * timeElapsedInSeconds);
-        float clampedTimeElapsed = Mathf.Clamp(timeElapsedToLocalScaleRatio, 0, _dashBarLocalSizeXAxis);
+        float clampedTimeElapsed = Mathf.Clamp(timeElapsedToLocalScaleRatio, MinimumClampedValue, _dashBarLocalSizeXAxis);
 
         transform.localScale = new Vector3(clampedTimeElapsed, transform.localScale.y, transform.localScale.z);
     }
