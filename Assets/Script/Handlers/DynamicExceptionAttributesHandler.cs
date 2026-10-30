@@ -43,10 +43,16 @@ public static class DynamicExceptionAttributesHandler
             });
         }
        
+        // We check if the application is playing since this method is run twice when starting the game in edit mode,
+        // this check makes it so we only hook the listener to sceneLoaded at RuntimeInitializeOnLoadMethod
         if (Application.isPlaying)
+            // We hook our HandleDynamicExceptionAttributes to the sceneLoaded event and discard the parameters given by the event
             SceneManager.sceneLoaded += (_, _) => HandleDynamicExceptionAttributes();
     }
     
+    /// <summary>
+    /// Fils the input exceptions list with the exceptions for the issues found in the classes and also return the types with the fields.
+    /// </summary>
     private static Dictionary<Type, DynamicExceptionAttributeFieldsWrapper> GetExceptionsForAndTypesWithDynamicExceptionAttributes(List<Exception> exceptions) =>
         AppDomain.CurrentDomain.GetAssemblies() // We get all assemblies currently loaded
             .SelectMany( // We project the list of assemblies to a list with all types(classes) in those assemblies

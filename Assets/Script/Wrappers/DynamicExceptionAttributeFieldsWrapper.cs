@@ -6,7 +6,6 @@ using Unity.VisualScripting;
 public class DynamicExceptionAttributeFieldsWrapper
 {
     public List<FieldInfo> Components { get; }
-
     public List<FieldInfo> RequiredSerializeFields { get; }
 
     public DynamicExceptionAttributeFieldsWrapper(IEnumerable<FieldInfo> fieldInfos)
