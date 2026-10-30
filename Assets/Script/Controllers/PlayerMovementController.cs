@@ -50,11 +50,10 @@ public class PlayerMovementController : MonoBehaviour
     private Vector2 _movementInputs; // Store the movement input values to be used in FixedUpdate
     private float _slopeAngle;
     [Component] private PlayerAnimator _playerAnimator;
-    [Component] private CheckpointController _controller;
     #endregion
 
     #region Initialization
-    private void Awake() =>
+    private void Start() =>
         // Store the original gravity scale of the player to avoid sliding off of slopes.
         _originalGravityScale = _playerRigidbody2D.gravityScale;
     #endregion
@@ -96,8 +95,6 @@ public class PlayerMovementController : MonoBehaviour
     #region Update Methods
     private void Update()
     {
-        _controller.ResetLevel();
-        
         _movementInputs = _movementInputActionReference.action.ReadValue<Vector2>();
 
         JumpUpdate();
