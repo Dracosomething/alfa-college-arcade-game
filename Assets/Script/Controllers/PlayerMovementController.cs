@@ -121,6 +121,7 @@ public class PlayerMovementController : MonoBehaviour
             velocity = AdjustedVelocityToSlope(new Vector2(Mathf.Round(_movementInputs.x) * _movementSpeed, _playerRigidbody2D.linearVelocity.y));
 
         _playerRigidbody2D.linearVelocity = velocity;
+        
         _playerAnimator.GetMovementAndGroundValues(_movementInputs, velocity, _isGrounded);
     }
     #endregion

@@ -16,9 +16,25 @@ public class PlayerAnimator : MonoBehaviour
 
     public void GetMovementAndGroundValues(Vector2 movementInputs,  Vector2 velocity, bool isGrounded)
     {
+	const string SittingDownParameter = "IsSittingDown";
+
         SetDirection(GetMovingDirection(movementInputs));
 
+        if (!movementInputs.Equals(Vector2.zero) || !velocity.Equals(Vector2.zero))
+            SetPlayerAnimatorBool(SittingDownParameter, false);
+
         SetAnimationState(GetAnimationState(movementInputs, velocity, isGrounded));
+    }
+
+    public void SetAnimationState(PlayerAnimationState state)
+    {
+        if (_currentState.Equals(state))
+            return;
+
+        ResetStates();
+
+        _currentState = state;
+        SetPlayerAnimatorBool(_currentState.ToString(), true);
     }
 
     private Direction GetMovingDirection(Vector2 movementInputs)
@@ -53,17 +69,6 @@ public class PlayerAnimator : MonoBehaviour
         return PlayerAnimationState.IsIdle;
     }
 
-    private void SetAnimationState(PlayerAnimationState state)
-    {
-        if (_currentState.Equals(state))
-            return;
-
-        ResetStates();
-
-        _currentState = state;
-        SetPlayerAnimatorBool(_currentState.ToString(), true);
-    }
-
     private void SetDirection(Direction direction)
     {
         const string DirectionParameter = "IsFacingRight";
@@ -77,8 +82,15 @@ public class PlayerAnimator : MonoBehaviour
 
     private void ResetStates()
     {
+        const string SittingDownParameter = "IsSittingDown";
+
         foreach (PlayerAnimationState state in Enum.GetValues(typeof(PlayerAnimationState)))
+        {
+            if (state.ToString().Equals(SittingDownParameter))
+                continue;
+
             SetPlayerAnimatorBool(state.ToString(), false);
+        }
     }
 
     private void SetPlayerAnimatorBool(string parameter, bool value) =>
