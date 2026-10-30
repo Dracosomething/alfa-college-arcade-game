@@ -9,9 +9,9 @@ public class WalkingEnemy : Enemy
     private Vector2 _endPosition;
     private TargetPosition _targetPositionOption = TargetPosition.EndPosition;
     
-    protected override void Awake()
+    protected override void Start()
     {
-        base.Awake();
+        base.Start();
         
         _startPosition = transform.position;
         _endPosition = new Vector2(_startPosition.x + _endPositionXOffset, _startPosition.y);
