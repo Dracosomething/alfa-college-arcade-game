@@ -16,7 +16,7 @@ public class ExitLevelController : MonoBehaviour
     private GameObject _guiIndicator;
     private TextMeshProUGUI _indicatorText;
 
-    private void Awake()
+    private void Start()
     {
         const string IndicatorTextFieldName = "ExitLevelText";
         const string IndicatorVisualElementName = "ExitLevelIndicator";

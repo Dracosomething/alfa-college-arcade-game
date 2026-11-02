@@ -11,9 +11,9 @@ public class FlyingEnemy : Enemy
     [Component] private NavMeshAgent _agent;
     private Vector2 _spawnPosition;
 
-    protected override void Awake()
+    protected override void Start()
     {
-        base.Awake();
+        base.Start();
         
         _agent.updateRotation = false;
         _agent.updateUpAxis = false;

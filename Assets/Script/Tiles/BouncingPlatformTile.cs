@@ -8,7 +8,7 @@ public class BouncingPlatformTile : MonoBehaviour
     [SerializeField] private float _bounceForce = 0;
     private Rigidbody2D _playerRigidbody;
     
-    public void Awake()
+    public void Start()
     {
 	    if (!SceneHelper.TryFindGameObjectWithTagInScene(Constants.PlayerGameObjectName, out var player))
 		    throw new CouldNotFindGameObjectException("Object with tag \"Player\" not found.");
