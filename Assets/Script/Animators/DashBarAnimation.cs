@@ -1,3 +1,4 @@
+using Unity.VisualScripting;
 using UnityEditor.ShaderGraph.Internal;
 using UnityEngine;
 
@@ -5,17 +6,19 @@ using UnityEngine;
 public class DashBarAnimation : MonoBehaviour
 {
     const float MinimumClampedValue = 0f;
+
     [Component] private SpriteRenderer _dashBarImage;
+    private PlayerMovementController _playerMovementController;
     private float _dashBarLocalSizeXAxis;
     private float _dashBarCooldownTimeInSeconds;
     private float _dashBarDurationTimeInSeconds;
-    private PlayerMovementController _playerMovementController;
 
     private void Awake() 
     {
         // No TryGetComponentInParent exists, manual null check required.
         _playerMovementController = transform.GetComponentInParent<PlayerMovementController>();
-        if (_playerMovementController == null)
+
+        if (_playerMovementController.IsUnityNull())
             throw new MissingComponentException($"PlayerMovementController component not found in parent of DashBar");
 
         _dashBarLocalSizeXAxis = transform.localScale.x;
@@ -39,9 +42,15 @@ public class DashBarAnimation : MonoBehaviour
         transform.localScale = new Vector3(clampedTimeElapsed, transform.localScale.y, transform.localScale.z);
     }
 
+    public void HideCooldownBar() =>
+    _dashBarImage.enabled = false;
+
+    public void ShowCooldownBar() =>
+        _dashBarImage.enabled = true;
+
     private void Update()
     {
-        if (transform.localScale.x == _dashBarLocalSizeXAxis)
+        if (transform.localScale.x.Equals(_dashBarLocalSizeXAxis))
         {
             _dashBarImage.color = Color.green;
             return;
@@ -49,10 +58,4 @@ public class DashBarAnimation : MonoBehaviour
 
         _dashBarImage.color = Color.red;
     }
-
-    public void HideCooldownBar() =>
-        _dashBarImage.enabled = false;
-
-    public void ShowCooldownBar() =>
-        _dashBarImage.enabled = true;
 }
