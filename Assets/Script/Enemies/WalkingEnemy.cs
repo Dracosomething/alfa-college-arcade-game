@@ -1,6 +1,5 @@
 using System;
 using System.ComponentModel;
-using Unity.VisualScripting;
 using UnityEngine;
 
 public class WalkingEnemy : Enemy
@@ -47,12 +46,4 @@ public class WalkingEnemy : Enemy
                 throw new InvalidEnumArgumentException("TargetPosition enum only allows the values of '0'(StartPosition) and '1'(EndPosition)");
         }
     }
-
-    private Vector2 GetTargetPosition() =>
-        _targetPositionOption switch
-        {
-            TargetPosition.StartPosition => _startPosition,
-            TargetPosition.EndPosition => _endPosition,
-            /* Default */ _ => throw new InvalidEnumArgumentException("TargetPosition enum only allows the values of '0'(StartPosition) and '1'(EndPosition)")
-        };
 }
