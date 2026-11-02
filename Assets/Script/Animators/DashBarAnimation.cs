@@ -25,6 +25,16 @@ public class DashBarAnimation : MonoBehaviour
         _dashBarCooldownTimeInSeconds = _playerMovementController.DashCooldown;
         _dashBarDurationTimeInSeconds = _playerMovementController.DashDuration;
     }
+    private void Update()
+    {
+        if (transform.localScale.x.Equals(_dashBarLocalSizeXAxis))
+        {
+            _dashBarImage.color = Color.green;
+            return;
+        }
+
+        _dashBarImage.color = Color.red;
+    }
 
     public void IncreaseDashBar(float timeElapsedInSeconds)
     {
@@ -47,15 +57,4 @@ public class DashBarAnimation : MonoBehaviour
 
     public void ShowCooldownBar() =>
         _dashBarImage.enabled = true;
-
-    private void Update()
-    {
-        if (transform.localScale.x.Equals(_dashBarLocalSizeXAxis))
-        {
-            _dashBarImage.color = Color.green;
-            return;
-        }
-
-        _dashBarImage.color = Color.red;
-    }
 }
