@@ -26,11 +26,11 @@ public static class DynamicExceptionAttributesHandler
     
     [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterAssembliesLoaded)]
     [InitializeOnLoadMethod]
-    public static void PreProcessFilesOnStartUpAndCreateEventHandler()
+    public static void PreprocessFilesOnStartUpAndCreateEventHandler()
     {
         List<Exception> exceptions = new();
 
-        s_customAttributeFieldsPerTypeMap = GetExceptionsForAndTypesWithDynamicExceptionAttributes(exceptions);
+        s_customAttributeFieldsPerTypeMap = GetExceptionsForTypesAndTypesWithDynamicExceptionAttributes(exceptions);
         
         if (exceptions.Any())
         {
@@ -51,9 +51,9 @@ public static class DynamicExceptionAttributesHandler
     }
     
     /// <summary>
-    /// Fils the input exceptions list with the exceptions for the issues found in the classes and also return the types with the fields.
+    /// Fills the input exceptions list with the exceptions for the issues found in the classes and also return the types with the fields.
     /// </summary>
-    private static Dictionary<Type, DynamicExceptionAttributeFieldsWrapper> GetExceptionsForAndTypesWithDynamicExceptionAttributes(List<Exception> exceptions) =>
+    private static Dictionary<Type, DynamicExceptionAttributeFieldsWrapper> GetExceptionsForTypesAndTypesWithDynamicExceptionAttributes(List<Exception> exceptions) =>
         AppDomain.CurrentDomain.GetAssemblies() // We get all assemblies currently loaded
             .SelectMany( // We project the list of assemblies to a list with all types(classes) in those assemblies
                 assembly => assembly.GetTypes(),
