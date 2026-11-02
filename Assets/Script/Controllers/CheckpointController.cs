@@ -5,7 +5,7 @@ using UnityEngine.SceneManagement;
 public class CheckpointController : MonoBehaviour
 {
     [Component] private Rigidbody2D _playerRigidbody;
-    private Transform _currentCheckpoint;
+    [SerializeField] private Transform _currentCheckpoint;
 
     public void SetCheckpoint(Transform position) =>
         _currentCheckpoint = position;

@@ -50,6 +50,7 @@ public class PlayerMovementController : MonoBehaviour
     private Vector2 _movementInputs; // Store the movement input values to be used in FixedUpdate
     private float _slopeAngle;
     [Component] private PlayerAnimator _playerAnimator;
+    [Component] private SoundEffectController _soundEffectController;
     #endregion
 
     #region Initialization
@@ -171,6 +172,9 @@ public class PlayerMovementController : MonoBehaviour
     private void Jump()
     {
         const float JumpVelocityGravityFactor = -2f;
+        
+        _soundEffectController.PlaySound("jump", this.gameObject.name);
+        
         // JumpVelocityGravityFactor determines the relationship between jump height and gravity. It maked the calculation of the jump velocity based on the desired jump height and gravity value.
         _playerRigidbody2D.linearVelocityY = Mathf.Sqrt(_jumpHeight * JumpVelocityGravityFactor * Constants.DefaultGravity);
         _isGroundCheckDelayActive = true;
@@ -213,6 +217,8 @@ public class PlayerMovementController : MonoBehaviour
     {
         _dashTimer += Time.deltaTime;
 
+        _soundEffectController.PlaySound("simple-whoosh-382724", this.gameObject.name);
+        
         if (_dashTimer > DashDuration)
         {
             _isDashButtonPressed = false;
