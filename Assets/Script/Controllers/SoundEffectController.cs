@@ -28,7 +28,8 @@ public class SoundEffectController : MonoBehaviour
         var soundEffectWrapper = this.AddComponent<SoundEffectWrapper>();
         soundEffectWrapper.SoundEffectOwnerName = soundEffectOwnerName;
         soundEffectWrapper.SoundEffectName = soundEffectName;
-        
+
+        soundEffectWrapper.AudioSource = soundEffectWrapper.AddComponent<AudioSource>();
         soundEffectWrapper.AudioSource.clip = audioClip;
         soundEffectWrapper.AudioSource.spatialBlend = Constants._2DSound;
         

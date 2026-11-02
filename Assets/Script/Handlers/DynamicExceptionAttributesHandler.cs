@@ -25,7 +25,9 @@ public static class DynamicExceptionAttributesHandler
     private static Dictionary<Type, DynamicExceptionAttributeFieldsWrapper> s_customAttributeFieldsPerTypeMap = new();
     
     [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterAssembliesLoaded)]
+    #if UNITY_EDITOR
     [InitializeOnLoadMethod]
+    #endif
     public static void PreprocessFilesOnStartUpAndCreateEventHandler()
     {
         List<Exception> exceptions = new();

@@ -1,4 +1,6 @@
+using System;
 using System.ComponentModel;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class WalkingEnemy : Enemy
@@ -15,7 +17,7 @@ public class WalkingEnemy : Enemy
         
         _startPosition = transform.position;
         _endPosition = new Vector2(_startPosition.x + _endPositionXOffset, _startPosition.y);
-        _targetPosition = GetTargetPosition();
+        _targetPosition = _endPosition;
     }
 
     protected override void Move()
@@ -25,7 +27,7 @@ public class WalkingEnemy : Enemy
             target: _targetPosition,
             maxDistanceDelta: Speed * Time.fixedDeltaTime);
 
-        if (RigidBody.position.Equals(_targetPosition))
+        if (Math.Abs(RigidBody.position.x - _targetPosition.x) < 0.1)
             SwitchTargetPosition();
     }
 
@@ -35,15 +37,15 @@ public class WalkingEnemy : Enemy
         {
             case TargetPosition.StartPosition:
                 _targetPositionOption = TargetPosition.EndPosition;
+                _targetPosition = _endPosition;
                 break;
             case TargetPosition.EndPosition:
                 _targetPositionOption = TargetPosition.StartPosition;
+                _targetPosition = _startPosition;
                 break;
             default:
                 throw new InvalidEnumArgumentException("TargetPosition enum only allows the values of '0'(StartPosition) and '1'(EndPosition)");
         }
-
-        _targetPosition = GetTargetPosition();
     }
 
     private Vector2 GetTargetPosition() =>

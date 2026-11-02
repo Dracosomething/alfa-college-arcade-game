@@ -76,6 +76,9 @@ public class AbilitySelectionController : MonoBehaviour
     
     private void ScrollThroughAbilityObjects()
     {
+        if (!_abilityObjectsInView.Any())
+            return;
+            
         if (_selectedAbilityObject.IsUnityNull())
             _selectedAbilityObject = _abilityObjectsInView.First();
         else if (_selectedAbilityObject.Equals(_abilityObjectsInView.Last()))
