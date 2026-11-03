@@ -34,7 +34,7 @@ public class ExitLevelController : MonoBehaviour
 
     private void Update()
     {
-        if (_cancelActionReference.action.ReadValueAsInputState() == InputState.Pressed)
+        if (_cancelActionReference.action.ReadValueAsInputState().Equals(InputState.Pressed))
         {
             _guiIndicator.SetActive(true);
             
