@@ -5,7 +5,7 @@ public class PlayerLifeGUIController : MonoBehaviour
 {
     private PlayerLifeController _playerLifeController;
     [Component] private TextMeshProUGUI _textMesh;
-    
+
     private void Awake()
     {
         if (!SceneHelper.TryFindGameObjectWithTagInScene("Player", out var playerGameObject))
