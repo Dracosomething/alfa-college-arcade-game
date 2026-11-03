@@ -24,6 +24,7 @@ public class PlayerMovementController : MonoBehaviour
 
     [Header("Jump Settings")]
     [SerializeField] private float _jumpHeight = 10f;
+    [SerializeField] private float _coyoteTime = 0.1f; // In seconds
     [RequiredSerializeField] [SerializeField] private GameObject _groundCheckObject;
 
     [Header("Dash Settings")]
@@ -35,7 +36,6 @@ public class PlayerMovementController : MonoBehaviour
     private bool _isGroundCheckDelayActive = false;
     private bool _isGrounded = true;
 
-    private const float _coyoteTime = 0.1f; // In seconds
     private float _coyoteTimeTimer = 0f; // In seconds
     private bool _isGroundedWithCoyoteTime = false;
 
@@ -170,8 +170,9 @@ public class PlayerMovementController : MonoBehaviour
 
     private void Jump()
     {
+        // JumpVelocityGravityFactor determines the relationship between jump height and gravity. It makes the calculation of the jump velocity based on the desired jump height and gravity value.
         const float JumpVelocityGravityFactor = -2f;
-        // JumpVelocityGravityFactor determines the relationship between jump height and gravity. It maked the calculation of the jump velocity based on the desired jump height and gravity value.
+
         _playerRigidbody2D.linearVelocityY = Mathf.Sqrt(_jumpHeight * JumpVelocityGravityFactor * Constants.DefaultGravity);
         _isGroundCheckDelayActive = true;
     }

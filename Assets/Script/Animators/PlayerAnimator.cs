@@ -16,22 +16,24 @@ public class PlayerAnimator : MonoBehaviour
 
     public void GetMovementAndGroundValues(Vector2 movementInputs,  Vector2 velocity, bool isGrounded)
     {
-        SetDirection(GetMovingDirection(movementInputs));
+        SetDirection(GetMovingDirection(Mathf.Round(movementInputs.x)));
 
-        SetAnimationState(GetAnimationState(movementInputs, velocity, isGrounded));
+        // change this
+        PlayerAnimationState state = GetMovementAnimationState(movementInputs, velocity, isGrounded);
+        
     }
 
-    private Direction GetMovingDirection(Vector2 movementInputs)
+    public Direction GetMovingDirection(float movementInput)
     {
-        if (movementInputs.x > Constants.NoInput)
+        if (movementInput > Constants.NoInput)
             return Direction.Right;
-        else if (movementInputs.x < Constants.NoInput)
+        else if (movementInput < Constants.NoInput)
             return Direction.Left;
 
         return _currentDirection;
     }
 
-    private PlayerAnimationState GetAnimationState(Vector2 movementInputs, Vector2 velocity, bool isGrounded)
+    public PlayerAnimationState GetMovementAnimationState(Vector2 movementInputs, Vector2 velocity, bool isGrounded)
     {
         const float DashThreshold = 5f;
         const float JumpThreshold = 0.1f;
