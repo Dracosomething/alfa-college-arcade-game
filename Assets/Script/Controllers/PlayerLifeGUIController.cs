@@ -6,7 +6,7 @@ public class PlayerLifeGUIController : MonoBehaviour
     private PlayerLifeController _playerLifeController;
     [Component] private TextMeshProUGUI _textMesh;
     
-    private void Awake()
+    private void Start()
     {
         if (!SceneHelper.TryFindGameObjectWithTagInScene("Player", out var playerGameObject))
             throw new CouldNotFindGameObjectException("Player");
