@@ -14,6 +14,7 @@ GameObject:
   - component: {fileID: 1841281455651686381}
   - component: {fileID: 3206727357614702135}
   - component: {fileID: 5116972712148457968}
+  - component: {fileID: 3024759130495820159}
   m_Layer: 3
   m_Name: Flying cleaner robot
   m_TagString: Untagged
@@ -80,7 +81,7 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 1
-  m_Sprite: {fileID: 1152734865, guid: 50d877707a446bd499824cf9fc8fe8a6, type: 3}
+  m_Sprite: {fileID: -2101863684, guid: 8df7f6e5a15e830c7927a2f7b6dd116e, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 1
   m_FlipY: 0
@@ -104,11 +105,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Health: 5
-  Damage: 2
   Speed: 2
   _wanderRadius: 10
-  _wanderInterval: 3
-  _forgetDelay: 10
   _sightDistance: 10
 --- !u!50 &1841281455651686381
 Rigidbody2D:
@@ -196,3 +194,18 @@ NavMeshAgent:
   m_BaseOffset: 0.5
   m_WalkableMask: 4294967295
   m_ObstacleAvoidanceType: 4
+--- !u!114 &3024759130495820159
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2513276215096346287}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fe9375ecd1a34133afa3e405a1858648, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _cooldownDuration:
+    <Minutes>k__BackingField: 0
+    <Seconds>k__BackingField: 0
