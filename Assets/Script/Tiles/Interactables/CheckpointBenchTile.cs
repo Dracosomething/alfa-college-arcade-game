@@ -43,7 +43,7 @@ public class CheckpointBenchTile : MonoBehaviour, IInteractionObject
         if (!_isPlayerRigidbodyFrozen)
         {
             _isPlayerRigidbodyFrozen = true;
-            Invoke("UnfreezePlayer", SittingDownAnimationTransitionLength);
+            Invoke(nameof(UnfreezePlayer), SittingDownAnimationTransitionLength);
         }
     }
 

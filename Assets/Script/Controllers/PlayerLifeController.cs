@@ -25,7 +25,7 @@ public class PlayerLifeController : MonoBehaviour
 
         _playerAnimator.SetAnimationState(PlayerAnimationState.TookDamage);
 
-        Invoke("RespawnPlayer", TakingDamageAnimationTransitionLength);
+        Invoke(nameof(RespawnPlayer), TakingDamageAnimationTransitionLength);
     }
 
     private bool IsDead() =>
