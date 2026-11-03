@@ -5,5 +5,6 @@ public enum PlayerAnimationState
     IsJumping,
     IsFalling,
     IsDashing,
-    IsIdle
+    IsIdle,
+    TookDamage
 }

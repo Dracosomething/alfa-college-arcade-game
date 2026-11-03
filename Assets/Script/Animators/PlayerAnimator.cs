@@ -16,7 +16,7 @@ public class PlayerAnimator : MonoBehaviour
 
     public void GetMovementAndGroundValues(Vector2 movementInputs,  Vector2 velocity, bool isGrounded)
     {
-	const string SittingDownParameter = "IsSittingDown";
+        const string SittingDownParameter = "IsSittingDown";
 
         SetDirection(GetMovingDirection(movementInputs));
 
@@ -83,10 +83,11 @@ public class PlayerAnimator : MonoBehaviour
     private void ResetStates()
     {
         const string SittingDownParameter = "IsSittingDown";
+        const string TookDamageParameter = "TookDamage";
 
         foreach (PlayerAnimationState state in Enum.GetValues(typeof(PlayerAnimationState)))
         {
-            if (state.ToString().Equals(SittingDownParameter))
+            if (state.ToString().Equals(SittingDownParameter) || state.ToString().Equals(TookDamageParameter))
                 continue;
 
             SetPlayerAnimatorBool(state.ToString(), false);

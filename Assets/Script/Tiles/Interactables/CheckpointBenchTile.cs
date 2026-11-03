@@ -25,7 +25,7 @@ public class CheckpointBenchTile : MonoBehaviour, IInteractionObject
 
     void IInteractionObject.Interact()
     {
-        float sittingDownAnimationTransitionLength = 0.25f; // Use a constant instead of getting the animator transition length because to my knowledge it is impossible to easily get
+        const float SittingDownAnimationTransitionLength = 0.25f; // Use a constant instead of getting the animator transition length because to my knowledge it is impossible to easily get
 
         // Lossy Scale is used because it grabs the global scale of the object instead of the local one, it should usually not give any problems in any case
         float playerLossyYScaleInHalf = _playerGameObject.transform.lossyScale.y / 2; // Use half because the Transform position is not in the middle
@@ -34,17 +34,17 @@ public class CheckpointBenchTile : MonoBehaviour, IInteractionObject
 
         _playerCheckpointController.SetCheckpoint(newCheckpointLocation);
 
-	_playerAnimator.SetAnimationState(PlayerAnimationState.IsSittingDown);
+        _playerAnimator.SetAnimationState(PlayerAnimationState.IsSittingDown);
 
         _playerRigidbody.constraints = RigidbodyConstraints2D.FreezeAll;
 
-	_playerGameObject.transform.position = new Vector3(transform.position.x, transform.position.y + playerLossyYScaleInHalf, transform.position.z);
+        _playerGameObject.transform.position = new Vector3(transform.position.x, transform.position.y + playerLossyYScaleInHalf, transform.position.z);
 
         if (!_isPlayerRigidbodyFrozen)
-	{
+        {
             _isPlayerRigidbodyFrozen = true;
-            Invoke("UnfreezePlayer", sittingDownAnimationTransitionLength);
-	}
+            Invoke("UnfreezePlayer", SittingDownAnimationTransitionLength);
+        }
     }
 
     private void UnfreezePlayer()
