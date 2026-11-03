@@ -29,12 +29,6 @@ public class SoundEffectController : MonoBehaviour
         soundEffectWrapper.Initialize(soundEffectOwnerName, soundEffectName, audioClip);
     }
 
-    /// <summary>
-    /// This does not function properly when there are multiple of 1 sound effect.
-    /// </summary>
-    public bool IsPlayingSoundEffect(string soundEffectName, string soundEffectOwner) =>
-        HasAudioSourceForSoundEffect(soundEffectName, soundEffectOwner);
-
     private void Update() =>
         _soundEffectCache.RemoveUnusedGameObjects();
 
