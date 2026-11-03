@@ -8,7 +8,7 @@ public class PlayerCheckpointController : MonoBehaviour
     [RequiredSerializeField] [SerializeField] private Transform _startCheckpoint;
     private Vector3 _currentCheckpoint;
 
-    private void Awake() =>
+    private void Start() =>
         SetCheckpoint(_startCheckpoint.position);
 
     public void SetCheckpoint(Vector3 position) =>
