@@ -9,7 +9,7 @@ public class PlayerLifeController : MonoBehaviour
     [field: SerializeField] public int MaximumLives { get; private set; } = 3;
     public int CurrentLives { get; private set; }
 
-    private void Awake() =>
+    private void Start() =>
         CurrentLives = MaximumLives;
 
     public void Die()

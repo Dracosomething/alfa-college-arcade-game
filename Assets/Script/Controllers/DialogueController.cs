@@ -26,7 +26,7 @@ public class DialogueController : MonoBehaviour
     private bool _isDialogueActive;
     private bool _isNotWritingText;
     
-    private void Awake()
+    private void Start()
     {
         if (!SceneHelper.TryFindFirstObjectByTypeInScene<PlayerMovementController>(out _playerMovementController))
             throw new CouldNotFindGameObjectException("Could not find a PlayerMovementController in the scene.");

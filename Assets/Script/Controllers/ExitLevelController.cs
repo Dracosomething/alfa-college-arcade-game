@@ -16,7 +16,7 @@ public class ExitLevelController : MonoBehaviour
     private GameObject _guiIndicator;
     private TextMeshProUGUI _indicatorText;
 
-    private void Awake()
+    private void Start()
     {
         const string IndicatorTextFieldName = "ExitLevelText";
         const string IndicatorVisualElementName = "ExitLevelIndicator";
@@ -34,7 +34,7 @@ public class ExitLevelController : MonoBehaviour
 
     private void Update()
     {
-        if (_cancelActionReference.action.ReadValueAsInputState() == InputState.Pressed)
+        if (_cancelActionReference.action.ReadValueAsInputState().Equals(InputState.Pressed))
         {
             _guiIndicator.SetActive(true);
             

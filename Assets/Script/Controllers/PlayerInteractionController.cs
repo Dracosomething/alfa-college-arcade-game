@@ -9,7 +9,7 @@ public class PlayerInteractionController : MonoBehaviour
     [SerializeField] private GameObject _interactionCheckObject;
     [SerializeField] private LayerMask _interactableObjectLayer;
 
-    private void Awake()
+    private void Start()
     {
         if (_interactionInputReference.IsUnityNull())
             throw new SerializeFieldNotSetException("Missing Interaction InputActionReference");

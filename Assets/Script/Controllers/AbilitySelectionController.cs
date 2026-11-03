@@ -15,7 +15,7 @@ public class AbilitySelectionController : MonoBehaviour
     private SpriteRenderer? _selectedAbilityObject = null;
     private Vector2 _previousCameraPosition;
     
-    private void Awake()
+    private void Start()
     {
         if (Camera.main.IsUnityNull())
             throw new NoMainCameraException();
@@ -28,10 +28,9 @@ public class AbilitySelectionController : MonoBehaviour
         _abilityObjectsInScene = GetAbilityObjectsInScene(currentScene).ToList();
 
         _scrollInputActionReference.action.Enable();
-    }
-
-    private void Start() =>
+        
         _abilityObjectsInView = GetAbilityObjectsInView().ToList();
+    }
 
     public IAbilityObject? GetSelectedAbilityObject()
     {
