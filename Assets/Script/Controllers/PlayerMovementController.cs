@@ -7,12 +7,15 @@ public class PlayerMovementController : MonoBehaviour
 {
     #region Fields
     private const int DashStartTimerValue = 0;
+    private const int ZeroUpVelocity = 0;
     private const float DashDurationDividerInHalf = 0.5f;
     private const float FlatSlopeAngle = 0f; // The maximum slope angle the player can walk on.
-    private const int ZeroUpVelocity = 0;
     private const float GroundCheckRadius = 0.15f;
-    private const float GroundCheckDelayLength = 0.1f; // In seconds  
-    private const int LastDashResetValue = 0;
+    private const float GroundCheckDelayLength = 0.1f; // In seconds
+    private const float DashDuration = 0.3f; // In seconds
+    private const string JumpSoundEffectName = "jump";
+    private const string DashSoundEffectName = "dash";
+    private const string WalkSoundEffectName = "walk-footsteps";
 
     [Header("Input Action References")]
     [RequiredSerializeField] [SerializeField] private InputActionReference _movementInputActionReference;
@@ -28,10 +31,8 @@ public class PlayerMovementController : MonoBehaviour
 
     [Header("Dash Settings")]
     [SerializeField] private float _dashForce = 5f;
+    [SerializeField] private float _dashCooldown = 1f; // In seconds
     [RequiredSerializeField] [SerializeField] private LayerMask _walkableGroundLayerMask;
-    [RequiredSerializeField][SerializeField] private DashBarAnimation _dashBarAnimation;
-    [field: SerializeField] public float DashCooldown { get; private set; } = 1f; // In seconds
-    public float DashDuration { get; private set; } = 0.3f; // In seconds
 
     private float _groundCheckDelayTimer = 0f; // In seconds
     private bool _isGroundCheckDelayActive = false;
@@ -47,10 +48,12 @@ public class PlayerMovementController : MonoBehaviour
     private float _timeSinceLastDash = 0f; // In seconds
     private float _originalGravityScale;
 
+    [Component] private Rigidbody2D _playerRigidbody2D;
+
     private Vector2 _movementInputs; // Store the movement input values to be used in FixedUpdate
     private float _slopeAngle;
     [Component] private PlayerAnimator _playerAnimator;
-    [Component] private Rigidbody2D _playerRigidbody2D;
+    [Component] private SoundEffectController _soundEffectController;
     #endregion
 
     #region Initialization
@@ -75,7 +78,7 @@ public class PlayerMovementController : MonoBehaviour
     }
     #endregion
     
-    #region OnEnable / OnDisable
+    #region Enable/Disable Input Actions
     private void OnEnable()
     {
         // Enable the inputs of the player when the player is enabled.
@@ -104,6 +107,10 @@ public class PlayerMovementController : MonoBehaviour
 
         if (_movementInputs.Equals(Vector2.zero) && _isGrounded && !_isGroundCheckDelayActive)
             _playerRigidbody2D.linearVelocity = Vector2.zero;
+        
+        // For playing the sound of the player walking
+        if (!_movementInputs.Equals(Vector2.zero) && _isGrounded)
+            _soundEffectController.PlaySound(WalkSoundEffectName, gameObject.name);
 
         if ((!_slopeAngle.Equals(FlatSlopeAngle) && _isGrounded) || _isDashButtonPressed)
             _playerRigidbody2D.gravityScale = Constants.ZeroGravity;
@@ -172,6 +179,9 @@ public class PlayerMovementController : MonoBehaviour
     private void Jump()
     {
         const float JumpVelocityGravityFactor = -2f;
+        
+        _soundEffectController.PlaySound(JumpSoundEffectName, gameObject.name);
+        
         // JumpVelocityGravityFactor determines the relationship between jump height and gravity. It maked the calculation of the jump velocity based on the desired jump height and gravity value.
         _playerRigidbody2D.linearVelocityY = Mathf.Sqrt(_jumpHeight * JumpVelocityGravityFactor * Constants.DefaultGravity);
         _isGroundCheckDelayActive = true;
@@ -182,21 +192,18 @@ public class PlayerMovementController : MonoBehaviour
     private void DashUpdate()
     {
         const float MovementInputThreshold = 0.5f;
+        const int LastDashResetValue = 0;
 
-        if (!_isDashButtonPressed)
-        {
-            _timeSinceLastDash += Time.deltaTime;
-            _dashBarAnimation.IncreaseDashBar(_timeSinceLastDash);
-        }
-
+        _timeSinceLastDash += Time.deltaTime;
         // checking if the input was pressed and if the player can dash and the cooldown is over, then check if then player can actually dash by checking if its grounded and movements aren't null.
-        if (_dashInputActionReference.action.WasPressedThisFrame() && _timeSinceLastDash >= DashCooldown &&
+        if (_dashInputActionReference.action.WasPressedThisFrame() && _timeSinceLastDash >= _dashCooldown &&
             !_isGrounded && _canDash && (_movementInputs.x > MovementInputThreshold || _movementInputs.x < -MovementInputThreshold))
         {
             if (HasCollisionWithObject())
                 return;
 
             _isDashButtonPressed = true;
+            _timeSinceLastDash = LastDashResetValue;
         }
 
         if (_dashInputActionReference.action.WasReleasedThisFrame())
@@ -206,7 +213,6 @@ public class PlayerMovementController : MonoBehaviour
                 _isDashButtonPressed = false;
                 _canDash = false;
                 _dashTimer = DashStartTimerValue;
-                _timeSinceLastDash = LastDashResetValue;
             }
         }
 
@@ -216,15 +222,15 @@ public class PlayerMovementController : MonoBehaviour
 
     private void Dash()
     {
+        _soundEffectController.PlaySound(DashSoundEffectName, gameObject.name);
+        
         _dashTimer += Time.deltaTime;
-        _dashBarAnimation.DecreaseDashBar(_dashTimer);
 
         if (_dashTimer > DashDuration)
         {
             _isDashButtonPressed = false;
             _canDash = false;
             _dashTimer = DashStartTimerValue;
-            _timeSinceLastDash = LastDashResetValue;
         }
     }
     #endregion

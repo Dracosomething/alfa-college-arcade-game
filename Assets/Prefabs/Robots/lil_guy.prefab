@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: 2862568802251104593}
   - component: {fileID: 4139623247807327189}
   - component: {fileID: 3263175614833953919}
+  - component: {fileID: 921913704493674382}
   m_Layer: 0
   m_Name: lil_guy
   m_TagString: Untagged
@@ -79,9 +80,9 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 1
-  m_Sprite: {fileID: 5095402386223003974, guid: 7f3526de1ec2b2d4dbc312d4518ec525, type: 3}
+  m_Sprite: {fileID: 3045137011253905696, guid: 1245d644c2994db4396f9a987b68c944, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
-  m_FlipX: 1
+  m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
   m_Size: {x: 1, y: 1}
@@ -175,9 +176,21 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f0d79d83c2fdee84dae702253c016b84, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  health: 10
-  damage: 1
-  speed: 0.5
-  patrolPoints:
-  - {fileID: 0}
-  - {fileID: 0}
+  Health: 1
+  Speed: 1
+  _endPositionXOffset: 0
+--- !u!114 &921913704493674382
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5903191455718190286}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fe9375ecd1a34133afa3e405a1858648, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _cooldownDuration:
+    <Minutes>k__BackingField: 0
+    <Seconds>k__BackingField: 0
