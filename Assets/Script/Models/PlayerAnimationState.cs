@@ -1,9 +1,10 @@
 public enum PlayerAnimationState
 {
     IsWalking,
-    IsSitting,
+    IsSittingDown,
     IsJumping,
     IsFalling,
     IsDashing,
-    IsIdle
+    IsIdle,
+    TookDamage
 }

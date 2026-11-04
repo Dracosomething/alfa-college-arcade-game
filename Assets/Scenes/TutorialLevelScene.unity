@@ -63670,6 +63670,10 @@ PrefabInstance:
       propertyPath: m_MaskInteraction
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 7972565283692893005, guid: df135888d42a0aa4b906378c8e23ddb0, type: 3}
+      propertyPath: _startCheckpoint
+      value: 
+      objectReference: {fileID: 958517192}
     - target: {fileID: 8180571952851925878, guid: df135888d42a0aa4b906378c8e23ddb0, type: 3}
       propertyPath: m_Name
       value: Player
@@ -63679,11 +63683,8 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents:
     - targetCorrespondingSourceObject: {fileID: 8180571952851925878, guid: df135888d42a0aa4b906378c8e23ddb0, type: 3}
-      insertIndex: -1
+      insertIndex: 9
       addedObject: {fileID: 2006145436}
-    - targetCorrespondingSourceObject: {fileID: 8180571952851925878, guid: df135888d42a0aa4b906378c8e23ddb0, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 2006145444}
   m_SourcePrefab: {fileID: 100100000, guid: df135888d42a0aa4b906378c8e23ddb0, type: 3}
 --- !u!4 &1259243823 stripped
 Transform:
@@ -116025,7 +116026,7 @@ Tilemap:
       - {fileID: 975423156, guid: 76b4ee3e7af644b45b3abd62fddfb81f, type: 3}
       - {fileID: 975423156, guid: 76b4ee3e7af644b45b3abd62fddfb81f, type: 3}
       - {fileID: 975423156, guid: 76b4ee3e7af644b45b3abd62fddfb81f, type: 3}
-      m_AnimationSpeed: 3
+      m_AnimationSpeed: 3.0000002
       m_AnimationTimeOffset: 0
       m_Flags: 0
   - first: {x: 25, y: 10, z: 0}
@@ -116144,7 +116145,7 @@ Tilemap:
       - {fileID: -1240626031211899577, guid: 76b4ee3e7af644b45b3abd62fddfb81f, type: 3}
       - {fileID: -1240626031211899577, guid: 76b4ee3e7af644b45b3abd62fddfb81f, type: 3}
       - {fileID: -1240626031211899577, guid: 76b4ee3e7af644b45b3abd62fddfb81f, type: 3}
-      m_AnimationSpeed: 3
+      m_AnimationSpeed: 3.0000002
       m_AnimationTimeOffset: 0
       m_Flags: 0
   - first: {x: 62, y: 19, z: 0}
@@ -116753,18 +116754,6 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 08eafbe8a3b49b1459e6562d746b3d92, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
---- !u!114 &2006145444
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2006145422}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a1d81efe9ff0cfb4982dfb5a4dfbe39c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!1 &2044294787

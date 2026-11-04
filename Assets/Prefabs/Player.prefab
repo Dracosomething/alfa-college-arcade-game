@@ -46,6 +46,8 @@ GameObject:
   - component: {fileID: 7374495109831047526}
   - component: {fileID: 8697776027628019467}
   - component: {fileID: 4891827625028676775}
+  - component: {fileID: 8147904712490152472}
+  - component: {fileID: 7972565283692893005}
   - component: {fileID: 280967301474166230}
   m_Layer: 0
   m_Name: Player
@@ -333,6 +335,31 @@ MonoBehaviour:
   _interactableObjectLayer:
     serializedVersion: 2
     m_Bits: 256
+--- !u!114 &8147904712490152472
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8180571952851925878}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1b0e69e1261b86628ba35a5bf1b68554, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  <MaximumLives>k__BackingField: 3
+--- !u!114 &7972565283692893005
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8180571952851925878}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a1d81efe9ff0cfb4982dfb5a4dfbe39c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!70 &280967301474166230
 CapsuleCollider2D:
   m_ObjectHideFlags: 0
