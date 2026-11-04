@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using UnityEngine;
 
 [RequireComponent(typeof(Animator))]
@@ -85,12 +86,14 @@ public class PlayerAnimator : MonoBehaviour
         const string SittingDownParameter = "IsSittingDown";
         const string TookDamageParameter = "TookDamage";
 
-        foreach (PlayerAnimationState state in Enum.GetValues(typeof(PlayerAnimationState)))
+        foreach (string state in Enum.GetValues(typeof(PlayerAnimationState))
+                                     .Cast<PlayerAnimationState>() // Cast as Enum.GetValues returns an Array
+                                     .Select(playerAnimationState => playerAnimationState.ToString()))
         {
-            if (state.ToString().Equals(SittingDownParameter) || state.ToString().Equals(TookDamageParameter))
+            if (state.Equals(SittingDownParameter) || state.Equals(TookDamageParameter))
                 continue;
 
-            SetPlayerAnimatorBool(state.ToString(), false);
+            SetPlayerAnimatorBool(state, false);
         }
     }
 
