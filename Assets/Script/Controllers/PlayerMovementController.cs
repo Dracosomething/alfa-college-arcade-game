@@ -5,14 +5,13 @@ using UnityEngine.InputSystem;
 [RequireComponent(typeof(CapsuleCollider2D), typeof(Rigidbody2D))]
 public class PlayerMovementController : MonoBehaviour
 {
-    #region Fields
     private const int DashStartTimerValue = 0;
     private const int ZeroUpVelocity = 0;
     private const float DashDurationDividerInHalf = 0.5f;
     private const float FlatSlopeAngle = 0f; // The maximum slope angle the player can walk on.
     private const float GroundCheckRadius = 0.15f;
     private const float GroundCheckDelayLength = 0.1f; // In seconds
-    private const float DashDuration = 0.3f; // In seconds
+    private const int LastDashResetValue = 0;
     private const string JumpSoundEffectName = "jump";
     private const string DashSoundEffectName = "dash";
     private const string WalkSoundEffectName = "walk-footsteps";
@@ -30,9 +29,11 @@ public class PlayerMovementController : MonoBehaviour
     [RequiredSerializeField] [SerializeField] private GameObject _groundCheckObject;
 
     [Header("Dash Settings")]
-    [SerializeField] private float _dashForce = 5f;
-    [SerializeField] private float _dashCooldown = 1f; // In seconds
+    [SerializeField] private float _dashForce = 5f;    
     [RequiredSerializeField] [SerializeField] private LayerMask _walkableGroundLayerMask;
+    [RequiredSerializeField] [SerializeField] private DashBarAnimation _dashBarAnimation;
+    [field: SerializeField] public float DashCooldown { get; private set; } = 1f; // In seconds
+    public float DashDuration { get; private set; } = 0.3f; // In seconds
 
     private float _groundCheckDelayTimer = 0f; // In seconds
     private bool _isGroundCheckDelayActive = false;
@@ -48,21 +49,17 @@ public class PlayerMovementController : MonoBehaviour
     private float _timeSinceLastDash = 0f; // In seconds
     private float _originalGravityScale;
 
-    [Component] private Rigidbody2D _playerRigidbody2D;
 
     private Vector2 _movementInputs; // Store the movement input values to be used in FixedUpdate
     private float _slopeAngle;
     [Component] private PlayerAnimator _playerAnimator;
     [Component] private SoundEffectController _soundEffectController;
-    #endregion
-
-    #region Initialization
+    [Component] private Rigidbody2D _playerRigidbody2D;
+    
     private void Start() =>
         // Store the original gravity scale of the player to avoid sliding off of slopes.
         _originalGravityScale = _playerRigidbody2D.gravityScale;
-    #endregion
 
-    #region enable, disable
     public void EnablePlayerMovementController()
     {
         _movementInputActionReference.action.Enable();
@@ -75,10 +72,8 @@ public class PlayerMovementController : MonoBehaviour
         _movementInputActionReference.action.Disable();
         _jumpInputActionReference.action.Disable();
         _dashInputActionReference.action.Disable();
-    }
-    #endregion
-    
-    #region Enable/Disable Input Actions
+    }    
+
     private void OnEnable()
     {
         // Enable the inputs of the player when the player is enabled.
@@ -94,9 +89,7 @@ public class PlayerMovementController : MonoBehaviour
         _jumpInputActionReference.action.Disable();
         _dashInputActionReference.action.Disable();
     }
-    #endregion
 
-    #region Update Methods
     private void Update()
     {
         _movementInputs = _movementInputActionReference.action.ReadValue<Vector2>();
@@ -131,9 +124,7 @@ public class PlayerMovementController : MonoBehaviour
         _playerRigidbody2D.linearVelocity = velocity;
         _playerAnimator.GetMovementAndGroundValues(_movementInputs, velocity, _isGrounded);
     }
-    #endregion
 
-    #region Slope Adjustment
     private Vector2 AdjustedVelocityToSlope(Vector2 velocity)
     {
         float rayLength = 2f; // The length of the ray used for slope detection.
@@ -162,9 +153,7 @@ public class PlayerMovementController : MonoBehaviour
 
         return velocity;
     }
-    #endregion
 
-    #region Jump implementation
     private void JumpUpdate()
     {
         CheckForValidGround();
@@ -186,17 +175,19 @@ public class PlayerMovementController : MonoBehaviour
         _playerRigidbody2D.linearVelocityY = Mathf.Sqrt(_jumpHeight * JumpVelocityGravityFactor * Constants.DefaultGravity);
         _isGroundCheckDelayActive = true;
     }
-    #endregion
 
-    #region Dash Implementation
     private void DashUpdate()
     {
         const float MovementInputThreshold = 0.5f;
-        const int LastDashResetValue = 0;
 
-        _timeSinceLastDash += Time.deltaTime;
+        if (!_isDashButtonPressed)
+        {
+            _timeSinceLastDash += Time.deltaTime;
+            _dashBarAnimation.IncreaseDashBar(_timeSinceLastDash);
+        }
+
         // checking if the input was pressed and if the player can dash and the cooldown is over, then check if then player can actually dash by checking if its grounded and movements aren't null.
-        if (_dashInputActionReference.action.WasPressedThisFrame() && _timeSinceLastDash >= _dashCooldown &&
+        if (_dashInputActionReference.action.WasPressedThisFrame() && _timeSinceLastDash >= DashCooldown &&
             !_isGrounded && _canDash && (_movementInputs.x > MovementInputThreshold || _movementInputs.x < -MovementInputThreshold))
         {
             if (HasCollisionWithObject())
@@ -213,6 +204,7 @@ public class PlayerMovementController : MonoBehaviour
                 _isDashButtonPressed = false;
                 _canDash = false;
                 _dashTimer = DashStartTimerValue;
+                _timeSinceLastDash = LastDashResetValue;
             }
         }
 
@@ -226,16 +218,17 @@ public class PlayerMovementController : MonoBehaviour
         
         _dashTimer += Time.deltaTime;
 
+        _dashBarAnimation.DecreaseDashBar(_dashTimer);
+
         if (_dashTimer > DashDuration)
         {
             _isDashButtonPressed = false;
             _canDash = false;
             _dashTimer = DashStartTimerValue;
+            _timeSinceLastDash = LastDashResetValue;
         }
     }
-    #endregion
 
-    #region Ground check delay and coyote time
     private void CheckForValidGround()
     {
         const int CoyoteTimeTimerStartValue = 0;
@@ -274,9 +267,7 @@ public class PlayerMovementController : MonoBehaviour
             _groundCheckDelayTimer = GroundCheckDelayTimerStartValue;
         }
     }
-    #endregion
 
-    #region collision checks with walls while dashing
     // Avoiding dashing into walls by stopping the dash.
     private bool HasCollisionWithObject()
     {
@@ -288,5 +279,4 @@ public class PlayerMovementController : MonoBehaviour
 
         return !contactPoints[FirstContactPoint].collider.IsUnityNull();
     }
-    #endregion
 }

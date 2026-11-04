@@ -1,5 +1,4 @@
 using Unity.VisualScripting;
-using UnityEditor.ShaderGraph.Internal;
 using UnityEngine;
 
 [RequireComponent(typeof(SpriteRenderer))]
@@ -10,10 +9,10 @@ public class DashBarAnimation : MonoBehaviour
     [Component] private SpriteRenderer _dashBarImage;
     private PlayerMovementController _playerMovementController;
     private float _dashBarLocalSizeXAxis;
-    private float _dashBarCooldownTimeInSeconds;
-    private float _dashBarDurationTimeInSeconds;
+    private float _dashBarCooldownTimeInSeconds = 1;
+    private float _dashBarDurationTimeInSeconds = 0.3f;
 
-    private void Awake() 
+    private void Start() 
     {
         // No TryGetComponentInParent exists, manual null check required.
         _playerMovementController = transform.GetComponentInParent<PlayerMovementController>();
