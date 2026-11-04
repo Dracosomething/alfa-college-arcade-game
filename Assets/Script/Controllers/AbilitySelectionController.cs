@@ -7,22 +7,13 @@ using UnityEngine.SceneManagement;
 
 public class AbilitySelectionController : MonoBehaviour
 {
-    private const float DiagonalBoxCastAngle = 45f;
-    private const float HorizontalBoxCastAngle = 0f;
-    
-    [Component] private PlayerMovementController _playerMovementController;
-    [RequiredSerializeField, SerializeField] private InputActionReference _startScrollingInputActionReference;
-    [RequiredSerializeField, SerializeField] private InputActionReference _scrollInputActionReference;
+    [RequiredSerializeField] [SerializeField] private InputActionReference _scrollInputActionReference;
     private Camera _mainCamera;
     private Transform _cameraTransform;
     private List<SpriteRenderer> _abilityObjectsInScene;
     private List<SpriteRenderer> _abilityObjectsInView;
     private SpriteRenderer? _selectedAbilityObject = null;
     private Vector2 _previousCameraPosition;
-    private Vector2 _boxCastSize = new(4, 4);
-    [SerializeField] private float _slowDownFactor = 0.5f;
-    [SerializeField] private float _maxAbiltyObjectDistance = 5f;
-    private float _originalTimeScale;
     
     private void Start()
     {
@@ -36,11 +27,9 @@ public class AbilitySelectionController : MonoBehaviour
         Scene currentScene = SceneManager.GetActiveScene();
         _abilityObjectsInScene = GetAbilityObjectsInScene(currentScene).ToList();
 
-        _startScrollingInputActionReference.action.Enable();
+        _scrollInputActionReference.action.Enable();
         
         _abilityObjectsInView = GetAbilityObjectsInView().ToList();
-
-        _originalTimeScale = Time.timeScale;
     }
 
     public IAbilityObject? GetSelectedAbilityObject()
@@ -54,21 +43,16 @@ public class AbilitySelectionController : MonoBehaviour
     
     private void Update()
     {
-        
         if (!((Vector2)_cameraTransform.position).Equals(_previousCameraPosition))
             OnCameraChangePosition();
-
-        if (_startScrollingInputActionReference.action.WasPressedThisFrame())
-        {
-            _playerMovementController.DisablePlayerMovementController();
-            Time.timeScale = _slowDownFactor;
-        }
         
-        if (_startScrollingInputActionReference.action.IsPressed())
+        if (_scrollInputActionReference.action.WasPressedThisFrame())
         {
-            var inputVector = _scrollInputActionReference.action.ReadValue<Vector2>().normalized;
-
-            Vector2 playerPos = transform.position;
+            UnHighlightSelected();
+            
+            ScrollThroughAbilityObjects();
+            
+            HighlightSelected();
         }
     }
 
@@ -83,7 +67,7 @@ public class AbilitySelectionController : MonoBehaviour
 
     private void DeselectAbilityObjectIfNoLongerInView()
     {
-        if (!_selectedAbilityObject.IsUnityNull() && !IsTransformVisible(_selectedAbilityObject))
+        if (!_selectedAbilityObject.IsUnityNull() && !IsRendererVisible(_selectedAbilityObject))
         {
             UnHighlightSelected();
             _selectedAbilityObject = null;
@@ -125,7 +109,7 @@ public class AbilitySelectionController : MonoBehaviour
     
     private IEnumerable<SpriteRenderer> GetAbilityObjectsInView() =>
         _abilityObjectsInScene
-            .Where(renderer => this.IsTransformVisible(renderer.gameObject.transform)); // We check if the renderer is visible
+            .Where(IsRendererVisible); // We check if the renderer is visible
     
     private IEnumerable<SpriteRenderer> GetAbilityObjectsInScene(Scene currentScene) =>
         Resources.FindObjectsOfTypeAll<GameObject>() // We get all GameObjects currently loaded
@@ -134,9 +118,9 @@ public class AbilitySelectionController : MonoBehaviour
             .Where(IAbilityObject.IsAbilityObject) // We filter out all GameObjects that are not an AbilityObject
             .Select(gameObject => gameObject.GetComponent<SpriteRenderer>()); // We select the SpriteRenderer
 
-    private bool IsTransformVisible(Transform abilityObjectTransform)
+    private bool IsRendererVisible(Renderer abilityObjectRenderer)
     {
-        Vector2 viewPosition = _mainCamera.WorldToViewportPoint(abilityObjectTransform.position); // returns a vector2 where x and y are 0-1 if the position is in the camera
+        Vector2 viewPosition = _mainCamera.WorldToViewportPoint(abilityObjectRenderer.transform.position); // returns a vector2 where x and y are 0-1 if the position is in the camera
 
         return viewPosition.x is >= 0 and <= 1 && viewPosition.y is >= 0 and <= 1;
     }
