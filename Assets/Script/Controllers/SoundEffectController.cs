@@ -17,7 +17,7 @@ public class SoundEffectController : MonoBehaviour
 
         if (allowMultipleOfSoundEffect)
         {
-            byte[] randomByteString = new byte[16];
+            var randomByteString = new byte[16];
             _random.NextBytes(randomByteString); // We fill the array with random data
 
             soundEffectName += randomByteString.ToHexString(); // We append the random data to our sound effect name.
@@ -26,20 +26,8 @@ public class SoundEffectController : MonoBehaviour
         _soundEffectCache.AddSoundEffect(soundEffectOwnerName, soundEffectName);
         
         var soundEffectWrapper = this.AddComponent<SoundEffectWrapper>();
-        soundEffectWrapper.SoundEffectOwnerName = soundEffectOwnerName;
-        soundEffectWrapper.SoundEffectName = soundEffectName;
-        
-        soundEffectWrapper.AudioSource.clip = audioClip;
-        soundEffectWrapper.AudioSource.spatialBlend = Constants._2DSound;
-        
-        soundEffectWrapper.AudioSource.Play();
+        soundEffectWrapper.Initialize(soundEffectOwnerName, soundEffectName, audioClip);
     }
-
-    /// <summary>
-    /// This does not function properly when there are multiple of 1 sound effect.
-    /// </summary>
-    public bool IsPlayingSoundEffect(string soundEffectName, string soundEffectOwner) =>
-        HasAudioSourceForSoundEffect(soundEffectName, soundEffectOwner);
 
     private void Update() =>
         _soundEffectCache.RemoveUnusedGameObjects();
