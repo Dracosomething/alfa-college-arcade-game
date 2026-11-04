@@ -42,7 +42,7 @@ public class DashBarAnimation : MonoBehaviour
     }
 
     public void HideCooldownBar() =>
-    _dashBarImage.enabled = false;
+        _dashBarImage.enabled = false;
 
     public void ShowCooldownBar() =>
         _dashBarImage.enabled = true;

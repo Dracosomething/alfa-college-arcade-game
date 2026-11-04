@@ -32,6 +32,7 @@ public class PlayerMovementController : MonoBehaviour
     [SerializeField] private float _dashForce = 5f;    
     [RequiredSerializeField] [SerializeField] private LayerMask _walkableGroundLayerMask;
     [RequiredSerializeField] [SerializeField] private DashBarAnimation _dashBarAnimation;
+
     [field: SerializeField] public float DashCooldown { get; private set; } = 1f; // In seconds
     public float DashDuration { get; private set; } = 0.3f; // In seconds
 
@@ -197,15 +198,12 @@ public class PlayerMovementController : MonoBehaviour
             _timeSinceLastDash = LastDashResetValue;
         }
 
-        if (_dashInputActionReference.action.WasReleasedThisFrame())
+        if (_dashInputActionReference.action.WasReleasedThisFrame() && _dashTimer > (DashDuration * DashDurationDividerInHalf))
         {
-            if (_dashTimer > (DashDuration * DashDurationDividerInHalf))
-            {
-                _isDashButtonPressed = false;
-                _canDash = false;
-                _dashTimer = DashStartTimerValue;
-                _timeSinceLastDash = LastDashResetValue;
-            }
+            _isDashButtonPressed = false;
+            _canDash = false;
+            _dashTimer = DashStartTimerValue;
+            _timeSinceLastDash = LastDashResetValue;
         }
 
         if (_isDashButtonPressed)
