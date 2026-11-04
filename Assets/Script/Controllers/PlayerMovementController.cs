@@ -27,6 +27,7 @@ public class PlayerMovementController : MonoBehaviour
     [Header("Jump Settings")]
     [SerializeField] private float _jumpHeight = 10f;
     [RequiredSerializeField] [SerializeField] private GameObject _groundCheckObject;
+    [SerializeField] private float _coyoteTime = 0.1f; // In seconds
 
     [Header("Dash Settings")]
     [SerializeField] private float _dashForce = 5f;    
@@ -40,7 +41,6 @@ public class PlayerMovementController : MonoBehaviour
     private bool _isGroundCheckDelayActive = false;
     private bool _isGrounded = true;
 
-    private const float _coyoteTime = 0.1f; // In seconds
     private float _coyoteTimeTimer = 0f; // In seconds
     private bool _isGroundedWithCoyoteTime = false;
 
