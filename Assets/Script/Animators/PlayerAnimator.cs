@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using UnityEngine;
 
 [RequireComponent(typeof(Animator))]
@@ -16,9 +17,25 @@ public class PlayerAnimator : MonoBehaviour
 
     public void GetMovementAndGroundValues(Vector2 movementInputs,  Vector2 velocity, bool isGrounded)
     {
+        const string SittingDownParameter = "IsSittingDown";
+
         SetDirection(GetMovingDirection(movementInputs));
 
+        if (!movementInputs.Equals(Vector2.zero) || !velocity.Equals(Vector2.zero))
+            SetPlayerAnimatorBool(SittingDownParameter, false);
+
         SetAnimationState(GetAnimationState(movementInputs, velocity, isGrounded));
+    }
+
+    public void SetAnimationState(PlayerAnimationState state)
+    {
+        if (_currentState.Equals(state))
+            return;
+
+        ResetStates();
+
+        _currentState = state;
+        SetPlayerAnimatorBool(_currentState.ToString(), true);
     }
 
     private Direction GetMovingDirection(Vector2 movementInputs)
@@ -53,17 +70,6 @@ public class PlayerAnimator : MonoBehaviour
         return PlayerAnimationState.IsIdle;
     }
 
-    private void SetAnimationState(PlayerAnimationState state)
-    {
-        if (_currentState.Equals(state))
-            return;
-
-        ResetStates();
-
-        _currentState = state;
-        SetPlayerAnimatorBool(_currentState.ToString(), true);
-    }
-
     private void SetDirection(Direction direction)
     {
         const string DirectionParameter = "IsFacingRight";
@@ -77,8 +83,18 @@ public class PlayerAnimator : MonoBehaviour
 
     private void ResetStates()
     {
-        foreach (PlayerAnimationState state in Enum.GetValues(typeof(PlayerAnimationState)))
-            SetPlayerAnimatorBool(state.ToString(), false);
+        const string SittingDownParameter = "IsSittingDown";
+        const string TookDamageParameter = "TookDamage";
+
+        foreach (string state in Enum.GetValues(typeof(PlayerAnimationState))
+                                     .Cast<PlayerAnimationState>() // Cast as Enum.GetValues returns an Array
+                                     .Select(playerAnimationState => playerAnimationState.ToString()))
+        {
+            if (state.Equals(SittingDownParameter) || state.Equals(TookDamageParameter))
+                continue;
+
+            SetPlayerAnimatorBool(state, false);
+        }
     }
 
     private void SetPlayerAnimatorBool(string parameter, bool value) =>
