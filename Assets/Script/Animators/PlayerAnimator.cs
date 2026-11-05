@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using UnityEngine;
 
 [RequireComponent(typeof(Animator))]
@@ -16,24 +17,38 @@ public class PlayerAnimator : MonoBehaviour
 
     public void GetMovementAndGroundValues(Vector2 movementInputs,  Vector2 velocity, bool isGrounded)
     {
+        const string SittingDownParameter = "IsSittingDown";
 
+        SetDirection(GetMovingDirection(movementInputs));
 
-        // change this
-        PlayerAnimationState state = GetMovementAnimationState(movementInputs, velocity, isGrounded);
-        
+        if (!movementInputs.Equals(Vector2.zero) || !velocity.Equals(Vector2.zero))
+            SetPlayerAnimatorBool(SittingDownParameter, false);
+
+        SetAnimationState(GetAnimationState(movementInputs, velocity, isGrounded));
     }
 
-    public Direction SetDirection(float movementInput)
+    public void SetAnimationState(PlayerAnimationState state)
     {
-        if (movementInput > Constants.NoInput)
+        if (_currentState.Equals(state))
+            return;
+
+        ResetStates();
+
+        _currentState = state;
+        SetPlayerAnimatorBool(_currentState.ToString(), true);
+    }
+
+    private Direction GetMovingDirection(Vector2 movementInputs)
+    {
+        if (movementInputs.x > Constants.NoInput)
             return Direction.Right;
-        else if (movementInput < Constants.NoInput)
+        else if (movementInputs.x < Constants.NoInput)
             return Direction.Left;
 
         return _currentDirection;
     }
 
-    public PlayerAnimationState GetMovementAnimationState(Vector2 movementInputs, Vector2 velocity, bool isGrounded)
+    private PlayerAnimationState GetAnimationState(Vector2 movementInputs, Vector2 velocity, bool isGrounded)
     {
         const float DashThreshold = 5f;
         const float JumpThreshold = 0.1f;
@@ -55,18 +70,7 @@ public class PlayerAnimator : MonoBehaviour
         return PlayerAnimationState.IsIdle;
     }
 
-    private void SetAnimationState(PlayerAnimationState state)
-    {
-        if (_currentState.Equals(state))
-            return;
-
-        ResetStates();
-
-        _currentState = state;
-        SetPlayerAnimatorBool(_currentState.ToString(), true);
-    }
-
-    private void SetAnimationDirection(Direction direction)
+    private void SetDirection(Direction direction)
     {
         const string DirectionParameter = "IsFacingRight";
 
@@ -79,8 +83,18 @@ public class PlayerAnimator : MonoBehaviour
 
     private void ResetStates()
     {
-        foreach (PlayerAnimationState state in Enum.GetValues(typeof(PlayerAnimationState)))
-            SetPlayerAnimatorBool(state.ToString(), false);
+        const string SittingDownParameter = "IsSittingDown";
+        const string TookDamageParameter = "TookDamage";
+
+        foreach (string state in Enum.GetValues(typeof(PlayerAnimationState))
+                                     .Cast<PlayerAnimationState>() // Cast as Enum.GetValues returns an Array
+                                     .Select(playerAnimationState => playerAnimationState.ToString()))
+        {
+            if (state.Equals(SittingDownParameter) || state.Equals(TookDamageParameter))
+                continue;
+
+            SetPlayerAnimatorBool(state, false);
+        }
     }
 
     private void SetPlayerAnimatorBool(string parameter, bool value) =>

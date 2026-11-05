@@ -7,12 +7,15 @@ public class PlayerMovementController : MonoBehaviour
 {
     #region Fields
     private const int DashStartTimerValue = 0;
+    private const int ZeroUpVelocity = 0;
     private const float DashDurationDividerInHalf = 0.5f;
     private const float FlatSlopeAngle = 0f; // The maximum slope angle the player can walk on.
-    private const int ZeroUpVelocity = 0;
     private const float GroundCheckRadius = 0.15f;
     private const float GroundCheckDelayLength = 0.1f; // In seconds
     private const float DashDuration = 0.3f; // In seconds
+    private const string JumpSoundEffectName = "jump";
+    private const string DashSoundEffectName = "dash";
+    private const string WalkSoundEffectName = "walk-footsteps";
 
     [Header("Input Action References")]
     [RequiredSerializeField] [SerializeField] private InputActionReference _movementInputActionReference;
@@ -24,7 +27,6 @@ public class PlayerMovementController : MonoBehaviour
 
     [Header("Jump Settings")]
     [SerializeField] private float _jumpHeight = 10f;
-    [SerializeField] private float _coyoteTime = 0.1f; // In seconds
     [RequiredSerializeField] [SerializeField] private GameObject _groundCheckObject;
 
     [Header("Dash Settings")]
@@ -36,6 +38,7 @@ public class PlayerMovementController : MonoBehaviour
     private bool _isGroundCheckDelayActive = false;
     private bool _isGrounded = true;
 
+    private const float _coyoteTime = 0.1f; // In seconds
     private float _coyoteTimeTimer = 0f; // In seconds
     private bool _isGroundedWithCoyoteTime = false;
 
@@ -50,6 +53,7 @@ public class PlayerMovementController : MonoBehaviour
     private Vector2 _movementInputs; // Store the movement input values to be used in FixedUpdate
     private float _slopeAngle;
     [Component] private PlayerAnimator _playerAnimator;
+    [Component] private SoundEffectController _soundEffectController;
     #endregion
 
     #region Initialization
@@ -103,6 +107,10 @@ public class PlayerMovementController : MonoBehaviour
 
         if (_movementInputs.Equals(Vector2.zero) && _isGrounded && !_isGroundCheckDelayActive)
             _playerRigidbody2D.linearVelocity = Vector2.zero;
+        
+        // For playing the sound of the player walking
+        if (!_movementInputs.Equals(Vector2.zero) && _isGrounded)
+            _soundEffectController.PlaySound(WalkSoundEffectName, gameObject.name);
 
         if ((!_slopeAngle.Equals(FlatSlopeAngle) && _isGrounded) || _isDashButtonPressed)
             _playerRigidbody2D.gravityScale = Constants.ZeroGravity;
@@ -121,6 +129,7 @@ public class PlayerMovementController : MonoBehaviour
             velocity = AdjustedVelocityToSlope(new Vector2(Mathf.Round(_movementInputs.x) * _movementSpeed, _playerRigidbody2D.linearVelocity.y));
 
         _playerRigidbody2D.linearVelocity = velocity;
+        
         _playerAnimator.GetMovementAndGroundValues(_movementInputs, velocity, _isGrounded);
     }
     #endregion
@@ -159,7 +168,6 @@ public class PlayerMovementController : MonoBehaviour
     #region Jump implementation
     private void JumpUpdate()
     {
-
         CheckForValidGround();
 
         if (_jumpInputActionReference.action.ReadValue<float>() > Constants.NoInput && _isGroundedWithCoyoteTime)
@@ -168,11 +176,14 @@ public class PlayerMovementController : MonoBehaviour
         GroundCheckDelay();
     }
 
+
     private void Jump()
     {
-        // JumpVelocityGravityFactor determines the relationship between jump height and gravity. It makes the calculation of the jump velocity based on the desired jump height and gravity value.
         const float JumpVelocityGravityFactor = -2f;
-
+        
+        _soundEffectController.PlaySound(JumpSoundEffectName, gameObject.name);
+        
+        // JumpVelocityGravityFactor determines the relationship between jump height and gravity. It maked the calculation of the jump velocity based on the desired jump height and gravity value.
         _playerRigidbody2D.linearVelocityY = Mathf.Sqrt(_jumpHeight * JumpVelocityGravityFactor * Constants.DefaultGravity);
         _isGroundCheckDelayActive = true;
     }
@@ -212,6 +223,8 @@ public class PlayerMovementController : MonoBehaviour
 
     private void Dash()
     {
+        _soundEffectController.PlaySound(DashSoundEffectName, gameObject.name);
+        
         _dashTimer += Time.deltaTime;
 
         if (_dashTimer > DashDuration)
