@@ -4,7 +4,6 @@ using UnityEngine;
 public abstract class Enemy : MonoBehaviour
 {
     [Component] private SpriteRenderer _spriteRenderer;
-    [Component] private CooldownWrapper _attackCooldownWrapper;
     private Vector2 _previousPosition;
     private long _remainingCooldownTimeInSeconds;
     [Component] protected Rigidbody2D RigidBody;
@@ -29,9 +28,6 @@ public abstract class Enemy : MonoBehaviour
     
     private void OnCollisionStay2D(Collision2D collision)
     {
-        if (_attackCooldownWrapper.IsCooldownActive())
-            return;
-
         var collidedObject = collision.gameObject;
         
         if (collidedObject.CompareTag(Constants.PlayerGameObjectName)) 
@@ -43,9 +39,9 @@ public abstract class Enemy : MonoBehaviour
         Vector2 currentPosition = RigidBody.position;
         
         if (currentPosition.x > _previousPosition.x)
-            _spriteRenderer.flipX = false;
-        else if (currentPosition.x < _previousPosition.x)
             _spriteRenderer.flipX = true;
+        else if (currentPosition.x < _previousPosition.x)
+            _spriteRenderer.flipX = false;
         
         _previousPosition = currentPosition;
     }
@@ -56,7 +52,5 @@ public abstract class Enemy : MonoBehaviour
             throw new MissingComponentException("Player is missing a LifeController component!");
             
         lifeController.Die();
-        
-        _attackCooldownWrapper.StartCooldown();
     }
 }
