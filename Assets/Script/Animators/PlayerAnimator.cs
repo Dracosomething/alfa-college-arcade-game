@@ -16,14 +16,14 @@ public class PlayerAnimator : MonoBehaviour
 
     public void GetMovementAndGroundValues(Vector2 movementInputs,  Vector2 velocity, bool isGrounded)
     {
-        SetDirection(GetMovingDirection(Mathf.Round(movementInputs.x)));
+
 
         // change this
         PlayerAnimationState state = GetMovementAnimationState(movementInputs, velocity, isGrounded);
         
     }
 
-    public Direction GetMovingDirection(float movementInput)
+    public Direction SetDirection(float movementInput)
     {
         if (movementInput > Constants.NoInput)
             return Direction.Right;
@@ -66,7 +66,7 @@ public class PlayerAnimator : MonoBehaviour
         SetPlayerAnimatorBool(_currentState.ToString(), true);
     }
 
-    private void SetDirection(Direction direction)
+    private void SetAnimationDirection(Direction direction)
     {
         const string DirectionParameter = "IsFacingRight";
 

@@ -159,6 +159,7 @@ public class PlayerMovementController : MonoBehaviour
     #region Jump implementation
     private void JumpUpdate()
     {
+
         CheckForValidGround();
 
         if (_jumpInputActionReference.action.ReadValue<float>() > Constants.NoInput && _isGroundedWithCoyoteTime)
@@ -166,7 +167,6 @@ public class PlayerMovementController : MonoBehaviour
 
         GroundCheckDelay();
     }
-
 
     private void Jump()
     {
