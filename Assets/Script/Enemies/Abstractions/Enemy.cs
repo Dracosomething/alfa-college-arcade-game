@@ -14,6 +14,9 @@ public abstract class Enemy : MonoBehaviour
     protected virtual void Start() =>
         _previousPosition = RigidBody.position;
 
+    public void Hurt() =>
+        Health--;
+    
     protected virtual void Update()
     {
         if (Health <= 0) 
@@ -34,7 +37,8 @@ public abstract class Enemy : MonoBehaviour
 
         var collidedObject = collision.gameObject;
         
-        if (collidedObject.CompareTag(Constants.PlayerGameObjectName)) 
+        if (collidedObject.CompareTag(Constants.PlayerGameObjectName) &&
+            RigidBody.position.y >= collision.transform.position.y) 
             DealDamageToPlayer(collidedObject);
     }
 
