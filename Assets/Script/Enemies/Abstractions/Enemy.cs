@@ -5,10 +5,8 @@ public abstract class Enemy : MonoBehaviour
 {
     [Component] private SpriteRenderer _spriteRenderer;
     private Vector2 _previousPosition;
-    private long _remainingCooldownTimeInSeconds;
     [Component] protected Rigidbody2D RigidBody;
     [SerializeField] protected int Health = 1;
-    [SerializeField] protected float Speed = 1;
 
     protected virtual void Start() =>
         _previousPosition = RigidBody.position;
