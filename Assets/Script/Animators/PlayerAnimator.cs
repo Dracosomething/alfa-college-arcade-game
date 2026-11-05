@@ -27,15 +27,19 @@ public class PlayerAnimator : MonoBehaviour
         SetAnimationState(GetAnimationState(movementInputs, velocity, isGrounded));
     }
 
-    public void SetAnimationState(PlayerAnimationState state)
+    public void SetAnimationState(PlayerAnimationState state, bool value = true)
     {
-        if (_currentState.Equals(state))
+        if (_currentState.Equals(state) && value)
             return;
 
         ResetStates();
 
         _currentState = state;
-        SetPlayerAnimatorBool(_currentState.ToString(), true);
+
+        if (state.Equals(PlayerAnimationState.TookDamage))
+            SetPlayerAnimatorTrigger(_currentState.ToString());
+        else
+            SetPlayerAnimatorBool(_currentState.ToString(), value);
     }
 
     private Direction GetMovingDirection(Vector2 movementInputs)
@@ -99,4 +103,7 @@ public class PlayerAnimator : MonoBehaviour
 
     private void SetPlayerAnimatorBool(string parameter, bool value) =>
         _playerAnimator.SetBool(Animator.StringToHash(parameter), value);
+
+    private void SetPlayerAnimatorTrigger (string parameter) =>
+        _playerAnimator.SetTrigger(Animator.StringToHash(parameter));
 }

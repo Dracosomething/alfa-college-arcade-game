@@ -109,7 +109,7 @@ public class PlayerMovementController : MonoBehaviour
             _playerRigidbody2D.linearVelocity = Vector2.zero;
         
         // For playing the sound of the player walking
-        if (!_movementInputs.Equals(Vector2.zero) && _isGrounded)
+        if (!_movementInputs.Equals(Vector2.zero) && _isGrounded && !_soundEffectController.IsUnityNull())
             _soundEffectController.PlaySound(WalkSoundEffectName, gameObject.name);
 
         if ((!_slopeAngle.Equals(FlatSlopeAngle) && _isGrounded) || _isDashButtonPressed)
@@ -180,12 +180,15 @@ public class PlayerMovementController : MonoBehaviour
     private void Jump()
     {
         const float JumpVelocityGravityFactor = -2f;
-        
-        _soundEffectController.PlaySound(JumpSoundEffectName, gameObject.name);
-        
+               
         // JumpVelocityGravityFactor determines the relationship between jump height and gravity. It maked the calculation of the jump velocity based on the desired jump height and gravity value.
         _playerRigidbody2D.linearVelocityY = Mathf.Sqrt(_jumpHeight * JumpVelocityGravityFactor * Constants.DefaultGravity);
         _isGroundCheckDelayActive = true;
+
+        if (_soundEffectController.IsUnityNull())
+            return;
+
+        _soundEffectController.PlaySound(JumpSoundEffectName, gameObject.name);
     }
     #endregion
 
@@ -222,9 +225,7 @@ public class PlayerMovementController : MonoBehaviour
     }
 
     private void Dash()
-    {
-        _soundEffectController.PlaySound(DashSoundEffectName, gameObject.name);
-        
+    {       
         _dashTimer += Time.deltaTime;
 
         if (_dashTimer > DashDuration)
@@ -233,6 +234,11 @@ public class PlayerMovementController : MonoBehaviour
             _canDash = false;
             _dashTimer = DashStartTimerValue;
         }
+
+        if (_soundEffectController.IsUnityNull())
+            return;
+
+        _soundEffectController.PlaySound(DashSoundEffectName, gameObject.name);
     }
     #endregion
 
