@@ -7,6 +7,12 @@ public class CooldownWrapper : MonoBehaviour
     [SerializeField] private CustomTimeSpan _cooldownDuration = new(minutes: 0, seconds: 0);
     private float _remainingCooldownInSeconds;
 
+    private void Start()
+    {
+        if (IsCooldownActive())
+            StopCooldown();
+    }
+
     public bool IsCooldownActive() =>
         _remainingCooldownInSeconds > FinishedCooldownInSeconds;
 

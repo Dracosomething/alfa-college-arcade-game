@@ -9,6 +9,7 @@ public class WalkingEnemy : Enemy
     private Vector2 _targetPosition;
     private Vector2 _endPosition;
     private TargetPosition _targetPositionOption = TargetPosition.EndPosition;
+    [SerializeField] protected float Speed = 1;
     
     protected override void Start()
     {
