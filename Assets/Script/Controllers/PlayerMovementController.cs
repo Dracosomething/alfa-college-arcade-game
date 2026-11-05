@@ -5,7 +5,6 @@ using UnityEngine.InputSystem;
 [RequireComponent(typeof(CapsuleCollider2D), typeof(Rigidbody2D))]
 public class PlayerMovementController : MonoBehaviour
 {
-    #region Fields
     private const int DashStartTimerValue = 0;
     private const int ZeroUpVelocity = 0;
     private const float DashDurationDividerInHalf = 0.5f;
@@ -54,15 +53,11 @@ public class PlayerMovementController : MonoBehaviour
     private float _slopeAngle;
     [Component] private PlayerAnimator _playerAnimator;
     [Component] private SoundEffectController _soundEffectController;
-    #endregion
 
-    #region Initialization
     private void Start() =>
         // Store the original gravity scale of the player to avoid sliding off of slopes.
         _originalGravityScale = _playerRigidbody2D.gravityScale;
-    #endregion
 
-    #region enable, disable
     public void EnablePlayerMovementController()
     {
         _movementInputActionReference.action.Enable();
@@ -76,9 +71,7 @@ public class PlayerMovementController : MonoBehaviour
         _jumpInputActionReference.action.Disable();
         _dashInputActionReference.action.Disable();
     }
-    #endregion
     
-    #region Enable/Disable Input Actions
     private void OnEnable()
     {
         // Enable the inputs of the player when the player is enabled.
@@ -94,9 +87,7 @@ public class PlayerMovementController : MonoBehaviour
         _jumpInputActionReference.action.Disable();
         _dashInputActionReference.action.Disable();
     }
-    #endregion
 
-    #region Update Methods
     private void Update()
     {
         _movementInputs = _movementInputActionReference.action.ReadValue<Vector2>();
@@ -132,9 +123,7 @@ public class PlayerMovementController : MonoBehaviour
         
         _playerAnimator.GetMovementAndGroundValues(_movementInputs, velocity, _isGrounded);
     }
-    #endregion
 
-    #region Slope Adjustment
     private Vector2 AdjustedVelocityToSlope(Vector2 velocity)
     {
         float rayLength = 2f; // The length of the ray used for slope detection.
@@ -163,9 +152,7 @@ public class PlayerMovementController : MonoBehaviour
 
         return velocity;
     }
-    #endregion
 
-    #region Jump implementation
     private void JumpUpdate()
     {
         CheckForValidGround();
@@ -190,9 +177,7 @@ public class PlayerMovementController : MonoBehaviour
 
         _soundEffectController.PlaySound(JumpSoundEffectName, gameObject.name);
     }
-    #endregion
 
-    #region Dash Implementation
     private void DashUpdate()
     {
         const float MovementInputThreshold = 0.5f;
@@ -240,9 +225,7 @@ public class PlayerMovementController : MonoBehaviour
 
         _soundEffectController.PlaySound(DashSoundEffectName, gameObject.name);
     }
-    #endregion
 
-    #region Ground check delay and coyote time
     private void CheckForValidGround()
     {
         const int CoyoteTimeTimerStartValue = 0;
@@ -281,9 +264,7 @@ public class PlayerMovementController : MonoBehaviour
             _groundCheckDelayTimer = GroundCheckDelayTimerStartValue;
         }
     }
-    #endregion
 
-    #region collision checks with walls while dashing
     // Avoiding dashing into walls by stopping the dash.
     private bool HasCollisionWithObject()
     {
@@ -295,5 +276,4 @@ public class PlayerMovementController : MonoBehaviour
 
         return !contactPoints[FirstContactPoint].collider.IsUnityNull();
     }
-    #endregion
 }
