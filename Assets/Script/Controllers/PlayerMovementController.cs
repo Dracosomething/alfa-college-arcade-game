@@ -36,6 +36,7 @@ public class PlayerMovementController : MonoBehaviour
     private float _groundCheckDelayTimer = 0f; // In seconds
     private bool _isGroundCheckDelayActive = false;
     private bool _isGrounded = true;
+    private bool _isJumping = false;
 
     private const float _coyoteTime = 0.1f; // In seconds
     private float _coyoteTimeTimer = 0f; // In seconds
@@ -54,9 +55,12 @@ public class PlayerMovementController : MonoBehaviour
     [Component] private PlayerAnimator _playerAnimator;
     [Component] private SoundEffectController _soundEffectController;
 
-    private void Start() =>
+    private void Start()
+    {        
         // Store the original gravity scale of the player to avoid sliding off of slopes.
         _originalGravityScale = _playerRigidbody2D.gravityScale;
+        _playerAnimator.DashThreshold = _dashForce; // Set the dash threshold in the animator to match the dash force of the player.
+    }
 
     public void EnablePlayerMovementController()
     {
@@ -112,6 +116,11 @@ public class PlayerMovementController : MonoBehaviour
     private void FixedUpdate()
     {
         Vector2 velocity;
+
+        /// <summary>
+        /// Dash force is set in the Fixed update because its physics based and needs to be updated in the Fixed Update. 
+        /// It also makes it easier to see what type of movement the player is doing if it is all in Fixed Update instead of on different places.
+        /// </summary>
         if (_isDashButtonPressed)
             // using mathf.round to avoid moving on the slightest input from, for example, a controller stick.
             velocity = new Vector2(Mathf.Round(_movementInputs.x) * _movementSpeed * _dashForce, ZeroUpVelocity);
@@ -121,13 +130,30 @@ public class PlayerMovementController : MonoBehaviour
 
         _playerRigidbody2D.linearVelocity = velocity;
         
-        _playerAnimator.GetMovementAndGroundValues(_movementInputs, velocity, _isGrounded);
+        _playerAnimator.SetMovementAndGroundValues(_movementInputs, velocity, _isGrounded, _isJumping);
     }
 
     private Vector2 AdjustedVelocityToSlope(Vector2 velocity)
     {
-        float rayLength = 2f; // The length of the ray used for slope detection.
-        RaycastHit2D hitInfo = Physics2D.Raycast(transform.position, Vector2.down, rayLength, _walkableGroundLayerMask);
+        const float RayLength = 2f; // The length of the ray used for slope detection.
+        const float RayOffsetDistance = 0.1f; // The distance to offset the ray origin for slope detection.
+
+        Direction RayOffsetDirection = _playerAnimator.GetCurrentDirection();
+
+        Vector2 rayOriginWithOffset = transform.position; // The origin of the ray used for slope detection with an offset for upwards slopes.
+
+        switch (RayOffsetDirection)
+        {
+            case Direction.Right:
+                rayOriginWithOffset = transform.position + new Vector3(x: RayOffsetDistance, y: 0f, z: 0f); // offset the ray origin to the right side of the player to detect slopes in that direction.
+                break;
+            case Direction.Left:
+                rayOriginWithOffset = transform.position + new Vector3(x: -RayOffsetDistance, y: 0f, z: 0f); // offset the ray origin to the left side of the player to detect slopes in that direction.
+                break;
+        }
+
+        RaycastHit2D hitInfo = Physics2D.Raycast(rayOriginWithOffset, Vector2.down, RayLength, _walkableGroundLayerMask);
+
         _slopeAngle = Vector2.Angle(hitInfo.normal, Vector2.up);
 
         if (!hitInfo.collider.IsUnityNull() && !_slopeAngle.Equals(FlatSlopeAngle) && _isGrounded)
@@ -159,6 +185,9 @@ public class PlayerMovementController : MonoBehaviour
 
         if (_jumpInputActionReference.action.ReadValue<float>() > Constants.NoInput && _isGroundedWithCoyoteTime)
             Jump();
+        
+        if (_isJumping && _playerRigidbody2D.linearVelocity.y <= ZeroUpVelocity)
+            _isJumping = false;
 
         GroundCheckDelay();
     }
@@ -170,7 +199,10 @@ public class PlayerMovementController : MonoBehaviour
                
         // JumpVelocityGravityFactor determines the relationship between jump height and gravity. It maked the calculation of the jump velocity based on the desired jump height and gravity value.
         _playerRigidbody2D.linearVelocityY = Mathf.Sqrt(_jumpHeight * JumpVelocityGravityFactor * Constants.DefaultGravity);
+
         _isGroundCheckDelayActive = true;
+
+        _isJumping = true;
 
         if (_soundEffectController.IsUnityNull())
             return;
