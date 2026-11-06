@@ -2,9 +2,11 @@ using UnityEngine;
 
 public class PlayerLifeController : MonoBehaviour
 {
-    [Component] private CheckpointController _checkpointController;
+    [Component] private PlayerCheckpointController _playerCheckpointController;
+    [Component] private PlayerAnimator _playerAnimator;
+    private bool _isPlayerAlreadyDying = false;
 
-    [field: SerializeField] public int MaximumLives { get; private set; }
+    [field: SerializeField] public int MaximumLives { get; private set; } = 3;
     public int CurrentLives { get; private set; }
 
     private void Start() =>
@@ -12,17 +14,33 @@ public class PlayerLifeController : MonoBehaviour
 
     public void Die()
     {
+        const float TakingDamageAnimationTransitionLength = 0.25f;
+
+        if (_isPlayerAlreadyDying)
+            return;
+
+        _isPlayerAlreadyDying = true;
+
         CurrentLives--;
 
-        if (IsDead())
-        {
-            _checkpointController.ResetLevel();
-            return;
-        }
+        _playerAnimator.SetAnimationState(PlayerAnimationState.TookDamage);
 
-        _checkpointController.GoToLastCheckpoint();
+        Invoke(nameof(RespawnPlayer), TakingDamageAnimationTransitionLength);
     }
 
     private bool IsDead() =>
         CurrentLives <= 0;
+
+    private void RespawnPlayer()
+    {
+        _isPlayerAlreadyDying = false;
+
+        if (IsDead())
+        {
+            _playerCheckpointController.ResetLevel();
+            return;
+        }
+
+        _playerCheckpointController.GoToLastCheckpoint();
+    }
 }
