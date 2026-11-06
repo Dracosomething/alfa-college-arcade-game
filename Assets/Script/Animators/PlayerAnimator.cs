@@ -9,36 +9,46 @@ public class PlayerAnimator : MonoBehaviour
     private Direction _currentDirection;
     private Animator _playerAnimator;
 
+    public float DashThreshold = 5f;
+
     private void Awake()
     {
         if (!TryGetComponent<Animator>(out _playerAnimator))
             Debug.LogError("Animator component not found on Player.");
     }
 
-    public void GetMovementAndGroundValues(Vector2 movementInputs,  Vector2 velocity, bool isGrounded)
+    public void SetMovementAndGroundValues(Vector2 movementInputs,  Vector2 velocity, bool isGrounded, bool isJumping)
     {
         const string SittingDownParameter = "IsSittingDown";
 
-        SetDirection(GetMovingDirection(movementInputs));
+        UpdatePlayerAnimatorBoolWithDirection(SetMovingDirection(movementInputs));
 
         if (!movementInputs.Equals(Vector2.zero) || !velocity.Equals(Vector2.zero))
             SetPlayerAnimatorBool(SittingDownParameter, false);
 
-        SetAnimationState(GetAnimationState(movementInputs, velocity, isGrounded));
+        SetAnimationState(SetPlayerAnimationState(movementInputs, velocity, isGrounded, isJumping));
     }
 
-    public void SetAnimationState(PlayerAnimationState state)
+    public void SetAnimationState(PlayerAnimationState state, bool value = true)
     {
-        if (_currentState.Equals(state))
+        if (_currentState.Equals(state) && value)
             return;
 
-        ResetStates();
+        ResetAnimationStates();
 
         _currentState = state;
-        SetPlayerAnimatorBool(_currentState.ToString(), true);
+
+        if (state.Equals(PlayerAnimationState.TookDamage))
+            SetPlayerAnimatorTrigger(_currentState.ToString());
+        else
+            SetPlayerAnimatorBool(_currentState.ToString(), value);
     }
 
-    private Direction GetMovingDirection(Vector2 movementInputs)
+    public Direction GetCurrentDirection() => _currentDirection;
+
+    public PlayerAnimationState GetCurrentAnimationState() => _currentState;
+
+    private Direction SetMovingDirection(Vector2 movementInputs)
     {
         if (movementInputs.x > Constants.NoInput)
             return Direction.Right;
@@ -48,19 +58,18 @@ public class PlayerAnimator : MonoBehaviour
         return _currentDirection;
     }
 
-    private PlayerAnimationState GetAnimationState(Vector2 movementInputs, Vector2 velocity, bool isGrounded)
+    private PlayerAnimationState SetPlayerAnimationState(Vector2 movementInputs, Vector2 velocity, bool isGrounded, bool isJumping)
     {
-        const float DashThreshold = 5f;
         const float JumpThreshold = 0.1f;
 
         // Check for dashing first because that has priority over jumping, walking and idle.
-        if ((velocity.x > DashThreshold || velocity.x < -DashThreshold) && velocity.y.Equals(Constants.NoInput))
+        if ((velocity.x > DashThreshold || velocity.x < -DashThreshold) && velocity.y.Equals(Constants.NoInput) && !isGrounded)
             return PlayerAnimationState.IsDashing;
 
         // Checking for jumping because that has priority over walking and idle.
-        if (velocity.y > JumpThreshold && !isGrounded)
+        if (velocity.y > JumpThreshold && !isGrounded && isJumping)
             return PlayerAnimationState.IsJumping;
-        else if (velocity.y < -JumpThreshold && !isGrounded)
+        else if (velocity.y < -JumpThreshold && !isGrounded && !isJumping)
             return PlayerAnimationState.IsFalling;
 
         if (!movementInputs.x.Equals(Constants.NoInput)) // Either if x is positive or negative.
@@ -70,7 +79,7 @@ public class PlayerAnimator : MonoBehaviour
         return PlayerAnimationState.IsIdle;
     }
 
-    private void SetDirection(Direction direction)
+    private void UpdatePlayerAnimatorBoolWithDirection(Direction direction)
     {
         const string DirectionParameter = "IsFacingRight";
 
@@ -81,7 +90,7 @@ public class PlayerAnimator : MonoBehaviour
         SetPlayerAnimatorBool(DirectionParameter, _currentDirection == Direction.Right);
     }
 
-    private void ResetStates()
+    private void ResetAnimationStates()
     {
         const string SittingDownParameter = "IsSittingDown";
         const string TookDamageParameter = "TookDamage";
@@ -99,4 +108,7 @@ public class PlayerAnimator : MonoBehaviour
 
     private void SetPlayerAnimatorBool(string parameter, bool value) =>
         _playerAnimator.SetBool(Animator.StringToHash(parameter), value);
+
+    private void SetPlayerAnimatorTrigger (string parameter) =>
+        _playerAnimator.SetTrigger(Animator.StringToHash(parameter));
 }

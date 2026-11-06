@@ -5,7 +5,6 @@ using UnityEngine.InputSystem;
 [RequireComponent(typeof(CapsuleCollider2D), typeof(Rigidbody2D))]
 public class PlayerMovementController : MonoBehaviour
 {
-    #region Fields
     private const int DashStartTimerValue = 0;
     private const int ZeroUpVelocity = 0;
     private const float DashDurationDividerInHalf = 0.5f;
@@ -37,6 +36,7 @@ public class PlayerMovementController : MonoBehaviour
     private float _groundCheckDelayTimer = 0f; // In seconds
     private bool _isGroundCheckDelayActive = false;
     private bool _isGrounded = true;
+    private bool _isJumping = false;
 
     private const float _coyoteTime = 0.1f; // In seconds
     private float _coyoteTimeTimer = 0f; // In seconds
@@ -54,15 +54,14 @@ public class PlayerMovementController : MonoBehaviour
     private float _slopeAngle;
     [Component] private PlayerAnimator _playerAnimator;
     [Component] private SoundEffectController _soundEffectController;
-    #endregion
 
-    #region Initialization
-    private void Start() =>
+    private void Start()
+    {        
         // Store the original gravity scale of the player to avoid sliding off of slopes.
         _originalGravityScale = _playerRigidbody2D.gravityScale;
-    #endregion
+        _playerAnimator.DashThreshold = _dashForce; // Set the dash threshold in the animator to match the dash force of the player.
+    }
 
-    #region enable, disable
     public void EnablePlayerMovementController()
     {
         _movementInputActionReference.action.Enable();
@@ -76,9 +75,7 @@ public class PlayerMovementController : MonoBehaviour
         _jumpInputActionReference.action.Disable();
         _dashInputActionReference.action.Disable();
     }
-    #endregion
     
-    #region Enable/Disable Input Actions
     private void OnEnable()
     {
         // Enable the inputs of the player when the player is enabled.
@@ -94,9 +91,7 @@ public class PlayerMovementController : MonoBehaviour
         _jumpInputActionReference.action.Disable();
         _dashInputActionReference.action.Disable();
     }
-    #endregion
 
-    #region Update Methods
     private void Update()
     {
         _movementInputs = _movementInputActionReference.action.ReadValue<Vector2>();
@@ -109,7 +104,7 @@ public class PlayerMovementController : MonoBehaviour
             _playerRigidbody2D.linearVelocity = Vector2.zero;
         
         // For playing the sound of the player walking
-        if (!_movementInputs.Equals(Vector2.zero) && _isGrounded)
+        if (!_movementInputs.Equals(Vector2.zero) && _isGrounded && !_soundEffectController.IsUnityNull())
             _soundEffectController.PlaySound(WalkSoundEffectName, gameObject.name);
 
         if ((!_slopeAngle.Equals(FlatSlopeAngle) && _isGrounded) || _isDashButtonPressed)
@@ -121,6 +116,11 @@ public class PlayerMovementController : MonoBehaviour
     private void FixedUpdate()
     {
         Vector2 velocity;
+
+        /// <summary>
+        /// Dash force is set in the Fixed update because its physics based and needs to be updated in the Fixed Update. 
+        /// It also makes it easier to see what type of movement the player is doing if it is all in Fixed Update instead of on different places.
+        /// </summary>
         if (_isDashButtonPressed)
             // using mathf.round to avoid moving on the slightest input from, for example, a controller stick.
             velocity = new Vector2(Mathf.Round(_movementInputs.x) * _movementSpeed * _dashForce, ZeroUpVelocity);
@@ -130,15 +130,30 @@ public class PlayerMovementController : MonoBehaviour
 
         _playerRigidbody2D.linearVelocity = velocity;
         
-        _playerAnimator.GetMovementAndGroundValues(_movementInputs, velocity, _isGrounded);
+        _playerAnimator.SetMovementAndGroundValues(_movementInputs, velocity, _isGrounded, _isJumping);
     }
-    #endregion
 
-    #region Slope Adjustment
     private Vector2 AdjustedVelocityToSlope(Vector2 velocity)
     {
-        float rayLength = 2f; // The length of the ray used for slope detection.
-        RaycastHit2D hitInfo = Physics2D.Raycast(transform.position, Vector2.down, rayLength, _walkableGroundLayerMask);
+        const float RayLength = 2f; // The length of the ray used for slope detection.
+        const float RayOffsetDistance = 0.1f; // The distance to offset the ray origin for slope detection.
+
+        Direction RayOffsetDirection = _playerAnimator.GetCurrentDirection();
+
+        Vector2 rayOriginWithOffset = transform.position; // The origin of the ray used for slope detection with an offset for upwards slopes.
+
+        switch (RayOffsetDirection)
+        {
+            case Direction.Right:
+                rayOriginWithOffset = transform.position + new Vector3(x: RayOffsetDistance, y: 0f, z: 0f); // offset the ray origin to the right side of the player to detect slopes in that direction.
+                break;
+            case Direction.Left:
+                rayOriginWithOffset = transform.position + new Vector3(x: -RayOffsetDistance, y: 0f, z: 0f); // offset the ray origin to the left side of the player to detect slopes in that direction.
+                break;
+        }
+
+        RaycastHit2D hitInfo = Physics2D.Raycast(rayOriginWithOffset, Vector2.down, RayLength, _walkableGroundLayerMask);
+
         _slopeAngle = Vector2.Angle(hitInfo.normal, Vector2.up);
 
         if (!hitInfo.collider.IsUnityNull() && !_slopeAngle.Equals(FlatSlopeAngle) && _isGrounded)
@@ -163,15 +178,16 @@ public class PlayerMovementController : MonoBehaviour
 
         return velocity;
     }
-    #endregion
 
-    #region Jump implementation
     private void JumpUpdate()
     {
         CheckForValidGround();
 
         if (_jumpInputActionReference.action.ReadValue<float>() > Constants.NoInput && _isGroundedWithCoyoteTime)
             Jump();
+        
+        if (_isJumping && _playerRigidbody2D.linearVelocity.y <= ZeroUpVelocity)
+            _isJumping = false;
 
         GroundCheckDelay();
     }
@@ -180,16 +196,20 @@ public class PlayerMovementController : MonoBehaviour
     private void Jump()
     {
         const float JumpVelocityGravityFactor = -2f;
-        
-        _soundEffectController.PlaySound(JumpSoundEffectName, gameObject.name);
-        
+               
         // JumpVelocityGravityFactor determines the relationship between jump height and gravity. It maked the calculation of the jump velocity based on the desired jump height and gravity value.
         _playerRigidbody2D.linearVelocityY = Mathf.Sqrt(_jumpHeight * JumpVelocityGravityFactor * Constants.DefaultGravity);
-        _isGroundCheckDelayActive = true;
-    }
-    #endregion
 
-    #region Dash Implementation
+        _isGroundCheckDelayActive = true;
+
+        _isJumping = true;
+
+        if (_soundEffectController.IsUnityNull())
+            return;
+
+        _soundEffectController.PlaySound(JumpSoundEffectName, gameObject.name);
+    }
+
     private void DashUpdate()
     {
         const float MovementInputThreshold = 0.5f;
@@ -222,9 +242,7 @@ public class PlayerMovementController : MonoBehaviour
     }
 
     private void Dash()
-    {
-        _soundEffectController.PlaySound(DashSoundEffectName, gameObject.name);
-        
+    {       
         _dashTimer += Time.deltaTime;
 
         if (_dashTimer > DashDuration)
@@ -233,10 +251,13 @@ public class PlayerMovementController : MonoBehaviour
             _canDash = false;
             _dashTimer = DashStartTimerValue;
         }
-    }
-    #endregion
 
-    #region Ground check delay and coyote time
+        if (_soundEffectController.IsUnityNull())
+            return;
+
+        _soundEffectController.PlaySound(DashSoundEffectName, gameObject.name);
+    }
+
     private void CheckForValidGround()
     {
         const int CoyoteTimeTimerStartValue = 0;
@@ -275,9 +296,7 @@ public class PlayerMovementController : MonoBehaviour
             _groundCheckDelayTimer = GroundCheckDelayTimerStartValue;
         }
     }
-    #endregion
 
-    #region collision checks with walls while dashing
     // Avoiding dashing into walls by stopping the dash.
     private bool HasCollisionWithObject()
     {
@@ -289,5 +308,4 @@ public class PlayerMovementController : MonoBehaviour
 
         return !contactPoints[FirstContactPoint].collider.IsUnityNull();
     }
-    #endregion
 }

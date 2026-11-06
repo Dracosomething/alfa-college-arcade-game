@@ -30,7 +30,7 @@ public class CheckpointBenchTile : MonoBehaviour, IInteractionObject
         // Lossy Scale is used because it grabs the global scale of the object instead of the local one, it should usually not give any problems in any case
         float playerLossyYScaleInHalf = _playerGameObject.transform.lossyScale.y / 2; // Use half because the Transform position is not in the middle
 
-        Vector3 newCheckpointLocation = new Vector3(transform.position.x, transform.position.y + playerLossyYScaleInHalf, transform.position.z);
+        Vector3 newCheckpointLocation = new(transform.position.x, transform.position.y + playerLossyYScaleInHalf, transform.position.z);
 
         _playerCheckpointController.SetCheckpoint(newCheckpointLocation);
 
