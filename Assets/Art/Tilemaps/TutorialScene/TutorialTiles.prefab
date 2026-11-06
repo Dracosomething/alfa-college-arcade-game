@@ -450,6 +450,16 @@ Tilemap:
       m_TileObjectToInstantiateIndex: 65535
       dummyAlignment: 0
       m_AllTileFlags: 1073741825
+  - first: {x: -2, y: 3, z: 0}
+    second:
+      serializedVersion: 2
+      m_TileIndex: 31
+      m_TileSpriteIndex: 31
+      m_TileMatrixIndex: 0
+      m_TileColorIndex: 0
+      m_TileObjectToInstantiateIndex: 65535
+      dummyAlignment: 0
+      m_AllTileFlags: 1073741825
   m_AnimatedTiles:
   - first: {x: 2, y: 2, z: 0}
     second:
@@ -548,7 +558,7 @@ Tilemap:
     m_Data: {fileID: 11400000, guid: a7d7e17a79f94104e95510c6589a827c, type: 2}
   - m_RefCount: 1
     m_Data: {fileID: 11400000, guid: a8f852ce96ef0404d927d1a855e90cca, type: 2}
-  - m_RefCount: 1
+  - m_RefCount: 2
     m_Data: {fileID: 11400000, guid: e0829c44563a2f54fa9725636b87578d, type: 2}
   - m_RefCount: 1
     m_Data: {fileID: 11400000, guid: 069fdbfb7b1d97a1b9654a48befdbaa2, type: 2}
@@ -621,7 +631,7 @@ Tilemap:
     m_Data: {fileID: -175047841, guid: 38641ace29d34f04483480ef3b4923b5, type: 3}
   - m_RefCount: 1
     m_Data: {fileID: -3644078685925701394, guid: 38641ace29d34f04483480ef3b4923b5, type: 3}
-  - m_RefCount: 1
+  - m_RefCount: 2
     m_Data: {fileID: -6614608196806962361, guid: 38641ace29d34f04483480ef3b4923b5, type: 3}
   - m_RefCount: 1
     m_Data: {fileID: -8245977222953169685, guid: 2b0f44200765b445aa3acbc089d7043e, type: 3}
@@ -632,7 +642,7 @@ Tilemap:
   - m_RefCount: 1
     m_Data: {fileID: -532637741, guid: 38641ace29d34f04483480ef3b4923b5, type: 3}
   m_TileMatrixArray:
-  - m_RefCount: 36
+  - m_RefCount: 37
     m_Data:
       e00: 1
       e01: 0
@@ -651,13 +661,13 @@ Tilemap:
       e32: 0
       e33: 1
   m_TileColorArray:
-  - m_RefCount: 36
+  - m_RefCount: 37
     m_Data: {r: 1, g: 1, b: 1, a: 1}
   m_TileObjectToInstantiateArray: []
   m_AnimationFrameRate: 1
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_Origin: {x: -3, y: -5, z: 0}
-  m_Size: {x: 18, y: 8, z: 1}
+  m_Size: {x: 18, y: 9, z: 1}
   m_TileAnchor: {x: 0.5, y: 0.5, z: 0}
   m_TileOrientation: 0
   m_TileOrientationMatrix:
@@ -939,7 +949,7 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 1627660431548749990, guid: 784f0edc8c77e706abf23f4abc5ea35c, type: 3}
   m_PrefabInstance: {fileID: 7345809486036680540}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &2722274592172222068
+--- !u!114 &1153457832707725881
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
